@@ -1,4 +1,4 @@
-﻿namespace SharpDeck
+﻿namespace SharpDeck.Events
 {
     using System;
     using System.Reflection;

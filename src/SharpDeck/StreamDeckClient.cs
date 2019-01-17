@@ -1,35 +1,15 @@
 ﻿namespace SharpDeck
 {
     using Events;
-    using Newtonsoft.Json;
     using SharpDeck.Models;
+    using SharpDeck.Net;
     using System;
-    using System.Collections.Generic;
-    using System.Reflection;
 
     /// <summary>
     /// Provides events and methods that allow for communication with an Elgato Stream Deck.
     /// </summary>
     public class StreamDeckClient : IDisposable
     {
-        /// <summary>
-        /// Initializes static members of the <see cref="StreamDeckClient"/> class.
-        /// </summary>
-        static StreamDeckClient()
-        {
-            var typeOfThis = typeof(StreamDeckClient);
-            var events = typeOfThis.GetEvents(BindingFlags.Instance | BindingFlags.Public);
-
-            foreach (var ev in events)
-            {
-                var info = new StreamDeckEventInfo(ev, typeOfThis.GetField(ev.Name, BindingFlags.NonPublic | BindingFlags.Instance));
-                if (!string.IsNullOrWhiteSpace(info.Name))
-                {
-                    EventFactory.Add(info.Name, info);
-                }
-            }
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
         /// </summary>
@@ -45,7 +25,7 @@
         /// <param name="regParams">The registration parameters.</param>
         public StreamDeckClient(RegistrationParameters regParams)
         {
-            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}/");
+            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}");
             this.WebSocket.OnMessage += this.OnWebSocketClientMessage;
         }
 
@@ -111,12 +91,7 @@
         /// <summary>
         /// Gets or sets the web socket.
         /// </summary>
-        internal IWebSocket WebSocket { get; set; }
-
-        /// <summary>
-        /// Gets the event factory cache; this is used to determine which event should be triggered when a message is received.
-        /// </summary>
-        private static IDictionary<string, StreamDeckEventInfo> EventFactory { get; } = new Dictionary<string, StreamDeckEventInfo>();
+        internal IWebSocket WebSocket { get; }
 
         /// <summary>
         /// Gets or sets the registration parameters.
@@ -148,29 +123,17 @@
         /// <param name="e">The event args.</param>
         private void OnWebSocketClientMessage(object sender, WebSocketMessageEventArgs e)
         {
-            // attempt to determine which event was received
-            StreamDeckEventArgs eventArgs;
             try
             {
-                eventArgs = JsonConvert.DeserializeObject<StreamDeckEventArgs>(e.Message);
+                if (StreamDeckEventFactory.TryParse(e, out var ev, out var args))
+                {
+                    ev.Invoke(this, args);
+                    this.WebSocket.SendAsync("Thank you for the tasty msg");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                this.OnError?.Invoke(this, new StreamDeckClientErrorEventArgs("Unable to parse the message supplied by the Stream Deck"));
-                return;
-            }
-
-            // determine if we can handle the event
-            if (EventFactory.TryGetValue(eventArgs.Event, out var ev))
-            {
-                var args = JsonConvert.DeserializeObject(e.Message, ev.ArgsType);
-                ev.Invoke(this, args);
-
-                this.WebSocket.SendAsync("Tasty msg, thanks");
-            }
-            else
-            {
-                this.OnError?.Invoke(this, new StreamDeckClientErrorEventArgs($"Stream Deck supplied an unspported event: {eventArgs.Event}"));
+                this.OnError?.Invoke(this, new StreamDeckClientErrorEventArgs(ex.Message));
             }
         }
     }

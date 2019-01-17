@@ -1,4 +1,4 @@
-﻿namespace SharpDeck
+﻿namespace SharpDeck.Net
 {
     using Events;
     using System;

@@ -19,7 +19,7 @@
             const string url = "ws://localhost:23655";
 
             var wssv = new WebSocketServer(url);
-            wssv.AddWebSocketService<MainService>("/");
+            wssv.AddWebSocketService<MainService>(string.Empty);
 
             wssv.Start();
             Console.WriteLine($"Server started at: {url}");
