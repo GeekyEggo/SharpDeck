@@ -1,8 +1,9 @@
-﻿using WebSocketSharp;
-using WebSocketSharp.Server;
-
-namespace Wss.Console
+﻿namespace Wss.Console
 {
+    using System;
+    using WebSocketSharp;
+    using WebSocketSharp.Server;
+
     /// <summary>
     /// Provides a light-weight web socket server.
     /// </summary>
@@ -21,11 +22,11 @@ namespace Wss.Console
             wssv.AddWebSocketService<MainService>("/");
 
             wssv.Start();
-            System.Console.WriteLine($"Server started at: {url}");
+            Console.WriteLine($"Server started at: {url}");
 
             while (true)
             {
-                System.Console.Write("Send: ");
+                Console.Write("Send: ");
                 var input = System.Console.ReadLine();
                 if (input == "x" || input == "exit")
                 {
@@ -33,7 +34,7 @@ namespace Wss.Console
                 }
                 else if (input == "up")
                 {
-                    System.Console.WriteLine($"Sent: {MOCK_KEY_UP}");
+                    Console.WriteLine($"Sent: {MOCK_KEY_UP}");
                     wssv.WebSocketServices.Broadcast(MOCK_KEY_UP);
                 }
                 else
@@ -67,7 +68,7 @@ namespace Wss.Console
             {
                 var msg = $"Received: {e.Data}";
 
-                System.Console.WriteLine(msg);
+                Console.WriteLine(msg);
                 this.Send(msg);
             }
         }
