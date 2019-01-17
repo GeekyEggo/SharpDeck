@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Models
 {
+    /// <summary>
+    /// Provides information about a title.
+    /// </summary>
     public class TitleParameters
     {
         /// <summary>

@@ -1,6 +1,10 @@
 ﻿namespace SharpDeck.Models
 {
     using Enums;
+
+    /// <summary>
+    /// Provides information about an application.
+    /// </summary>
     public class Application
     {
         /// <summary>

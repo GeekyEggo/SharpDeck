@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Models
 {
+    /// <summary>
+    /// Provides payload information relating to an application.
+    /// </summary>
     public class ApplicationPayload
     {
         /// <summary>

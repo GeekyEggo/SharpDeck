@@ -2,6 +2,9 @@
 {
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Provides an enumeration of platforms.
+    /// </summary>
     public enum PlatformType
     {
         /// <summary>

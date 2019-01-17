@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Events
 {
+    /// <summary>
+    /// Provides information about an action-based event received from an Elgato Stream Deck.
+    /// </summary>
     public class ActionEventArgs<TPayload> : StreamDeckEventArgs<TPayload>
     {
         /// <summary>

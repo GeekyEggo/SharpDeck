@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Models
 {
+    /// <summary>
+    /// Provides information about a device, that is identifiable.
+    /// </summary>
     public class IdentifiableDeviceInfo : DeviceInfo
     {
         /// <summary>

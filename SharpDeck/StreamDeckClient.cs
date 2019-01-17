@@ -6,18 +6,23 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides events and methods that allow for communication with an Elgato Stream Deck.
+    /// </summary>
     public class StreamDeckClient : IDisposable
     {
+        /// <summary>
+        /// Initializes static members of the <see cref="StreamDeckClient"/> class.
+        /// </summary>
         static StreamDeckClient()
         {
-            var _parent = typeof(StreamDeckClient);
-            var events = _parent.GetEvents(BindingFlags.Instance | BindingFlags.Public);
+            var typeOfThis = typeof(StreamDeckClient);
+            var events = typeOfThis.GetEvents(BindingFlags.Instance | BindingFlags.Public);
 
             foreach (var ev in events)
             {
-                var info = new StreamDeckEventInfo(ev, _parent.GetField(ev.Name, BindingFlags.NonPublic | BindingFlags.Instance));
+                var info = new StreamDeckEventInfo(ev, typeOfThis.GetField(ev.Name, BindingFlags.NonPublic | BindingFlags.Instance));
                 if (!string.IsNullOrWhiteSpace(info.Name))
                 {
                     EventFactory.Add(info.Name, info);
@@ -25,18 +30,29 @@
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         public StreamDeckClient(string[] args)
             : this(RegistrationParameters.Parse(args))
         {
         }
 
-        public StreamDeckClient(RegistrationParameters registrationParams)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
+        /// </summary>
+        /// <param name="regParams">The registration parameters.</param>
+        public StreamDeckClient(RegistrationParameters regParams)
         {
-            this.WebSocketClient = new WebSocketClient("ws://localhost", registrationParams.Port);
-            this.WebSocketClient.OnMessage += this.OnWebSocketClientMessage;
+            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}/");
+            this.WebSocket.OnMessage += this.OnWebSocketClientMessage;
         }
 
-        #region Events received
+        /// <summary>
+        /// Occurs when the client encounters an error.
+        /// </summary>
+        public EventHandler<StreamDeckClientErrorEventArgs> OnError;
 
         /// <summary>
         /// Occurs when a monitored application is launched.
@@ -92,26 +108,67 @@
         [StreamDeckEvent("willDisappear")]
         public event EventHandler<ActionEventArgs> WillDisappear;
 
-        #endregion
+        /// <summary>
+        /// Gets or sets the web socket.
+        /// </summary>
+        internal IWebSocket WebSocket { get; set; }
 
-        private static IDictionary<string, StreamDeckEventInfo> EventFactory { get; }
+        /// <summary>
+        /// Gets the event factory cache; this is used to determine which event should be triggered when a message is received.
+        /// </summary>
+        private static IDictionary<string, StreamDeckEventInfo> EventFactory { get; } = new Dictionary<string, StreamDeckEventInfo>();
+
+        /// <summary>
+        /// Gets or sets the registration parameters.
+        /// </summary>
         private RegistrationParameters RegistrationParameters { get; set; }
-        private WebSocketClient WebSocketClient { get; }
 
-        public Task StartAsync()
-            => this.WebSocketClient.ConnectAsync();
+        /// <summary>
+        /// Starts the client.
+        /// </summary>
+        public void Start()
+            => this.WebSocket.Connect();
 
+        /// <summary>
+        /// Stops the client.
+        /// </summary>
+        public void Stop()
+            => this.WebSocket.Close();
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
-            => this.WebSocketClient?.Dispose();
+            => this.WebSocket?.Dispose();
 
-        private void OnWebSocketClientMessage(object sender, string e)
+        /// <summary>
+        /// Called when <see cref="IWebSocket.OnMessage"/> is triggered.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event args.</param>
+        private void OnWebSocketClientMessage(object sender, WebSocketMessageEventArgs e)
         {
-            var initialArgs = JsonConvert.DeserializeObject<StreamDeckEventArgs>(e);
-
-            if (EventFactory.TryGetValue(initialArgs.Event, out var ev))
+            // attempt to determine which event was received
+            StreamDeckEventArgs eventArgs;
+            try
             {
-                var eventArgs = JsonConvert.DeserializeObject(e, ev.ArgsType);
-                ev.Invoke(this, eventArgs);
+                eventArgs = JsonConvert.DeserializeObject<StreamDeckEventArgs>(e.Message);
+            }
+            catch
+            {
+                this.OnError?.Invoke(this, new StreamDeckClientErrorEventArgs("Unable to parse the message supplied by the Stream Deck"));
+                return;
+            }
+
+            // determine if we can handle the event
+            if (EventFactory.TryGetValue(eventArgs.Event, out var ev))
+            {
+                var args = JsonConvert.DeserializeObject(e.Message, ev.ArgsType);
+                ev.Invoke(this, args);
+            }
+            else
+            {
+                this.OnError?.Invoke(this, new StreamDeckClientErrorEventArgs($"Stream Deck supplied an unspported event: {eventArgs.Event}"));
             }
         }
     }

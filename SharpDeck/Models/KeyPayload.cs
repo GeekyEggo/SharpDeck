@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Models
 {
+    /// <summary>
+    /// Provides payload information relating to a key.
+    /// </summary>
     public class KeyPayload : ActionPayload
     {
         /// <summary>

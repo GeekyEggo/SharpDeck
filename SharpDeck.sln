@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck", "SharpDeck\SharpDeck.csproj", "{CBEF0224-AC09-4B46-AB66-1A81523E11AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "SharpDeck\SharpDeck.csproj", "{CBEF0224-AC09-4B46-AB66-1A81523E11AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WssConsole", "WssConsole\WssConsole.csproj", "{653B5621-0915-4A5C-9267-28CDB50A16E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeckConsole", "SharpDeckConsole\SharpDeckConsole.csproj", "{42FC235F-7E41-4DC7-93CE-72AB79B048CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{CBEF0224-AC09-4B46-AB66-1A81523E11AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBEF0224-AC09-4B46-AB66-1A81523E11AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBEF0224-AC09-4B46-AB66-1A81523E11AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{653B5621-0915-4A5C-9267-28CDB50A16E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{653B5621-0915-4A5C-9267-28CDB50A16E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{653B5621-0915-4A5C-9267-28CDB50A16E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{653B5621-0915-4A5C-9267-28CDB50A16E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42FC235F-7E41-4DC7-93CE-72AB79B048CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FC235F-7E41-4DC7-93CE-72AB79B048CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42FC235F-7E41-4DC7-93CE-72AB79B048CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42FC235F-7E41-4DC7-93CE-72AB79B048CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

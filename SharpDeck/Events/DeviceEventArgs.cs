@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Events
 {
+    /// <summary>
+    /// Provides information about a device-based event received from an Elgato Stream Deck.
+    /// </summary>
     public class DeviceEventArgs : StreamDeckEventArgs
     {
         /// <summary>

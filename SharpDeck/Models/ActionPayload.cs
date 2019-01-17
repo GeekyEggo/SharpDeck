@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Models
 {
+    /// <summary>
+    /// Provides information about an action.
+    /// </summary>
     public class ActionPayload
     {
         /// <summary>

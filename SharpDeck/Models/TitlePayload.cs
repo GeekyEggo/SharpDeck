@@ -1,5 +1,8 @@
 ﻿namespace SharpDeck.Models
 {
+    /// <summary>
+    /// Provides payload information about a title.
+    /// </summary>
     public class TitlePayload
     {
         /// <summary>

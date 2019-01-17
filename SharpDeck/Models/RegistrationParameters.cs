@@ -1,6 +1,10 @@
 ﻿namespace SharpDeck.Models
 {
     using System;
+
+    /// <summary>
+    /// Provides information about registration parameters supplied by an Elgato Stream Deck when initialising a client.
+    /// </summary>
     public class RegistrationParameters
     {
         /// <summary>

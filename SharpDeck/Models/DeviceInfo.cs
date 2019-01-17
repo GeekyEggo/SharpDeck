@@ -1,6 +1,10 @@
 ﻿namespace SharpDeck.Models
 {
     using Enums;
+
+    /// <summary>
+    /// Provides information about a device.
+    /// </summary>
     public class DeviceInfo
     {
         /// <summary>
