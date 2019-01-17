@@ -19,15 +19,15 @@
             const string url = "ws://localhost:23655";
 
             var wssv = new WebSocketServer(url);
-            wssv.AddWebSocketService<MainService>(string.Empty);
+            wssv.AddWebSocketService<MainService>("/");
 
             wssv.Start();
             Console.WriteLine($"Server started at: {url}");
 
             while (true)
             {
-                Console.Write("Send: ");
-                var input = System.Console.ReadLine();
+                Console.WriteLine("Send: ");
+                var input = Console.ReadLine();
                 if (input == "x" || input == "exit")
                 {
                     break;

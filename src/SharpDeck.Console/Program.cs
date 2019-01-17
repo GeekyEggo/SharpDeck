@@ -43,7 +43,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Events.KeyActionEventArgs"/> instance containing the event data.</param>
-        private static void Client_KeyUp(object sender, Events.KeyActionEventArgs e)
+        private static void Client_KeyUp(object sender, Events.ActionEventArgs<KeyPayload> e)
             => System.Console.WriteLine("KEY UP TRIGGERED");
     }
 }

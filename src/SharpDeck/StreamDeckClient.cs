@@ -25,7 +25,7 @@
         /// <param name="regParams">The registration parameters.</param>
         public StreamDeckClient(RegistrationParameters regParams)
         {
-            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}");
+            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}/");
             this.WebSocket.OnMessage += this.OnWebSocketClientMessage;
         }
 
@@ -38,13 +38,13 @@
         /// Occurs when a monitored application is launched.
         /// </summary>
         [StreamDeckEvent("applicationDidLaunch")]
-        public event EventHandler<ApplicationEventArgs> ApplicationDidLaunch;
+        public event EventHandler<StreamDeckEventArgs<ApplicationPayload>> ApplicationDidLaunch;
 
         /// <summary>
         /// Occurs when a monitored application is terminated.
         /// </summary>
         [StreamDeckEvent("applicationDidTerminate")]
-        public event EventHandler<ApplicationEventArgs> ApplicationDidTerminate;
+        public event EventHandler<StreamDeckEventArgs<ApplicationPayload>> ApplicationDidTerminate;
 
         /// <summary>
         /// Occurs when a device is plugged to the computer.
@@ -62,19 +62,19 @@
         /// Occurs when the user presses a key.
         /// </summary>
         [StreamDeckEvent("keyDown")]
-        public event EventHandler<KeyActionEventArgs> KeyDown;
+        public event EventHandler<ActionEventArgs<KeyPayload>> KeyDown;
 
         /// <summary>
         /// Occurs when the user releases a key.
         /// </summary>
         [StreamDeckEvent("keyUp")]
-        public event EventHandler<KeyActionEventArgs> KeyUp;
+        public event EventHandler<ActionEventArgs<KeyPayload>> KeyUp;
 
         /// <summary>
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         [StreamDeckEvent("titleParametersDidChange")]
-        public event EventHandler<TitleActionEventArgs> TitleParametersDidChange;
+        public event EventHandler<ActionEventArgs<TitlePayload>> TitleParametersDidChange;
 
         /// <summary>
         /// Occurs when an instance of an action appears.
@@ -86,7 +86,7 @@
         /// Occurs when an instance of an action disappears.
         /// </summary>
         [StreamDeckEvent("willDisappear")]
-        public event EventHandler<ActionEventArgs> WillDisappear;
+        public event EventHandler<ActionEventArgs<ActionPayload>> WillDisappear;
 
         /// <summary>
         /// Gets or sets the web socket.
