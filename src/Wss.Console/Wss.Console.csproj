@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{653B5621-0915-4A5C-9267-28CDB50A16E6}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>WssConsole</RootNamespace>
-    <AssemblyName>WssConsole</AssemblyName>
+    <RootNamespace>Wss.Console</RootNamespace>
+    <AssemblyName>Wss.Console</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

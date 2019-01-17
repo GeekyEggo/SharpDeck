@@ -2,6 +2,7 @@
 {
     using Events;
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a light-weight interface for a web socket.
@@ -16,17 +17,20 @@
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        void Connect();
+        /// <returns>The task.</returns>
+        Task ConnectAsync();
 
         /// <summary>
-        /// Closes the web socket.
+        /// Disconnects the web socket.
         /// </summary>
-        void Close();
+        /// <returns>The task.</returns>
+        Task DisconnectAsync();
 
         /// <summary>
         /// Sends the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        void Send(string message);
+        /// <returns>The task.</returns>
+        Task SendAsync(string message);
     }
 }

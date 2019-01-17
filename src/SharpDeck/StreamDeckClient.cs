@@ -126,14 +126,14 @@
         /// <summary>
         /// Starts the client.
         /// </summary>
-        public void Start()
-            => this.WebSocket.Connect();
+        public async void Start()
+            => await this.WebSocket.ConnectAsync();
 
         /// <summary>
         /// Stops the client.
         /// </summary>
-        public void Stop()
-            => this.WebSocket.Close();
+        public async void Stop()
+            => await this.WebSocket.DisconnectAsync();
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -165,6 +165,8 @@
             {
                 var args = JsonConvert.DeserializeObject(e.Message, ev.ArgsType);
                 ev.Invoke(this, args);
+
+                this.WebSocket.SendAsync("Tasty msg, thanks");
             }
             else
             {

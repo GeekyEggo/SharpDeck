@@ -1,14 +1,14 @@
-﻿using System;
-using WebSocketSharp;
+﻿using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace WssConsole
+namespace Wss.Console
 {
     /// <summary>
     /// Provides a light-weight web socket server.
     /// </summary>
     public class Program
     {
+        private const string MOCK_KEY_UP = "{\"action\": \"com.elgato.example.action1\",\"event\": \"keyUp\",\"context\": null,\"device\": null,\"payload\": {\"settings\": null,\"coordinates\": {\"column\": 3, \"row\": 1},\"state\": 0,\"userDesiredState\": 1,\"isInMultiAction\": false}}";
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
@@ -21,15 +21,20 @@ namespace WssConsole
             wssv.AddWebSocketService<MainService>("/");
 
             wssv.Start();
-            Console.WriteLine($"Server started at: {url}");
+            System.Console.WriteLine($"Server started at: {url}");
 
             while (true)
             {
-                Console.Write("Send: ");
-                var input = Console.ReadLine();
+                System.Console.Write("Send: ");
+                var input = System.Console.ReadLine();
                 if (input == "x" || input == "exit")
                 {
                     break;
+                }
+                else if (input == "up")
+                {
+                    System.Console.WriteLine($"Sent: {MOCK_KEY_UP}");
+                    wssv.WebSocketServices.Broadcast(MOCK_KEY_UP);
                 }
                 else
                 {
@@ -59,7 +64,12 @@ namespace WssConsole
             /// <param name="e">A <see cref="T:WebSocketSharp.MessageEventArgs" /> that represents the event data passed to
             /// a <see cref="E:WebSocketSharp.WebSocket.OnMessage" /> event.</param>
             protected override void OnMessage(MessageEventArgs e)
-                => this.Send($"CONFIRM: [{e.Data}]");
+            {
+                var msg = $"Received: {e.Data}";
+
+                System.Console.WriteLine(msg);
+                this.Send(msg);
+            }
         }
     }
 }

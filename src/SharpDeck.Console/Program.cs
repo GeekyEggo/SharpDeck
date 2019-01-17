@@ -1,8 +1,7 @@
-﻿using SharpDeck;
-using SharpDeck.Models;
+﻿using SharpDeck.Models;
 using System;
 
-namespace SharpDeckConsole
+namespace SharpDeck.Console
 {
     /// <summary>
     /// Provides a light-weight console that demonstrates the <see cref="StreamDeckClient"/>.
@@ -25,15 +24,17 @@ namespace SharpDeckConsole
                 client.KeyUp += Client_KeyUp;
 
                 client.Start();
-                Console.WriteLine("Plugin started, press [x] to exit");
+                System.Console.WriteLine("Plugin started, press [x] to exit");
 
                 var input = new ConsoleKeyInfo();
                 while (input.Key != ConsoleKey.X)
                 {
-                    input = Console.ReadKey();
+                    input = System.Console.ReadKey();
                 }
 
                 client.Stop();
+
+                System.Console.ReadKey();
             }
         }
 
@@ -43,6 +44,6 @@ namespace SharpDeckConsole
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="SharpDeck.Events.KeyActionEventArgs"/> instance containing the event data.</param>
         private static void Client_KeyUp(object sender, SharpDeck.Events.KeyActionEventArgs e)
-            => Console.WriteLine("KEY UP TRIGGERED");
+            => System.Console.WriteLine("KEY UP TRIGGERED");
     }
 }
