@@ -18,7 +18,7 @@
         /// <summary>
         /// Gets or sets the JSON containing data that you can set and are stored persistently.
         /// </summary>
-        public string Settings { get; set; }
+        public object Settings { get; set; }
 
         /// <summary>
         /// Gets or sets the state; this is a parameter that is only set when the action has multiple states defined in its manifest.json. The 0-based value contains the current state of the action.
