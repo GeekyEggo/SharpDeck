@@ -1,9 +1,13 @@
 ﻿namespace SharpDeck.Events
 {
+    using Net;
     using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Reflection;
 
+    /// <summary>
+    /// A factory that provides information about supported events received from an Elgato Stream Deck.
+    /// </summary>
     public class StreamDeckEventFactory
     {
         /// <summary>

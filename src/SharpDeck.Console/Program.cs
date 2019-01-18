@@ -1,6 +1,7 @@
 ﻿namespace SharpDeck.Console
 {
     using Models;
+    using SharpDeck.Enums;
     using System;
 
     /// <summary>
@@ -21,7 +22,10 @@
 
             using (var client = new StreamDeckClient(regParams))
             {
-                client.KeyUp += Client_KeyUp;
+                client.KeyUp += (_, e) =>
+                {
+                    client.SetTitleAsync("context", "New title here", TargetType.Both);
+                };
 
                 client.Start();
                 Console.WriteLine("Plugin started, press [x] to exit");
@@ -37,13 +41,5 @@
                 Console.ReadKey();
             }
         }
-
-        /// <summary>
-        /// Handles the <see cref="StreamDeckClient.KeyUp"/> event.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Events.KeyActionEventArgs"/> instance containing the event data.</param>
-        private static void Client_KeyUp(object sender, Events.ActionEventArgs<KeyPayload> e)
-            => System.Console.WriteLine("KEY UP TRIGGERED");
     }
 }
