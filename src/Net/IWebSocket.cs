@@ -1,7 +1,7 @@
 ﻿namespace SharpDeck.Net
 {
-    using Events;
     using System;
+    using System.Net.WebSockets;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -12,13 +12,13 @@
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
-        event EventHandler<WebSocketMessageEventArgs> OnMessage;
+        event EventHandler<WebSocketMessageEventArgs> MessageReceived;
 
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        /// <returns>The task.</returns>
-        Task ConnectAsync();
+        /// <returns>The the web socket state; this will return <see cref="WebSocketState.None"/> when the web socket is already connected.</returns>
+        Task<WebSocketState> ConnectAsync();
 
         /// <summary>
         /// Disconnects the web socket.

@@ -8,6 +8,7 @@
     using SharpDeck.Models;
     using SharpDeck.Net;
     using System;
+    using System.Net.WebSockets;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -31,7 +32,7 @@
         public StreamDeckClient(RegistrationParameters regParams)
         {
             this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}/");
-            this.WebSocket.OnMessage += this.OnWebSocketClientMessage;
+            this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
         }
 
         /// <summary>
@@ -107,7 +108,13 @@
         /// Starts the client.
         /// </summary>
         public async void Start()
-            => await this.WebSocket.ConnectAsync();
+        {
+            var state = await this.WebSocket.ConnectAsync();
+            if (state == WebSocketState.Open)
+            {
+                await this.SendMessageAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
+            }
+        }
 
         /// <summary>
         /// Stops the client.
@@ -204,11 +211,11 @@
             => this.SendMessageAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
-        /// Called when <see cref="IWebSocket.OnMessage"/> is triggered.
+        /// Handles the <see cref="IWebSocket.MessageReceived"/> event; triggering any associated events.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event args.</param>
-        private void OnWebSocketClientMessage(object sender, WebSocketMessageEventArgs e)
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="WebSocketMessageEventArgs"/> instance containing the event data.</param>
+        private void WebSocket_MessageReceived(object sender, WebSocketMessageEventArgs e)
         {
             try
             {

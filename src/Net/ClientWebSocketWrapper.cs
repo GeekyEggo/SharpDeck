@@ -34,7 +34,7 @@
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
-        public event EventHandler<WebSocketMessageEventArgs> OnMessage;
+        public event EventHandler<WebSocketMessageEventArgs> MessageReceived;
 
         /// <summary>
         /// Gets or sets the encoding.
@@ -54,8 +54,8 @@
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        /// <returns>The task.</returns>
-        public async Task ConnectAsync()
+        /// <returns>The the web socket state; this will return <see cref="WebSocketState.None"/> when the web socket is already connected.</returns>
+        public async Task<WebSocketState> ConnectAsync()
         {
             if (this.WebSocket == null)
             {
@@ -63,7 +63,11 @@
 
                 await this.WebSocket.ConnectAsync(this.Uri, CancellationToken.None);
                 _ = this.ReceiveAsync();
+
+                return this.WebSocket.State;
             }
+
+            return WebSocketState.None;
         }
 
         /// <summary>
@@ -145,7 +149,7 @@
                     textBuffer.Append(this.Encoding.GetString(buffer, 0, result.Count));
                     if (result.EndOfMessage)
                     {
-                        this.OnMessage?.Invoke(this, new WebSocketMessageEventArgs(this.Encoding.GetString(buffer).TrimEnd('\0')));
+                        this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(this.Encoding.GetString(buffer).TrimEnd('\0')));
                         textBuffer.Clear();
                     }
                 }
