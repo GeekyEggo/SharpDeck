@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SharpDeck\SharpDeck.csproj" />
+    <ProjectReference Include="..\..\src\SharpDeck.csproj" />
   </ItemGroup>
 
 </Project>
