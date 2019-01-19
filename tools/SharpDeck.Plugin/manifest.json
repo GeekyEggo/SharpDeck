@@ -12,7 +12,7 @@
             ],
             "SupportedInMultiActions": false,
             "Tooltip": "Counts",
-            "UUID": "com.sharpdeck.testplugin.main"
+            "UUID": "com.sharpdeck.testplugin.counter"
         }
     ],
     "Author": "Richard Herman",

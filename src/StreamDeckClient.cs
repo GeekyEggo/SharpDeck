@@ -4,6 +4,7 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
+    using SharpDeck.Actions;
     using SharpDeck.Enums;
     using SharpDeck.Messages;
     using SharpDeck.Models;
@@ -118,6 +119,11 @@
         internal IWebSocket WebSocket { get; }
 
         /// <summary>
+        /// Gets the action manager, used to manage and invoke custom actions that have been added to the Stream Deck client.
+        /// </summary>
+        private ActionManager ActionManager { get; } = new ActionManager();
+
+        /// <summary>
         /// Gets or sets the registration parameters.
         /// </summary>
         private RegistrationParameters RegistrationParameters { get; set; }
@@ -126,6 +132,10 @@
         /// Gets or sets the task completion source for <see cref="StreamDeckClient.WaitAsync" />
         /// </summary>
         private TaskCompletionSource<bool> WaitTaskCompletionSource { get; set; }
+
+        public void RegisterAction<T>(string actionUUID)
+            where T : IStreamDeckAction, new()
+            => this.ActionManager.Register<T>(actionUUID);
 
         /// <summary>
         /// Starts the client; the client will not be ready until it has been registered, whereby <see cref="StreamDeckClient.Connect"/> will be invoked.
@@ -277,7 +287,11 @@
             {
                 if (StreamDeckEventFactory.TryParse(e, out var ev, out var args))
                 {
-                    ev.Invoke(this, args);
+                    if (!this.ActionManager.TryAction(this, ev, args))
+                    {
+                        ev.Invoke(this, args);
+                    }
+
                     this.WebSocket.SendAsync("Thank you for the tasty msg");
                 }
             }

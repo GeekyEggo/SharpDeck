@@ -5,7 +5,7 @@
     /// <summary>
     /// An attribute that acts as an identifier, and indicates that an event represents a message supplied by an Elgato Stream Deck.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Event)]
+    [AttributeUsage(AttributeTargets.Event | AttributeTargets.Method, AllowMultiple = false)]
     public class StreamDeckEventAttribute : Attribute
     {
         /// <summary>
