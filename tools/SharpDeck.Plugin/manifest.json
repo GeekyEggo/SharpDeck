@@ -1,0 +1,38 @@
+﻿{
+    "Actions": [
+        {
+            "Icon": "Images/Icon",
+            "Name": "Counter",
+            "States": [
+                {
+                    "Image": "Images/Action",
+                    "TitleAlignment": "middle",
+                    "FontSize": "17"
+                }
+            ],
+            "SupportedInMultiActions": false,
+            "Tooltip": "Counts",
+            "UUID": "com.sharpdeck.testplugin.main"
+        }
+    ],
+    "Author": "Richard Herman",
+    "Description": "SharpDeck test plugin for Elgato Stream Deck",
+    "Name": "SharpDeck",
+    "Icon": "Images/PluginIcon",
+    "URL": "https://github.com/geekyeggo/SharpDeck",
+    "Version": "0.1",
+    "CodePath": "SharpDeck.Plugin.exe",
+    "Category": "SharpDeck",
+    "CategoryIcon": "Images/CategoryIcon",
+    "OS": [
+        {
+            "Platform": "windows",
+            "MinimumVersion": "10"
+        }
+    ],
+    "ApplicationsToMonitor": {
+        "windows": [
+            "notepad++.exe"
+        ]
+    }
+}

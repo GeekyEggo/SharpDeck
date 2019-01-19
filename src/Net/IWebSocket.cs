@@ -1,7 +1,6 @@
 ﻿namespace SharpDeck.Net
 {
     using System;
-    using System.Net.WebSockets;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -10,6 +9,16 @@
     public interface IWebSocket : IDisposable
     {
         /// <summary>
+        /// Occurs when the web socket connects.
+        /// </summary>
+        event EventHandler Connect;
+
+        /// <summary>
+        /// Occurs when the web socket disconnects.
+        /// </summary>
+        event EventHandler Disconnect;
+
+        /// <summary>
         /// Occurs when a message is received.
         /// </summary>
         event EventHandler<WebSocketMessageEventArgs> MessageReceived;
@@ -17,8 +26,8 @@
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        /// <returns>The the web socket state; this will return <see cref="WebSocketState.None"/> when the web socket is already connected.</returns>
-        Task<WebSocketState> ConnectAsync();
+        /// <returns>The task.</returns>
+        Task ConnectAsync();
 
         /// <summary>
         /// Disconnects the web socket.

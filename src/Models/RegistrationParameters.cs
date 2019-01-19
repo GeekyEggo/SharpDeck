@@ -42,21 +42,21 @@
             var parameters = new RegistrationParameters();
             for (var i = 0; i < 4; i++)
             {
-                var param = args[(i * 2) + 1];
-                var value = args[(i * 2) + 2];
+                var param = args[(i * 2)];
+                var value = args[(i * 2) + 1];
 
                 switch (param)
                 {
-                    case "port":
+                    case "-port":
                         parameters.Port = int.Parse(value);
                         break;
-                    case "pluginUUID":
+                    case "-pluginUUID":
                         parameters.PluginUUID = value;
                         break;
-                    case "registerEvent":
+                    case "-registerEvent":
                         parameters.Event = value;
                         break;
-                    case "info":
+                    case "-info":
                         parameters.Info = null; // todo: de-serialize JSON
                         break;
                 }

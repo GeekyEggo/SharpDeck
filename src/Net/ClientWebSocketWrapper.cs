@@ -1,6 +1,5 @@
 ﻿namespace SharpDeck.Net
 {
-    using Events;
     using System;
     using System.Net.WebSockets;
     using System.Text;
@@ -32,9 +31,20 @@
         }
 
         /// <summary>
+        /// Occurs when the web socket connects.
+        /// </summary>
+        public event EventHandler Connect;
+
+        /// <summary>
+        /// Occurs when the web socket disconnects.
+        /// </summary>
+        public event EventHandler Disconnect;
+
+        /// <summary>
         /// Occurs when a message is received.
         /// </summary>
         public event EventHandler<WebSocketMessageEventArgs> MessageReceived;
+
 
         /// <summary>
         /// Gets or sets the encoding.
@@ -54,8 +64,8 @@
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        /// <returns>The the web socket state; this will return <see cref="WebSocketState.None"/> when the web socket is already connected.</returns>
-        public async Task<WebSocketState> ConnectAsync()
+        /// <returns>The task.</returns>
+        public async Task ConnectAsync()
         {
             if (this.WebSocket == null)
             {
@@ -64,10 +74,8 @@
                 await this.WebSocket.ConnectAsync(this.Uri, CancellationToken.None);
                 _ = this.ReceiveAsync();
 
-                return this.WebSocket.State;
+                this.Connect?.Invoke(this, EventArgs.Empty);
             }
-
-            return WebSocketState.None;
         }
 
         /// <summary>
@@ -81,7 +89,11 @@
                 var socket = this.WebSocket;
                 this.WebSocket = null;
 
-                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Disconnecting", CancellationToken.None);
+                if (socket.State == WebSocketState.Open)
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Disconnecting", CancellationToken.None);
+                }
+
                 socket.Dispose();
             }
         }
@@ -131,8 +143,7 @@
             while (this.WebSocket?.State == WebSocketState.Open)
             {
                 // await a message
-                var arrayBuffer = new ArraySegment<byte>(buffer);
-                var result = await this.WebSocket.ReceiveAsync(arrayBuffer, CancellationToken.None);
+                var result = await this.WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 if (result == null)
                 {
                     continue;
@@ -141,6 +152,7 @@
                 if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus != null && result.CloseStatus.HasValue && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
                 {
                     // stop listening, and return the close status
+                    this.Disconnect?.Invoke(this, EventArgs.Empty);
                     return result.CloseStatus.GetValueOrDefault();
                 }
                 else if (result.MessageType == WebSocketMessageType.Text)
@@ -149,12 +161,13 @@
                     textBuffer.Append(this.Encoding.GetString(buffer, 0, result.Count));
                     if (result.EndOfMessage)
                     {
-                        this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(this.Encoding.GetString(buffer).TrimEnd('\0')));
+                        this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(textBuffer.ToString()));
                         textBuffer.Clear();
                     }
                 }
             }
 
+            this.Disconnect?.Invoke(this, EventArgs.Empty);
             return WebSocketCloseStatus.NormalClosure;
         }
     }

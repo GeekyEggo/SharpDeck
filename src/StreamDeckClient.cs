@@ -2,13 +2,13 @@
 {
     using Events;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
     using SharpDeck.Enums;
     using SharpDeck.Messages;
     using SharpDeck.Models;
     using SharpDeck.Net;
     using System;
-    using System.Net.WebSockets;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -28,17 +28,35 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
         /// </summary>
-        /// <param name="regParams">The registration parameters.</param>
-        public StreamDeckClient(RegistrationParameters regParams)
+        /// <param name="registrationParameters">The registration parameters.</param>
+        public StreamDeckClient(RegistrationParameters registrationParameters)
         {
-            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{regParams.Port}/");
+            this.RegistrationParameters = registrationParameters;
+
+            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{registrationParameters.Port}/");
+            this.WebSocket.Connect += this.WebSocket_Connect;
+            this.WebSocket.Disconnect += this.WebSocket_Disconnect;
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
+        }
+
+        /// <summary>
+        /// Occurs when the client connects, and is registered.
+        /// </summary>
+        public event EventHandler Connect;
+
+        /// <summary>
+        /// Occurs when the client disconnects
+        /// </summary>
+        public event EventHandler Disconnect
+        {
+            add { this.WebSocket.Disconnect += value; }
+            remove { this.WebSocket.Disconnect -= value; }
         }
 
         /// <summary>
         /// Occurs when the client encounters an error.
         /// </summary>
-        public EventHandler<StreamDeckClientErrorEventArgs> OnError;
+        public event EventHandler<StreamDeckClientErrorEventArgs> Error;
 
         /// <summary>
         /// Occurs when a monitored application is launched.
@@ -62,7 +80,7 @@
         /// Occurs when a device is unplugged from the computer.
         /// </summary>
         [StreamDeckEvent("deviceDidDisconnect")]
-        public event EventHandler<DeviceEventArgs> DeciceDidDisconnect;
+        public event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
         /// Occurs when the user presses a key.
@@ -105,16 +123,15 @@
         private RegistrationParameters RegistrationParameters { get; set; }
 
         /// <summary>
-        /// Starts the client.
+        /// Gets or sets the task completion source for <see cref="StreamDeckClient.WaitAsync" />
+        /// </summary>
+        private TaskCompletionSource<bool> WaitTaskCompletionSource { get; set; }
+
+        /// <summary>
+        /// Starts the client; the client will not be ready until it has been registered, whereby <see cref="StreamDeckClient.Connect"/> will be invoked.
         /// </summary>
         public async void Start()
-        {
-            var state = await this.WebSocket.ConnectAsync();
-            if (state == WebSocketState.Open)
-            {
-                await this.SendMessageAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
-            }
-        }
+            => await this.WebSocket.ConnectAsync();
 
         /// <summary>
         /// Stops the client.
@@ -168,10 +185,10 @@
         /// Save persistent data for the actions instance.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
-        /// <param name="payload">A JSON object which is persistently saved for the action's instance.</param>
+        /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
         /// <returns>The task.</returns>
-        public Task SetSettings(string context, object payload)
-            => this.SendMessageAsync(new ContextMessage<object>("setSettings", context, payload));
+        public Task SetSettingsAsync(string context, object settings)
+            => this.SendMessageAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings)));
 
         /// <summary>
         ///	Change the state of the actions instance supporting multiple states.
@@ -211,6 +228,45 @@
             => this.SendMessageAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
+        /// Continuously listens to the Elgato Stream Deck, until disconnection.
+        /// </summary>
+        public void Wait()
+            => Task.WaitAll(this.WaitAsync());
+
+        /// <summary>
+        /// Continuously listens to the Elgato Stream Deck, until disconnection, asynchronously.
+        /// </summary>
+        /// <returns>The task.</returns>
+        public Task WaitAsync()
+        {
+            if (this.WaitTaskCompletionSource == null)
+            {
+                this.WaitTaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+
+            return this.WaitTaskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Handles the <see cref="IWebSocket.Connect"/> event; registering the plugin, and bubbling the <see cref="StreamDeckClient.Connect"/> event.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void WebSocket_Connect(object sender, EventArgs e)
+        {
+            await this.SendMessageAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
+            this.Connect?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Handles the <see cref="IWebSocket.Disconnect"/> event.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void WebSocket_Disconnect(object sender, EventArgs e)
+            => this.WaitTaskCompletionSource?.SetResult(true);
+
+        /// <summary>
         /// Handles the <see cref="IWebSocket.MessageReceived"/> event; triggering any associated events.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -227,26 +283,27 @@
             }
             catch (Exception ex)
             {
-                this.OnError?.Invoke(this, new StreamDeckClientErrorEventArgs(ex.Message));
+                this.Error?.Invoke(this, new StreamDeckClientErrorEventArgs(ex.Message));
             }
         }
 
         /// <summary>
         /// Sends the message asynchronously.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message object.</param>
         /// <returns>The task.</returns>
         private Task SendMessageAsync(object message)
         {
-            string json = JsonConvert.SerializeObject(message, new JsonSerializerSettings
+            var settings = new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver
                 {
                     NamingStrategy = new CamelCaseNamingStrategy()
                 },
                 Formatting = Formatting.None
-            });
+            };
 
+            var json = JsonConvert.SerializeObject(message, settings);
             return this.WebSocket.SendAsync(json);
         }
     }

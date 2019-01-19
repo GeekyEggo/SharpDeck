@@ -13,11 +13,11 @@
         /// <summary>
         /// Gets or sets an opaque value identifying the instances action. You will need to pass this opaque value to several APIs like the `setTitle` API.
         /// </summary>
-        public object Context { get; set; }
+        public string Context { get; set; }
 
         /// <summary>
         /// Gets or sets an opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.
         /// </summary>
-        public object Device { get; set; }
+        public string Device { get; set; }
     }
 }
