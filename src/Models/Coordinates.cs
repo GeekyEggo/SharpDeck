@@ -1,7 +1,7 @@
 ﻿namespace SharpDeck.Models
 {
     /// <summary>
-    /// Provides coordinates as represented as <see cref="Coordinates.Column"/> and <see cref="Coordinates.Row"/>; this can also be used to represent a size.
+    /// Provides coordinates as represented as <see cref="Coordinates.Column"/> and <see cref="Coordinates.Row"/>.
     /// </summary>
     public class Coordinates
     {

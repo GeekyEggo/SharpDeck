@@ -1,5 +1,7 @@
 ﻿namespace SharpDeck.Models
 {
+    using Enums;
+
     /// <summary>
     /// Provides information about a title.
     /// </summary>
@@ -32,9 +34,8 @@
 
         /// <summary>
         /// Gets or sets the vertical alignment of the title. Possible values are "top", "bottom" and "middle".
-        /// todo: Make this an enumeration
         /// </summary>
-        public string TitleAlignment { get; set; }
+        public TitleAlignmentType TitleAlignment { get; set; }
 
         /// <summary>
         /// Gets or sets the title color, as a hexidecimal, e.g. #ffffff.

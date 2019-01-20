@@ -1,5 +1,6 @@
 ﻿namespace SharpDeck.Models
 {
+    using Newtonsoft.Json;
     using System;
 
     /// <summary>
@@ -57,7 +58,7 @@
                         parameters.Event = value;
                         break;
                     case "-info":
-                        parameters.Info = null; // todo: de-serialize JSON
+                        parameters.Info = JsonConvert.DeserializeObject<RegistrationInfo>(value);
                         break;
                 }
             }
