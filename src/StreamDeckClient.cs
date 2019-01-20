@@ -98,6 +98,11 @@
         /// </summary>
         private StreamDeckEventRouter EventRouter { get; }
 
+        /// <summary>
+        /// Registers a Stream Deck Action.
+        /// </summary>
+        /// <typeparam name="T">The type of the action.</typeparam>
+        /// <param name="actionUUID">The action UUID; this can be found in the manifest.json file.</param>
         public void RegisterAction<T>(string actionUUID)
             where T : StreamDeckAction
             => this.EventRouter.Register<T>(actionUUID);
