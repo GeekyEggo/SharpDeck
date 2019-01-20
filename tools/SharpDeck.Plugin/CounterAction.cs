@@ -1,18 +1,39 @@
-﻿using SharpDeck.Events;
-using SharpDeck.Models;
-
-namespace SharpDeck.Plugin
+﻿namespace SharpDeck.Plugin
 {
+    using Events;
+    using Models;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// A simple counter action.
+    /// </summary>
     public class CounterAction : StreamDeckAction
     {
+        /// <summary>
+        /// Gets or sets the count.
+        /// </summary>
         private int Count { get; set; }
 
-        protected override void OnKeyDown(ActionEventArgs<KeyPayload> args)
+        /// <summary>
+        /// Occurs when the user presses a key.
+        /// </summary>
+        /// <param name="args">The <see cref="T:SharpDeck.Events.ActionEventArgs`1" /> instance containing the event data.</param>
+        protected override async void OnKeyDown(ActionEventArgs<KeyPayload> args)
         {
             this.Count = this.Count + 1;
-            this.SetTitleAsync(this.Count.ToString());
+            if (this.Count == 3)
+            {
+                await this.ShowOkAsync();
+                await Task.Delay(1000);
+            }
+
+            await this.SetTitleAsync(this.Count.ToString());
         }
 
+        /// <summary>
+        /// Occurs when an instance of an action appears.
+        /// </summary>
+        /// <param name="args">The <see cref="T:SharpDeck.Events.ActionEventArgs`1" /> instance containing the event data.</param>
         protected override void OnWillAppear(ActionEventArgs<ActionPayload> args)
             => this.SetTitleAsync("0");
     }

@@ -7,6 +7,7 @@
     using SharpDeck.Models;
     using SharpDeck.Net;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -29,28 +30,12 @@
         /// <param name="registrationParameters">The registration parameters.</param>
         public StreamDeckClient(RegistrationParameters registrationParameters)
         {
+            this.EventRouter = new StreamDeckEventRouter(this);
+
             this.RegistrationParameters = registrationParameters;
 
             this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{registrationParameters.Port}/");
-            this.WebSocket.Connect += this.WebSocket_Connect;
-            this.WebSocket.Disconnect += this.WebSocket_Disconnect;
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
-
-            this.EventRouter = new StreamDeckEventRouter(this);
-        }
-
-        /// <summary>
-        /// Occurs when the client connects, and is registered.
-        /// </summary>
-        public event EventHandler Connect;
-
-        /// <summary>
-        /// Occurs when the client disconnects
-        /// </summary>
-        public event EventHandler Disconnect
-        {
-            add { this.WebSocket.Disconnect += value; }
-            remove { this.WebSocket.Disconnect -= value; }
         }
 
         /// <summary>
@@ -79,9 +64,9 @@
         public event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
-        /// Gets or sets the web socket.
+        /// Gets the event router.
         /// </summary>
-        internal IWebSocket WebSocket { get; }
+        private StreamDeckEventRouter EventRouter { get; }
 
         /// <summary>
         /// Gets or sets the registration parameters.
@@ -89,14 +74,9 @@
         private RegistrationParameters RegistrationParameters { get; set; }
 
         /// <summary>
-        /// Gets or sets the task completion source for <see cref="StreamDeckClient.WaitAsync" />
+        /// Gets or sets the web socket.
         /// </summary>
-        private TaskCompletionSource<bool> WaitTaskCompletionSource { get; set; }
-
-        /// <summary>
-        /// Gets the event router.
-        /// </summary>
-        private StreamDeckEventRouter EventRouter { get; }
+        private IWebSocket WebSocket { get; }
 
         /// <summary>
         /// Registers a Stream Deck Action.
@@ -108,16 +88,34 @@
             => this.EventRouter.Register<T>(actionUUID);
 
         /// <summary>
-        /// Starts the client; the client will not be ready until it has been registered, whereby <see cref="StreamDeckClient.Connect"/> will be invoked.
+        /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
         /// </summary>
-        public async void Start()
-            => await this.WebSocket.ConnectAsync();
+        public void Start()
+            => this.Start(CancellationToken.None);
+
+        /// <summary>
+        /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public void Start(CancellationToken cancellationToken)
+            => Task.WaitAll(this.StartAsync(cancellationToken));
+
+        /// <summary>
+        /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await this.WebSocket.ConnectAsync();
+            await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
+            await this.WebSocket.ReceiveAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Stops the client.
         /// </summary>
-        public async void Stop()
-            => await this.WebSocket.DisconnectAsync();
+        public void Stop()
+            => Task.WaitAll(this.WebSocket.DisconnectAsync());
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -199,25 +197,6 @@
             => this.WebSocket.SendJsonAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
-        /// Continuously listens to the Elgato Stream Deck, until disconnection.
-        /// </summary>
-        public void Wait()
-            => Task.WaitAll(this.WaitAsync());
-
-        /// <summary>
-        /// Continuously listens to the Elgato Stream Deck, until disconnection, asynchronously.
-        /// </summary>
-        public Task WaitAsync()
-        {
-            if (this.WaitTaskCompletionSource == null)
-            {
-                this.WaitTaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            }
-
-            return this.WaitTaskCompletionSource.Task;
-        }
-
-        /// <summary>
         /// Occurs when a monitored application is launched.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
@@ -248,25 +227,6 @@
         [StreamDeckEvent("deviceDidDisconnect")]
         protected virtual void OnDeviceDidDisconnect(DeviceEventArgs args)
             => this.DeviceDidDisconnect?.Invoke(this, args);
-
-        /// <summary>
-        /// Handles the <see cref="IWebSocket.Connect"/> event; registering the plugin, and bubbling the <see cref="StreamDeckClient.Connect"/> event.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void WebSocket_Connect(object sender, EventArgs e)
-        {
-            await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
-            this.Connect?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Handles the <see cref="IWebSocket.Disconnect"/> event.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void WebSocket_Disconnect(object sender, EventArgs e)
-            => this.WaitTaskCompletionSource?.SetResult(true);
 
         /// <summary>
         /// Handles the <see cref="IWebSocket.MessageReceived"/> event; triggering any associated events.

@@ -46,8 +46,7 @@
         /// Occurs when a message is received.
         /// </summary>
         public event EventHandler<WebSocketMessageEventArgs> MessageReceived;
-
-
+        
         /// <summary>
         /// Gets or sets the encoding.
         /// </summary>
@@ -71,11 +70,7 @@
             if (this.WebSocket == null)
             {
                 this.WebSocket = new ClientWebSocket();
-
                 await this.WebSocket.ConnectAsync(this.Uri, CancellationToken.None);
-                _ = this.ReceiveAsync();
-
-                this.Connect?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -105,6 +100,55 @@
         {
             await this.DisconnectAsync();
             this.WebSocket = null;
+        }
+
+        /// <summary>
+        /// Receive data as an asynchronous operation.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task<WebSocketCloseStatus> ReceiveAsync(CancellationToken cancellationToken)
+        {
+            var buffer = new byte[BUFFER_SIZE];
+            var textBuffer = new StringBuilder(BUFFER_SIZE);
+
+            try
+            {
+                while (this.WebSocket?.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
+                {
+                    // await a message
+                    var result = await this.WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                    if (result == null)
+                    {
+                        continue;
+                    }
+
+                    if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus != null && result.CloseStatus.HasValue && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
+                    {
+                        // stop listening, and return the close status
+                        return result.CloseStatus.GetValueOrDefault();
+                    }
+                    else if (result.MessageType == WebSocketMessageType.Text)
+                    {
+                        // append to the text buffer, and determine if the message has finished
+                        textBuffer.Append(this.Encoding.GetString(buffer, 0, result.Count));
+                        if (result.EndOfMessage)
+                        {
+                            this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(textBuffer.ToString()));
+                            textBuffer.Clear();
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return WebSocketCloseStatus.NormalClosure;
+            }
+            catch (Exception)
+            {
+                return WebSocketCloseStatus.InternalServerError;
+            }
+
+            return WebSocketCloseStatus.NormalClosure;
         }
 
         /// <summary>
@@ -148,45 +192,6 @@
 
             var json = JsonConvert.SerializeObject(value, settings);
             return this.SendAsync(json);
-        }
-
-        /// <summary>
-        /// Starts listening to message requests from the web socket.
-        /// </summary>
-        private async Task<WebSocketCloseStatus> ReceiveAsync()
-        {
-            var buffer = new byte[BUFFER_SIZE];
-            var textBuffer = new StringBuilder(BUFFER_SIZE);
-
-            while (this.WebSocket?.State == WebSocketState.Open)
-            {
-                // await a message
-                var result = await this.WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                if (result == null)
-                {
-                    continue;
-                }
-
-                if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus != null && result.CloseStatus.HasValue && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
-                {
-                    // stop listening, and return the close status
-                    this.Disconnect?.Invoke(this, EventArgs.Empty);
-                    return result.CloseStatus.GetValueOrDefault();
-                }
-                else if (result.MessageType == WebSocketMessageType.Text)
-                {
-                    // append to the text buffer, and determine if the message has finished
-                    textBuffer.Append(this.Encoding.GetString(buffer, 0, result.Count));
-                    if (result.EndOfMessage)
-                    {
-                        this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(textBuffer.ToString()));
-                        textBuffer.Clear();
-                    }
-                }
-            }
-
-            this.Disconnect?.Invoke(this, EventArgs.Empty);
-            return WebSocketCloseStatus.NormalClosure;
         }
     }
 }

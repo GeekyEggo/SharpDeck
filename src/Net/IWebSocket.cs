@@ -1,6 +1,8 @@
 ﻿namespace SharpDeck.Net
 {
     using System;
+    using System.Net.WebSockets;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -8,16 +10,6 @@
     /// </summary>
     public interface IWebSocket : IDisposable
     {
-        /// <summary>
-        /// Occurs when the web socket connects.
-        /// </summary>
-        event EventHandler Connect;
-
-        /// <summary>
-        /// Occurs when the web socket disconnects.
-        /// </summary>
-        event EventHandler Disconnect;
-
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
@@ -32,6 +24,12 @@
         /// Disconnects the web socket.
         /// </summary>
         Task DisconnectAsync();
+
+        /// <summary>
+        /// Receive data as an asynchronous operation.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task<WebSocketCloseStatus> ReceiveAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends the specified message.

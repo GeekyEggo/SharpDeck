@@ -2,52 +2,27 @@
 {
     using System.Diagnostics;
 
+    /// <summary>
+    /// A basic plugin utilising the SharpDeck library.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
 #if DEBUG
             Debugger.Launch();
 #endif
-            
+
             using (var client = new StreamDeckClient(args))
             {
-                //client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
-
+                // register our custom action, and start the client
+                client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
                 client.Start();
-                client.KeyDown += (s, e) =>
-                {
-                    client.SetTitleAsync(e.Context, "ON");
-                };
-
-                client.Wait();
-                //var settings = new ActionSettings();
-                //client.WillAppear += (async (_, e) =>
-                //{
-                //    //client.SetTitleAsync
-                //    settings = e.Payload.GetSettings<ActionSettings>();
-                //    if (settings == null)
-                //    {
-                //        settings = new ActionSettings();
-                //        await client.SetSettingsAsync(e.Context, settings);
-                //    }
-                //
-                //    await client.SetTitleAsync(e.Context, settings.Count.ToString());
-                //});
-                //
-                //client.KeyDown += (async (_, e) =>
-                //{
-                //    settings.Count++;
-                //    await client.SetTitleAsync(e.Context, settings.Count.ToString());
-                //    await client.SetSettingsAsync(e.Context, settings);
-                //});
-
             }
         }
-    }
-
-    public class ActionSettings
-    {
-        public int Count { get; set; } = 0;
     }
 }
