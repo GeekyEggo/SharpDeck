@@ -1,9 +1,9 @@
-﻿namespace SharpDeck.Actions
+﻿namespace SharpDeck.Events
 {
     /// <summary>
     /// Provides information about an instance of an action.
     /// </summary>
-    public interface IActionInfo
+    public interface IActionEventInfo
     {
         /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.

@@ -12,11 +12,15 @@
             
             using (var client = new StreamDeckClient(args))
             {
-                client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
+                //client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
 
                 client.Start();
-                client.Wait();
+                client.KeyDown += (s, e) =>
+                {
+                    client.SetTitleAsync(e.Context, "ON");
+                };
 
+                client.Wait();
                 //var settings = new ActionSettings();
                 //client.WillAppear += (async (_, e) =>
                 //{

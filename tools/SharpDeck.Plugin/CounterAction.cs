@@ -1,4 +1,4 @@
-﻿using SharpDeck.Actions;
+﻿using SharpDeck.Events;
 using SharpDeck.Models;
 
 namespace SharpDeck.Plugin
@@ -7,13 +7,13 @@ namespace SharpDeck.Plugin
     {
         private int Count { get; set; }
 
-        public override void OnKeyDown(KeyPayload payload)
+        protected override void OnKeyDown(ActionEventArgs<KeyPayload> args)
         {
             this.Count = this.Count + 1;
             this.SetTitleAsync(this.Count.ToString());
         }
 
-        public override void OnWillAppear(ActionPayload payload)
+        protected override void OnWillAppear(ActionEventArgs<ActionPayload> args)
             => this.SetTitleAsync("0");
     }
 }

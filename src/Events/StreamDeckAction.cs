@@ -1,23 +1,40 @@
-﻿using SharpDeck.Enums;
-using SharpDeck.Models;
-using System;
-using System.Threading.Tasks;
-
-namespace SharpDeck.Actions
+﻿namespace SharpDeck.Events
 {
-    public class StreamDeckAction : IStreamDeckAction, IDisposable
+    using Enums;
+    using System;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeckClient"/>.
+    /// </summary>
+    public class StreamDeckAction : ActionEventHandler, IDisposable
     {
-        public string ActionUUID { get; private set; }
+        /// <summary>
+        /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
+        /// </summary>
+        public string ActionUUID { get; set; }
+
+        /// <summary>
+        /// Gets an opaque value identifying the instances action. You will need to pass this opaque value to several APIs like the `setTitle` API.
+        /// </summary>
         public string Context { get; private set; }
+
+        /// <summary>
+        /// Gets an opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.
+        /// </summary>
         public string Device { get; private set; }
-        protected StreamDeckClient StreamDeckClient { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the Elgato Stream Deck client.
+        /// </summary>
+        private StreamDeckClient StreamDeckClient { get; set; }
 
         /// <summary>
         /// Initializes the action.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <param name="streamDeck">An Elgato Stream Deck client.</param>
-        public void Initialize(IActionInfo info, StreamDeckClient client)
+        public void Initialize(IActionEventInfo info, StreamDeckClient client)
         {
             this.ActionUUID = info.Action;
             this.Context = info.Context;
@@ -31,12 +48,6 @@ namespace SharpDeck.Actions
         /// </summary>
         public void Dispose()
             => this.StreamDeckClient = null;
-
-        public virtual void OnKeyDown(KeyPayload payload) {}
-        public virtual void OnKeyUp(KeyPayload payload) {}
-        public virtual void OnWillAppear(ActionPayload payload) {}
-        public virtual void OnWillDisappear(ActionPayload payload) {}
-        public virtual void OnTitleParametersDidChange(TitlePayload payload) {}
 
         /// <summary>
         /// Dynamically change the title of an instance of an action.

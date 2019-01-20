@@ -4,54 +4,35 @@
     using System.Reflection;
 
     /// <summary>
-    /// Provides information about an event that represents an Elgato Stream Deck event, and methods for invoking it.
+    /// Provides information about a method that is decorated with <see cref="StreamDeckEventAttribute"/>, identifying it as an event that can be triggered by an Elgato Stream Deck.
     /// </summary>
     public class StreamDeckEventInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckEventInfo"/> class.
         /// </summary>
-        /// <param name="eventInfo">The event information.</param>
-        /// <param name="fieldInfo">The field information.</param>
-        public StreamDeckEventInfo(EventInfo eventInfo, FieldInfo fieldInfo)
+        /// <param name="attr">The attribute.</param>
+        /// <param name="methodInfo">The method information.</param>
+        public StreamDeckEventInfo(StreamDeckEventAttribute attr, MethodInfo methodInfo)
         {
-            this.Name = eventInfo.GetCustomAttribute<StreamDeckEventAttribute>()?.Name;
-            this.ArgsType = eventInfo.EventHandlerType.GetMethod(nameof(EventHandler.Invoke)).GetParameters()[1].ParameterType;
-            this.FieldInfo = fieldInfo;
+            this.Attribute = attr;
+            this.ArgsType = methodInfo.GetParameters()[0].ParameterType;
+            this.MethodInfo = methodInfo;
         }
 
         /// <summary>
-        /// Gets or sets the name of the event; this is the Elgato Stream Deck event name.
+        /// Gets the attribute.
         /// </summary>
-        public string Name { get; }
+        public StreamDeckEventAttribute Attribute { get; }
 
         /// <summary>
-        /// Gets the type of the arguments associated with the event info.
+        /// Gets the type of the arguments that should be supplied when invoking <see cref="MethodInfo"/>.
         /// </summary>
         public Type ArgsType { get; }
 
         /// <summary>
-        /// Gets the field information.
+        /// Gets the method information.
         /// </summary>
-        public FieldInfo FieldInfo { get; }
-
-        /// <summary>
-        /// Invokes the any handlers associated with the event.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The arguments.</param>
-        public void Invoke(object sender, object args)
-        {
-            var @delegate = (Delegate)this.FieldInfo.GetValue(sender);
-            if (@delegate == null)
-            {
-                return;
-            }
-
-            foreach (var handler in @delegate.GetInvocationList())
-            {
-                handler.Method.Invoke(handler.Target, new[] { sender, args });
-            }
-        }
+        public MethodInfo MethodInfo { get; }
     }
 }

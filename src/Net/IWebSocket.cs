@@ -41,5 +41,11 @@
         /// <param name="message">The message.</param>
         /// <returns>The task.</returns>
         Task SendAsync(string message);
+
+        /// <summary>
+        /// Serializes the value, and sends the message asynchronously.
+        /// </summary>
+        /// <param name="value">The value to serialize and send.</param>
+        Task SendJsonAsync(object value);
     }
 }

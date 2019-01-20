@@ -1,5 +1,7 @@
 ﻿namespace SharpDeck.Net
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using System;
     using System.Net.WebSockets;
     using System.Text;
@@ -130,6 +132,25 @@
             {
                 this._syncRoot.Release();
             }
+        }
+
+        /// <summary>
+        /// Serializes the value, and sends the message asynchronously.
+        /// </summary>
+        /// <param name="value">The value to serialize and send.</param>
+        public Task SendJsonAsync(object value)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.None
+            };
+
+            var json = JsonConvert.SerializeObject(value, settings);
+            return this.SendAsync(json);
         }
 
         /// <summary>

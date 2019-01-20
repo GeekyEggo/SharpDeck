@@ -9,13 +9,20 @@
     public class StreamDeckEventAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckEventAttribute"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckEventAttribute" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        public StreamDeckEventAttribute(string name)
+        /// <param name="isAction">Determines whether the event is associated with the instance of an action.</param>
+        public StreamDeckEventAttribute(string name, bool isAction = false)
         {
+            this.IsAction = isAction;
             this.Name = name;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the event is associated with an instance of an action.
+        /// </summary>
+        public bool IsAction { get; }
 
         /// <summary>
         /// Gets the name.
