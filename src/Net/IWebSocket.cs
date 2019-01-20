@@ -26,20 +26,17 @@
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        /// <returns>The task.</returns>
         Task ConnectAsync();
 
         /// <summary>
         /// Disconnects the web socket.
         /// </summary>
-        /// <returns>The task.</returns>
         Task DisconnectAsync();
 
         /// <summary>
         /// Sends the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <returns>The task.</returns>
         Task SendAsync(string message);
 
         /// <summary>

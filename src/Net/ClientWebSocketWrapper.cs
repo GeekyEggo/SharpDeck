@@ -66,7 +66,6 @@
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        /// <returns>The task.</returns>
         public async Task ConnectAsync()
         {
             if (this.WebSocket == null)
@@ -83,7 +82,6 @@
         /// <summary>
         /// Disconnects the web socket.
         /// </summary>
-        /// <returns>The task.</returns>
         public async Task DisconnectAsync()
         {
             if (this.WebSocket != null)
@@ -113,7 +111,6 @@
         /// Sends the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <returns>The task.</returns>
         public async Task SendAsync(string message)
         {
             if (this.WebSocket == null)
