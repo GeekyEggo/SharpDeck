@@ -33,7 +33,7 @@
         /// Initializes the action.
         /// </summary>
         /// <param name="info">The information.</param>
-        /// <param name="streamDeck">An Elgato Stream Deck client.</param>
+        /// <param name="client">An Elgato Stream Deck client.</param>
         public void Initialize(IActionEventInfo info, StreamDeckClient client)
         {
             this.ActionUUID = info.Action;
@@ -62,7 +62,6 @@
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
         /// </summary>
-        /// <param name="context">An opaque value identifying the instance's action.</param>
         public Task ShowAlertAsync()
             => this.StreamDeckClient.ShowAlertAsync(this.Context);
 

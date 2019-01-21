@@ -10,6 +10,7 @@
         /// Initializes a new instance of the <see cref="Message{TPayload}"/> class.
         /// </summary>
         /// <param name="event">The event.</param>
+        /// <param name="payload">The payload.</param>
         public Message(string @event, TPayload payload)
             : base(@event)
         {

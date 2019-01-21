@@ -10,11 +10,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CS0067</NoWarn>
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>$(TargetDir)SharpDeck.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn>1701;1702;CS0067</NoWarn>
+    <DocumentationFile>$(TargetDir)SharpDeck.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
