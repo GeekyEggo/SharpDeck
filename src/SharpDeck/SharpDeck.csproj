@@ -5,21 +5,23 @@
     <Authors>Richard Herman</Authors>
     <PackageOutputPath>$(TargetDir)..\..\build</PackageOutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>SharpDeck</Title>
     <PackageProjectUrl>https://github.com/GeekyEggo/Sharpdeck</PackageProjectUrl>
-    <RepositoryUrl>git@github.com:GeekyEggo/SharpDeck.git</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>Git</RepositoryType>
     <Copyright>Copyright (c) 2019 Richard Herman</Copyright>
     <Description>A lightweight .NET wrapper for the official Elgato Stream Deck SDK, designed to assist with creating plugins that can be distributed on the Stream Deck store.</Description>
+    <PackageTags>Elgato "Stream Deck" ESDSDK</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CS0067</NoWarn>
-    <DocumentationFile>$(TargetDir)SharpDeck.xml</DocumentationFile>
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\SharpDeck.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn>1701;1702;CS0067</NoWarn>
-    <DocumentationFile>$(TargetDir)SharpDeck.xml</DocumentationFile>
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\SharpDeck.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
