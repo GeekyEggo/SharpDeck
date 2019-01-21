@@ -30,8 +30,6 @@
         /// <param name="registrationParameters">The registration parameters.</param>
         public StreamDeckClient(RegistrationParameters registrationParameters)
         {
-            this.EventRouter = new StreamDeckEventRouter(this);
-
             this.RegistrationParameters = registrationParameters;
 
             this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{registrationParameters.Port}/");
@@ -66,7 +64,7 @@
         /// <summary>
         /// Gets the event router.
         /// </summary>
-        private StreamDeckEventRouter EventRouter { get; }
+        private StreamDeckEventRouter EventRouter { get; } = new StreamDeckEventRouter();
 
         /// <summary>
         /// Gets or sets the registration parameters.
@@ -116,12 +114,6 @@
         /// </summary>
         public void Stop()
             => Task.WaitAll(this.WebSocket.DisconnectAsync());
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-            => this.WebSocket?.Dispose();
 
         /// <summary>
         /// Dynamically change the title of an instance of an action.
@@ -197,6 +189,18 @@
             => this.WebSocket.SendJsonAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            this.EventRouter?.Dispose();
+            this.WebSocket?.Dispose();
+        }
+
+        /// <summary>
         /// Occurs when a monitored application is launched.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
@@ -237,7 +241,7 @@
         {
             try
             {
-                this.EventRouter.Route(e);
+                this.EventRouter.Route(this, e);
             }
             catch (Exception ex)
             {

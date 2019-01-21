@@ -6,7 +6,7 @@
     /// <summary>
     /// Provides a handler for an event received from an Elgato Stream Deck for an instance of an action.
     /// </summary>
-    public class ActionEventHandler
+    public class ActionEventHandler : IDisposable
     {
         /// <summary>
         /// Occurs when the user presses a key.
@@ -32,6 +32,21 @@
         /// Occurs when an instance of an action disappears.
         /// </summary>
         public event EventHandler<ActionEventArgs<ActionPayload>> WillDisappear;
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing) {}
 
         /// <summary>
         /// Occurs when the user presses a key.

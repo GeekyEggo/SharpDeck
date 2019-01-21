@@ -44,12 +44,6 @@
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-            => this.StreamDeckClient = null;
-
-        /// <summary>
         /// Dynamically change the title of an instance of an action.
         /// </summary>
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
@@ -100,5 +94,15 @@
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
         public Task SendToPropertyInspectorAsync(string context, string action, object payload)
             => this.StreamDeckClient.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            this.StreamDeckClient = null;
+        }
     }
 }
