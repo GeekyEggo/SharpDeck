@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "src\SharpDeck.csproj", "{F2F0202D-630A-429C-86E6-F9D900CB7E74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "SharpDeck\SharpDeck.csproj", "{F2F0202D-630A-429C-86E6-F9D900CB7E74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Plugin", "tools\SharpDeck.Plugin\SharpDeck.Plugin.csproj", "{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Plugin", "SharpDeck.Plugin\SharpDeck.Plugin.csproj", "{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -57,12 +57,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SharpDeck.csproj">
-      <Project>{119e982e-0dbb-435e-a470-4a8c8c973998}</Project>
-      <Name>SharpDeck</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Images\Action%402x.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -87,6 +81,12 @@
     <Content Include="Images\PluginIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharpDeck\SharpDeck.csproj">
+      <Project>{f2f0202d-630a-429c-86e6-f9d900cb7e74}</Project>
+      <Name>SharpDeck</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
