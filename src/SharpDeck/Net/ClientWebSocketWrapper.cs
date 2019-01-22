@@ -33,16 +33,6 @@
         }
 
         /// <summary>
-        /// Occurs when the web socket connects.
-        /// </summary>
-        public event EventHandler Connect;
-
-        /// <summary>
-        /// Occurs when the web socket disconnects.
-        /// </summary>
-        public event EventHandler Disconnect;
-
-        /// <summary>
         /// Occurs when a message is received.
         /// </summary>
         public event EventHandler<WebSocketMessageEventArgs> MessageReceived;
