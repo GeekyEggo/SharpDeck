@@ -37,9 +37,9 @@
         private static IDictionary<string, StreamDeckEventInfo> DELEGATE_MAP { get; }
 
         /// <summary>
-        /// Gets the registered actions.
+        /// Gets the actions factory, used to initialize new instances of actions.
         /// </summary>
-        private IDictionary<string, Type> RegisteredActions { get; } = new Dictionary<string, Type>();
+        private IDictionary<string, Func<StreamDeckAction>> ActionFactory { get; } = new Dictionary<string, Func<StreamDeckAction>>();
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -64,8 +64,10 @@
         /// </summary>
         /// <typeparam name="T">The type of Stream Deck action.</typeparam>
         /// <param name="actionUUID">The action UUID.</param>
-        public void Register<T>(string actionUUID)
-            => this.RegisteredActions.Add(actionUUID, typeof(T));
+        /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
+        public void Register<T>(string actionUUID, Func<T> valueFactory)
+            where T : StreamDeckAction
+            => this.ActionFactory.Add(actionUUID, valueFactory);
 
         /// <summary>
         /// Routes the message specified within the event arguments, invoking any associated delegates where possible.
@@ -105,7 +107,7 @@
         private ActionEventHandler GetActionOrDefault(IActionEventInfo actionInfo, StreamDeckClient client)
         {
             // when there is no registered action for the action UUID, return the default handler
-            if (!this.RegisteredActions.TryGetValue(actionInfo.Action, out var type))
+            if (!this.ActionFactory.TryGetValue(actionInfo.Action, out var valueFactory))
             {
                 return client;
             }
@@ -113,7 +115,7 @@
             // otherwise attempt to get the instance of the action or initiate a new one
             return this.Actions.GetOrAdd(actionInfo.Context, context =>
             {
-                var action = (StreamDeckAction)Activator.CreateInstance(type);
+                var action = valueFactory();
                 action.Initialize(actionInfo, client);
 
                 return action;

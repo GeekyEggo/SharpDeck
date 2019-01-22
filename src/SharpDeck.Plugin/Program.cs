@@ -20,7 +20,7 @@
             using (var client = new StreamDeckClient(args))
             {
                 // register our custom action, and start the client
-                client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
+                client.RegisterAction("com.sharpdeck.testplugin.counter", () => new CounterAction(500));
                 client.Start();
             }
         }

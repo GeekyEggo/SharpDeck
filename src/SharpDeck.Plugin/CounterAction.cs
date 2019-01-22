@@ -10,6 +10,15 @@
     public class CounterAction : StreamDeckAction
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="CounterAction"/> class.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        public CounterAction(int count)
+        {
+            this.Count = count;
+        }
+
+        /// <summary>
         /// Gets or sets the count.
         /// </summary>
         private int Count { get; set; }
@@ -35,6 +44,6 @@
         /// </summary>
         /// <param name="args">The <see cref="T:SharpDeck.Events.ActionEventArgs`1" /> instance containing the event data.</param>
         protected override void OnWillAppear(ActionEventArgs<ActionPayload> args)
-            => this.SetTitleAsync("0");
+            => this.SetTitleAsync(this.Count.ToString());
     }
 }

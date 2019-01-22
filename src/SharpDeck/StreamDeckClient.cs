@@ -77,13 +77,23 @@
         private IWebSocket WebSocket { get; }
 
         /// <summary>
-        /// Registers a Stream Deck Action.
+        /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID. When <typeparamref name="T"/> does not have a default constructor, consider specifying a `valueFactory`.
         /// </summary>
-        /// <typeparam name="T">The type of the action.</typeparam>
-        /// <param name="actionUUID">The action UUID; this can be found in the manifest.json file.</param>
+        /// <typeparam name="T">The type of Stream Deck action.</typeparam>
+        /// <param name="actionUUID">The action UUID.</param>
         public void RegisterAction<T>(string actionUUID)
+            where T : StreamDeckAction, new()
+            => this.RegisterAction<T>(actionUUID, () => new T());
+
+        /// <summary>
+        /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
+        /// </summary>
+        /// <typeparam name="T">The type of Stream Deck action.</typeparam>
+        /// <param name="actionUUID">The action UUID.</param>
+        /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
+        public void RegisterAction<T>(string actionUUID, Func<T> valueFactory)
             where T : StreamDeckAction
-            => this.EventRouter.Register<T>(actionUUID);
+            => this.EventRouter.Register<T>(actionUUID, valueFactory);
 
         /// <summary>
         /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
