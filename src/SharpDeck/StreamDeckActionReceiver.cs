@@ -1,12 +1,13 @@
-﻿namespace SharpDeck.Events
+﻿namespace SharpDeck
 {
     using Models;
+    using SharpDeck.Events;
     using System;
 
     /// <summary>
     /// Provides a handler for an event received from an Elgato Stream Deck for an instance of an action.
     /// </summary>
-    public class ActionEventHandler : IDisposable
+    public class StreamDeckActionReceiver : IStreamDeckActionReceiver, IDisposable
     {
         /// <summary>
         /// Occurs when the user presses a key.

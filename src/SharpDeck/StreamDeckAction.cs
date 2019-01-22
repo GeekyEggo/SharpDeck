@@ -1,13 +1,13 @@
-﻿namespace SharpDeck.Events
+﻿namespace SharpDeck
 {
     using Enums;
-    using System;
+    using SharpDeck.Events;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeckClient"/>.
+    /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeck"/>.
     /// </summary>
-    public class StreamDeckAction : ActionEventHandler, IDisposable
+    public class StreamDeckAction : StreamDeckActionReceiver
     {
         /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
@@ -27,20 +27,20 @@
         /// <summary>
         /// Gets or sets the Elgato Stream Deck client.
         /// </summary>
-        private StreamDeckClient StreamDeckClient { get; set; }
+        private IStreamDeckSender StreamDeck { get; set; }
 
         /// <summary>
         /// Initializes the action.
         /// </summary>
         /// <param name="info">The information.</param>
-        /// <param name="client">An Elgato Stream Deck client.</param>
-        public void Initialize(IActionEventInfo info, StreamDeckClient client)
+        /// <param name="streamDeck">An Elgato Stream Deck sender.</param>
+        public void Initialize(IActionEventInfo info, IStreamDeckSender streamDeck)
         {
             this.ActionUUID = info.Action;
             this.Context = info.Context;
             this.Device = info.Device;
 
-            this.StreamDeckClient = client;
+            this.StreamDeck = streamDeck;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         public Task SetTitleAsync(string title = "", TargetType target = TargetType.Both)
-            => this.StreamDeckClient.SetTitleAsync(this.Context, title, target);
+            => this.StreamDeck.SetTitleAsync(this.Context, title, target);
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action.
@@ -57,33 +57,33 @@
         /// <param name="base64Image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). If no image is passed, the image is reset to the default image from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         public Task SetImageAsync(string base64Image, TargetType target = TargetType.Both)
-            => this.StreamDeckClient.SetImageAsync(this.Context, base64Image, target);
+            => this.StreamDeck.SetImageAsync(this.Context, base64Image, target);
 
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
         /// </summary>
         public Task ShowAlertAsync()
-            => this.StreamDeckClient.ShowAlertAsync(this.Context);
+            => this.StreamDeck.ShowAlertAsync(this.Context);
 
         /// <summary>
         /// Temporarily show an OK checkmark icon on the image displayed by an instance of an action.
         /// </summary>
         public Task ShowOkAsync()
-            => this.StreamDeckClient.ShowOkAsync(this.Context);
+            => this.StreamDeck.ShowOkAsync(this.Context);
 
         /// <summary>
         /// Save persistent data for the actions instance.
         /// </summary>
         /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
         public Task SetSettingsAsync(object settings)
-            => this.StreamDeckClient.SetSettingsAsync(this.Context, settings);
+            => this.StreamDeck.SetSettingsAsync(this.Context, settings);
 
         /// <summary>
         ///	Change the state of the actions instance supporting multiple states.
         /// </summary>
         /// <param name="state">A 0-based integer value representing the state requested.</param>
         public Task SetStateAsync(int state = 0)
-            => this.StreamDeckClient.SetStateAsync(this.Context, state);
+            => this.StreamDeck.SetStateAsync(this.Context, state);
 
         /// <summary>
         /// Send a payload to the Property Inspector.
@@ -92,7 +92,7 @@
         /// <param name="action">The action unique identifier.</param>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
         public Task SendToPropertyInspectorAsync(string context, string action, object payload)
-            => this.StreamDeckClient.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
+            => this.StreamDeck.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -101,7 +101,7 @@
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            this.StreamDeckClient = null;
+            this.StreamDeck = null;
         }
     }
 }

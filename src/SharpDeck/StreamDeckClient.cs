@@ -13,7 +13,7 @@
     /// <summary>
     /// Provides events and methods that allow for communication with an Elgato Stream Deck.
     /// </summary>
-    public class StreamDeckClient : ActionEventHandler, IDisposable
+    public class StreamDeckClient : StreamDeckActionReceiver, IStreamDeckReceiver, IStreamDeckSender, IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.

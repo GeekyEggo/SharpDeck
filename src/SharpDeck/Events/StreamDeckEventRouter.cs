@@ -104,7 +104,7 @@
         /// <param name="actionInfo">The action information.</param>
         /// <param name="client">The Stream Deck client.</param>
         /// <returns>The action instance, a new instance of an action, or the default.</returns>
-        private ActionEventHandler GetActionOrDefault(IActionEventInfo actionInfo, StreamDeckClient client)
+        private StreamDeckActionReceiver GetActionOrDefault(IActionEventInfo actionInfo, StreamDeckClient client)
         {
             // when there is no registered action for the action UUID, return the default handler
             if (!this.ActionFactory.TryGetValue(actionInfo.Action, out var valueFactory))
