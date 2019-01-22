@@ -26,6 +26,5 @@
             value = null;
             return false;
         }
-
     }
 }
