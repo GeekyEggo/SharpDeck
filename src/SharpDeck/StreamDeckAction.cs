@@ -1,7 +1,6 @@
 ﻿namespace SharpDeck
 {
     using Enums;
-    using SharpDeck.Events;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -15,7 +14,7 @@
         public string ActionUUID { get; set; }
 
         /// <summary>
-        /// Gets an opaque value identifying the instances action. You will need to pass this opaque value to several APIs like the `setTitle` API.
+        /// Gets an opaque value identifying the instance of the action. You will need to pass this opaque value to several APIs like the `setTitle` API.
         /// </summary>
         public string Context { get; private set; }
 
@@ -32,14 +31,15 @@
         /// <summary>
         /// Initializes the action.
         /// </summary>
-        /// <param name="info">The information.</param>
+        /// <param name="action">The actions unique identifier.</param>
+        /// <param name="context">The opaque value identifying the instance of the action.</param>
+        /// <param name="device">The opaque value identifying the device.</param>
         /// <param name="streamDeck">An Elgato Stream Deck sender.</param>
-        public void Initialize(IActionEventInfo info, IStreamDeckSender streamDeck)
+        public void Initialize(string action, string context, string device, IStreamDeckSender streamDeck)
         {
-            this.ActionUUID = info.Action;
-            this.Context = info.Context;
-            this.Device = info.Device;
-
+            this.ActionUUID = action;
+            this.Context = context;
+            this.Device = device;
             this.StreamDeck = streamDeck;
         }
 

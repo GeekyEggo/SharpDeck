@@ -1,41 +1,17 @@
 ﻿namespace SharpDeck.Events
 {
+    using Extensions;
     using Net;
-    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Reflection;
 
     /// <summary>
     /// A factory that provides information about supported events received from an Elgato Stream Deck.
     /// </summary>
     public class StreamDeckEventRouter : IDisposable
     {
-        /// <summary>
-        /// Initializes the static members of the <see cref="StreamDeckEventRouter"/> class.
-        /// </summary>
-        static StreamDeckEventRouter()
-        {
-            // construct the delegate map
-            var delegateMap = new Dictionary<string, StreamDeckEventInfo>();
-            foreach (var method in typeof(StreamDeckClient).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
-            {
-                var attr = method.GetCustomAttribute<StreamDeckEventAttribute>();
-                if (attr != null)
-                {
-                    delegateMap.Add(attr.Name, new StreamDeckEventInfo(attr, method));
-                }
-            }
-
-            DELEGATE_MAP = delegateMap;                
-        }
-
-        /// <summary>
-        /// Gets the delegate map; this is used to determine which delegate should be invokved when a specific event is received from an Elgato Stream Deck.
-        /// </summary>
-        private static IDictionary<string, StreamDeckEventInfo> DELEGATE_MAP { get; }
-
         /// <summary>
         /// Gets the actions factory, used to initialize new instances of actions.
         /// </summary>
@@ -72,51 +48,52 @@
         /// <summary>
         /// Routes the message specified within the event arguments, invoking any associated delegates where possible.
         /// </summary>
-        /// <param name="sender">The Stream Deck client.</param>
+        /// <param name="client">The Stream Deck client.</param>
         /// <param name="e">The <see cref="WebSocketMessageEventArgs" /> instance containing the event data.</param>
-        public void Route(StreamDeckClient sender, WebSocketMessageEventArgs e)
+        public void Route(StreamDeckClient client, WebSocketMessageEventArgs e)
         {
-            // attempt to get the event delegate
-            var eventArgs = JsonConvert.DeserializeObject<StreamDeckEventArgs>(e.Message);
-            if (!DELEGATE_MAP.TryGetValue(eventArgs.Event, out var streamDeckEventInfo))
+            // determine if there is an event specified
+            var args = JObject.Parse(e.Message);
+            if (!args.TryGetString(nameof(StreamDeckEventArgs.Event), out var @event))
             {
                 return;
             }
 
-            // when the delegate is not an action, invoke the default handler
-            var args = JsonConvert.DeserializeObject(e.Message, streamDeckEventInfo.MethodInfo.GetParameters()[0].ParameterType);
-            if (!(args is IActionEventInfo actionInfo))
+            // when the event is not an action, allow the default Stream Deck client to handle the event
+            if (!args.TryGetString(nameof(ActionEventArgs<object>.Action), out var actionUUID)
+                || !args.TryGetString(nameof(ActionEventArgs<object>.Context), out var context)
+                || !args.TryGetString(nameof(ActionEventArgs<object>.Device), out var device))
             {
-                streamDeckEventInfo.MethodInfo.Invoke(sender, new[] { args });
+                client.TryHandleReceivedEvent(@event, args);
                 return;
             }
 
-            var action = this.GetActionOrDefault(actionInfo, sender);
-            if (action != null)
-            {
-                streamDeckEventInfo.MethodInfo?.Invoke(action, new[] { args });
-            }
+            // otherwise get the action, and try to handle the event
+            this.GetActionOrClient(actionUUID, context, device, client)
+                .TryHandleReceivedEvent(@event, args);
         }
 
         /// <summary>
-        /// Gets the <see cref="StreamDeckAction"/> for the specified <paramref name="actionInfo"/>, otherwise the default is return.
+        /// Gets the <see cref="StreamDeckAction"/> for the specified parameters; otherwise the default is returned.
         /// </summary>
-        /// <param name="actionInfo">The action information.</param>
+        /// <param name="actionUUID">The actions unique identifier.</param>
+        /// <param name="context">The opaque value identifying the instance of the action.</param>
+        /// <param name="device">The opaque value identifying the device.</param>
         /// <param name="client">The Stream Deck client.</param>
         /// <returns>The action instance, a new instance of an action, or the default.</returns>
-        private StreamDeckActionReceiver GetActionOrDefault(IActionEventInfo actionInfo, StreamDeckClient client)
+        private StreamDeckActionReceiver GetActionOrClient(string actionUUID, string context, string device, StreamDeckClient client)
         {
             // when there is no registered action for the action UUID, return the default handler
-            if (!this.ActionFactory.TryGetValue(actionInfo.Action, out var valueFactory))
+            if (!this.ActionFactory.TryGetValue(actionUUID, out var valueFactory))
             {
                 return client;
             }
 
             // otherwise attempt to get the instance of the action or initiate a new one
-            return this.Actions.GetOrAdd(actionInfo.Context, context =>
+            return this.Actions.GetOrAdd(context, _ =>
             {
                 var action = valueFactory();
-                action.Initialize(actionInfo, client);
+                action.Initialize(actionUUID, context, device, client);
 
                 return action;
             });

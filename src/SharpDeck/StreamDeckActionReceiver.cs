@@ -1,6 +1,7 @@
 ﻿namespace SharpDeck
 {
     using Models;
+    using Newtonsoft.Json.Linq;
     using SharpDeck.Events;
     using System;
 
@@ -50,10 +51,43 @@
         protected virtual void Dispose(bool disposing) {}
 
         /// <summary>
+        /// Attempts to handle the received event, raising the appropriate event where possible using the arguments supplied..
+        /// </summary>
+        /// <param name="event">The event name.</param>
+        /// <param name="args">The message as arguments.</param>
+        /// <returns><c>true</c> when the event was handled; otherwise <c>false</c>.</returns>
+        internal virtual bool TryHandleReceivedEvent(string @event, JObject args)
+        {
+            switch (@event)
+            {
+                case "keyDown":
+                    this.OnKeyDown(args.ToObject<ActionEventArgs<KeyPayload>>());
+                    return true;
+
+                case "keyUp":
+                    this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>());
+                    return true;
+
+                case "titleParametersDidChange":
+                    this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>());
+                    return true;
+
+                case "willAppear":
+                    this.OnWillAppear(args.ToObject<ActionEventArgs<ActionPayload>>());
+                    return true;
+
+                case "willDisappear":
+                    this.OnWillDisappear(args.ToObject<ActionEventArgs<ActionPayload>>());
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Occurs when the user presses a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("keyDown")]
         protected virtual void OnKeyDown(ActionEventArgs<KeyPayload> args)
             => this.KeyDown?.Invoke(this, args);
 
@@ -61,7 +95,6 @@
         /// Occurs when the user releases a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("keyUp")]
         protected virtual void OnKeyUp(ActionEventArgs<KeyPayload> args)
             => this.KeyUp?.Invoke(this, args);
 
@@ -69,7 +102,6 @@
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{TitlePayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("titleParametersDidChange")]
         protected virtual void OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
             => this.TitleParametersDidChange?.Invoke(this, args);
 
@@ -78,7 +110,6 @@
         /// Occurs when an instance of an action appears.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("willAppear")]
         protected virtual void OnWillAppear(ActionEventArgs<ActionPayload> args)
             => this.WillAppear?.Invoke(this, args);
 
@@ -86,7 +117,6 @@
         /// Occurs when an instance of an action disappears.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("willDisappear")]
         protected virtual void OnWillDisappear(ActionEventArgs<ActionPayload> args)
             => this.WillDisappear?.Invoke(this, args);
     }

@@ -199,6 +199,36 @@
             => this.WebSocket.SendJsonAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
+        /// Attempts to handle the received event, raising the appropriate event where possible using the arguments supplied..
+        /// </summary>
+        /// <param name="event">The event name.</param>
+        /// <param name="args">The message as arguments.</param>
+        /// <returns><c>true</c> when the event was handled; otherwise <c>false</c>.</returns>
+        internal override bool TryHandleReceivedEvent(string @event, JObject args)
+        {
+            switch (@event)
+            {
+                case "applicationDidLaunch":
+                    this.OnApplicationDidLaunch(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
+                    return true;
+
+                case "applicationDidTerminate":
+                    this.OnApplicationDidTerminate(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
+                    return true;
+
+                case "deviceDidConnect":
+                    this.OnDeviceDidConnect(args.ToObject<DeviceConnectEventArgs>());
+                    return true;
+
+                case "deviceDidDisconnect":
+                    this.OnDeviceDidDisconnect(args.ToObject<DeviceEventArgs>());
+                    return true;
+            }
+
+            return base.TryHandleReceivedEvent(@event, args);
+        }
+
+        /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -214,7 +244,6 @@
         /// Occurs when a monitored application is launched.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
-        [StreamDeckEvent("applicationDidLaunch")]
         protected virtual void OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
             => this.ApplicationDidLaunch?.Invoke(this, args);
 
@@ -222,7 +251,6 @@
         /// Occurs when a monitored application is terminated.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
-        [StreamDeckEvent("applicationDidTerminate")]
         protected virtual void OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
             => this.ApplicationDidTerminate?.Invoke(this, args);
 
@@ -230,7 +258,6 @@
         /// Occurs when a device is plugged to the computer.
         /// </summary>
         /// <param name="args">The <see cref="DeviceConnectEventArgs"/> instance containing the event data.</param>
-        [StreamDeckEvent("deviceDidConnect")]
         protected virtual void OnDeviceDidConnect(DeviceConnectEventArgs args)
             => this.DeviceDidConnect?.Invoke(this, args);
 
@@ -238,7 +265,6 @@
         /// Occurs when a device is unplugged from the computer.
         /// </summary>
         /// <param name="args">The <see cref="DeviceEventArgs"/> instance containing the event data.</param>
-        [StreamDeckEvent("deviceDidDisconnect")]
         protected virtual void OnDeviceDidDisconnect(DeviceEventArgs args)
             => this.DeviceDidDisconnect?.Invoke(this, args);
 
