@@ -1,4 +1,4 @@
-![https://www.nuget.org/packages/SharpDeck/](https://img.shields.io/nuget/v/SharpDeck.svg)
+[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/)
 
 # SharpDeck
 
