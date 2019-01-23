@@ -89,7 +89,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /S $(TargetDir.TrimEnd('\')) C:\Users\Richard\AppData\Roaming\Elgato\StreamDeck\Plugins\com.sharpdeck.test.sdPlugin</PostBuildEvent>
-  </PropertyGroup>
 </Project>
