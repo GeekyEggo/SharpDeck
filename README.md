@@ -35,9 +35,9 @@ class CounterAction : StreamDeckAction
 
 Having a problem, or got an idea? Let me know!
 
-![Twitter Logo](https://github.com/GeekyEggo/SharpDeck/raw/master/docs/icons/Twitter.png) / [@GeekyEggo](https://twitter.com/GeekyEggo)
+![Twitter Logo](https://github.com/GeekyEggo/SharpDeck/raw/master/docs/icons/Twitter.png)[@GeekyEggo](https://twitter.com/GeekyEggo)
 
-https://github.com/geekyeggo/Sharpdeck/issues
+https://github.com/GeekyEggo/SharpDeck/issues
 
 ## License
 
