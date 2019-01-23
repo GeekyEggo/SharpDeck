@@ -1,6 +1,11 @@
+![https://www.nuget.org/packages/SharpDeck/](https://img.shields.io/nuget/v/SharpDeck.svg)
+
 # SharpDeck
-A lightweight .NET wrapper for the official Elgato Stream Deck [SDK](https://developer.elgato.com/documentation/stream-deck/sdk/overview), designed to assist with creating plugins that can be distributed on the Stream Deck store.
+
+A lightweight .NET wrapper for creating Stream Deck plugins, using the official Elgato Stream Deck [SDK](https://developer.elgato.com/documentation/stream-deck/sdk/overview).
+
 ## Example
+
 ```csharp
 static void Main(string[] args)
 {
@@ -13,6 +18,7 @@ static void Main(string[] args)
 ```
 
 ## Registering Actions (Optional)
+
 Optionally, it is possible to register `StreamDeckAction` and have the client handle the context automatically.
 ```csharp
 client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
