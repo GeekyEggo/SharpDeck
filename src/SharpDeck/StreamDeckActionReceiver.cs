@@ -21,6 +21,11 @@
         public event EventHandler<ActionEventArgs<KeyPayload>> KeyUp;
 
         /// <summary>
+        /// Occurs when the property inspector sends a message to the plugin.
+        /// </summary>
+        public event EventHandler<ActionEventArgs<JObject>> SendToPlugin;
+
+        /// <summary>
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         public event EventHandler<ActionEventArgs<TitlePayload>> TitleParametersDidChange;
@@ -68,6 +73,10 @@
                     this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>());
                     return true;
 
+                case "sendToPlugin":
+                    this.OnSendToPlugin(args.ToObject<ActionEventArgs<JObject>>());
+                    return true;
+
                 case "titleParametersDidChange":
                     this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>());
                     return true;
@@ -99,12 +108,18 @@
             => this.KeyUp?.Invoke(this, args);
 
         /// <summary>
+        /// Occurs when the property inspector sends a message to the plugin.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
+        protected virtual void OnSendToPlugin(ActionEventArgs<JObject> args)
+            => this.SendToPlugin?.Invoke(this, args);
+
+        /// <summary>
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{TitlePayload}" /> instance containing the event data.</param>
         protected virtual void OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
             => this.TitleParametersDidChange?.Invoke(this, args);
-
 
         /// <summary>
         /// Occurs when an instance of an action appears.
