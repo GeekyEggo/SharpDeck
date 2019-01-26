@@ -4,7 +4,6 @@
     using Newtonsoft.Json.Linq;
     using SharpDeck.Enums;
     using SharpDeck.Messages;
-    using SharpDeck.Models;
     using SharpDeck.Net;
     using System;
     using System.Threading;

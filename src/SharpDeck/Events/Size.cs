@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Models
+﻿namespace SharpDeck.Events
 {
     /// <summary>
     /// Provides a size as represented by <see cref="Size.Columns"/> and <see cref="Size.Rows"/>.

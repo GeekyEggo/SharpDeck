@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Models
+﻿namespace SharpDeck.Events
 {
     /// <summary>
     /// Provides payload information about a title.

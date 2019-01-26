@@ -1,7 +1,6 @@
 ﻿namespace SharpDeck
 {
     using Events;
-    using Models;
     using System;
 
     /// <summary>

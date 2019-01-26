@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Models
+﻿namespace SharpDeck.Events
 {
     /// <summary>
     /// Provides information about a device, that is identifiable.

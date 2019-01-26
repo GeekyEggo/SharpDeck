@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Models
+﻿namespace SharpDeck.Events
 {
     /// <summary>
     /// Provides coordinates as represented as <see cref="Coordinates.Column"/> and <see cref="Coordinates.Row"/>.

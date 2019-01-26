@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Models
+﻿namespace SharpDeck.Events
 {
     /// <summary>
     /// Provides information about registration; this is used when initialising a <see cref="StreamDeckClient"/>, and is typically supplied as an argument.

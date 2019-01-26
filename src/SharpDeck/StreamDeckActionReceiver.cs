@@ -1,6 +1,5 @@
 ﻿namespace SharpDeck
 {
-    using Models;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events;
     using System;
