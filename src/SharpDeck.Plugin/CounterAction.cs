@@ -1,7 +1,6 @@
 ﻿namespace SharpDeck.Plugin
 {
     using Events;
-    using Models;
     using System.Threading.Tasks;
 
     /// <summary>
