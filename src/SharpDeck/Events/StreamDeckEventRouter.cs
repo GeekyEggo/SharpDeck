@@ -61,14 +61,14 @@
 
             // when the event is not an action, allow the default Stream Deck client to handle the event
             if (!args.TryGetString(nameof(ActionEventArgs<object>.Action), out var actionUUID)
-                || !args.TryGetString(nameof(ActionEventArgs<object>.Context), out var context)
-                || !args.TryGetString(nameof(ActionEventArgs<object>.Device), out var device))
+                || !args.TryGetString(nameof(ActionEventArgs<object>.Context), out var context))
             {
                 client.TryHandleReceivedEvent(@event, args);
                 return;
             }
 
-            // otherwise get the action, and try to handle the event
+            // otherwise get the action, and try to handle the event; device is not specified when "sendToPlugin" is called
+            args.TryGetString(nameof(ActionEventArgs<object>.Device), out var device);
             this.GetActionOrClient(actionUUID, context, device, client)
                 .TryHandleReceivedEvent(@event, args);
         }

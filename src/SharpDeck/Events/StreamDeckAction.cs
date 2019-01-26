@@ -88,10 +88,8 @@
         /// <summary>
         /// Send a payload to the Property Inspector.
         /// </summary>
-        /// <param name="context">An opaque value identifying the instances action.</param>
-        /// <param name="action">The action unique identifier.</param>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
-        public Task SendToPropertyInspectorAsync(string context, string action, object payload)
+        public Task SendToPropertyInspectorAsync(object payload)
             => this.StreamDeck.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
 
         /// <summary>
