@@ -26,7 +26,7 @@
         /// Occurs when the user presses a key.
         /// </summary>
         /// <param name="args">The <see cref="T:SharpDeck.Events.ActionEventArgs`1" /> instance containing the event data.</param>
-        protected override async void OnKeyDown(ActionEventArgs<KeyPayload> args)
+        protected override async Task OnKeyDown(ActionEventArgs<KeyPayload> args)
         {
             this.Count = this.Count + 1;
             if (this.Count == 3)
@@ -42,7 +42,7 @@
         /// Occurs when an instance of an action appears.
         /// </summary>
         /// <param name="args">The <see cref="T:SharpDeck.Events.ActionEventArgs`1" /> instance containing the event data.</param>
-        protected override void OnWillAppear(ActionEventArgs<ActionPayload> args)
+        protected override Task OnWillAppear(ActionEventArgs<ActionPayload> args)
             => this.SetTitleAsync(this.Count.ToString());
     }
 }
