@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A factory that provides information about supported events received from an Elgato Stream Deck.
@@ -50,27 +51,26 @@
         /// </summary>
         /// <param name="client">The Stream Deck client.</param>
         /// <param name="e">The <see cref="WebSocketMessageEventArgs" /> instance containing the event data.</param>
-        public void Route(StreamDeckClient client, WebSocketMessageEventArgs e)
+        public Task RouteAsync(StreamDeckClient client, WebSocketMessageEventArgs e)
         {
             // determine if there is an event specified
             var args = JObject.Parse(e.Message);
             if (!args.TryGetString(nameof(StreamDeckEventArgs.Event), out var @event))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             // when the event is not an action, allow the default Stream Deck client to handle the event
             if (!args.TryGetString(nameof(ActionEventArgs<object>.Action), out var actionUUID)
                 || !args.TryGetString(nameof(ActionEventArgs<object>.Context), out var context))
             {
-                client.TryHandleReceivedEvent(@event, args);
-                return;
+                return client.RaiseEventAsync(@event, args);
             }
 
             // otherwise get the action, and try to handle the event; device is not specified when "sendToPlugin" is called
             args.TryGetString(nameof(ActionEventArgs<object>.Device), out var device);
-            this.GetActionOrClient(actionUUID, context, device, client)
-                .TryHandleReceivedEvent(@event, args);
+            return this.GetActionOrClient(actionUUID, context, device, client)
+                .RaiseEventAsync(@event, args);
         }
 
         /// <summary>

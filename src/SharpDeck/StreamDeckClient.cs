@@ -92,7 +92,7 @@
         /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
         public void RegisterAction<T>(string actionUUID, Func<T> valueFactory)
             where T : StreamDeckAction
-            => this.EventRouter.Register<T>(actionUUID, valueFactory);
+            => this.EventRouter.Register(actionUUID, valueFactory);
 
         /// <summary>
         /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
@@ -105,7 +105,11 @@
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public void Start(CancellationToken cancellationToken)
-            => Task.WaitAll(this.StartAsync(cancellationToken));
+        {
+            var task = this.StartAsync(cancellationToken);
+            task.ConfigureAwait(false);
+            task.Wait(cancellationToken);
+        }
 
         /// <summary>
         /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
@@ -198,33 +202,28 @@
             => this.WebSocket.SendJsonAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
-        /// Attempts to handle the received event, raising the appropriate event where possible using the arguments supplied..
+        /// Raises the event, based on the <paramref name="event"/>, using the specified <paramref name="args"/>.
         /// </summary>
         /// <param name="event">The event name.</param>
         /// <param name="args">The message as arguments.</param>
-        /// <returns><c>true</c> when the event was handled; otherwise <c>false</c>.</returns>
-        internal override bool TryHandleReceivedEvent(string @event, JObject args)
+        internal override Task RaiseEventAsync(string @event, JObject args)
         {
             switch (@event)
             {
                 case "applicationDidLaunch":
-                    this.OnApplicationDidLaunch(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
-                    return true;
+                    return this.OnApplicationDidLaunch(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
 
                 case "applicationDidTerminate":
-                    this.OnApplicationDidTerminate(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
-                    return true;
+                    return this.OnApplicationDidTerminate(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
 
                 case "deviceDidConnect":
-                    this.OnDeviceDidConnect(args.ToObject<DeviceConnectEventArgs>());
-                    return true;
+                    return this.OnDeviceDidConnect(args.ToObject<DeviceConnectEventArgs>());
 
                 case "deviceDidDisconnect":
-                    this.OnDeviceDidDisconnect(args.ToObject<DeviceEventArgs>());
-                    return true;
+                    return this.OnDeviceDidDisconnect(args.ToObject<DeviceEventArgs>());
             }
 
-            return base.TryHandleReceivedEvent(@event, args);
+            return base.RaiseEventAsync(@event, args);
         }
 
         /// <summary>
@@ -243,29 +242,41 @@
         /// Occurs when a monitored application is launched.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
-        protected virtual void OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
-            => this.ApplicationDidLaunch?.Invoke(this, args);
+        protected virtual Task OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
+        {
+            this.ApplicationDidLaunch?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when a monitored application is terminated.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
-        protected virtual void OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
-            => this.ApplicationDidTerminate?.Invoke(this, args);
+        protected virtual Task OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
+        {
+            this.ApplicationDidTerminate?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when a device is plugged to the computer.
         /// </summary>
         /// <param name="args">The <see cref="DeviceConnectEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnDeviceDidConnect(DeviceConnectEventArgs args)
-            => this.DeviceDidConnect?.Invoke(this, args);
+        protected virtual Task OnDeviceDidConnect(DeviceConnectEventArgs args)
+        {
+            this.DeviceDidConnect?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when a device is unplugged from the computer.
         /// </summary>
         /// <param name="args">The <see cref="DeviceEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnDeviceDidDisconnect(DeviceEventArgs args)
-            => this.DeviceDidDisconnect?.Invoke(this, args);
+        protected virtual Task OnDeviceDidDisconnect(DeviceEventArgs args)
+        {
+            this.DeviceDidDisconnect?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Handles the <see cref="IWebSocket.MessageReceived"/> event; triggering any associated events.
@@ -276,7 +287,8 @@
         {
             try
             {
-                this.EventRouter.Route(this, e);
+                this.EventRouter.RouteAsync(this, e)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {

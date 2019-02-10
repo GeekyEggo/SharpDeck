@@ -3,6 +3,7 @@
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events;
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a handler for an event received from an Elgato Stream Deck for an instance of an action.
@@ -55,83 +56,94 @@
         protected virtual void Dispose(bool disposing) {}
 
         /// <summary>
-        /// Attempts to handle the received event, raising the appropriate event where possible using the arguments supplied..
+        /// Raises the event, based on the <paramref name="event"/>, using the specified <paramref name="args"/>.
         /// </summary>
         /// <param name="event">The event name.</param>
         /// <param name="args">The message as arguments.</param>
-        /// <returns><c>true</c> when the event was handled; otherwise <c>false</c>.</returns>
-        internal virtual bool TryHandleReceivedEvent(string @event, JObject args)
+        internal virtual Task RaiseEventAsync(string @event, JObject args)
         {
             switch (@event)
             {
                 case "keyDown":
-                    this.OnKeyDown(args.ToObject<ActionEventArgs<KeyPayload>>());
-                    return true;
+                    return this.OnKeyDown(args.ToObject<ActionEventArgs<KeyPayload>>());
 
                 case "keyUp":
-                    this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>());
-                    return true;
+                    return this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>());
 
                 case "sendToPlugin":
-                    this.OnSendToPlugin(args.ToObject<ActionEventArgs<JObject>>());
-                    return true;
+                    return this.OnSendToPlugin(args.ToObject<ActionEventArgs<JObject>>());
 
                 case "titleParametersDidChange":
-                    this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>());
-                    return true;
+                    return this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>());
 
                 case "willAppear":
-                    this.OnWillAppear(args.ToObject<ActionEventArgs<ActionPayload>>());
-                    return true;
+                    return this.OnWillAppear(args.ToObject<ActionEventArgs<ActionPayload>>());
 
                 case "willDisappear":
-                    this.OnWillDisappear(args.ToObject<ActionEventArgs<ActionPayload>>());
-                    return true;
+                    return this.OnWillDisappear(args.ToObject<ActionEventArgs<ActionPayload>>());
             }
 
-            return false;
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Occurs when the user presses a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
-        protected virtual void OnKeyDown(ActionEventArgs<KeyPayload> args)
-            => this.KeyDown?.Invoke(this, args);
+        protected virtual Task OnKeyDown(ActionEventArgs<KeyPayload> args)
+        {
+            this.KeyDown?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when the user releases a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
-        protected virtual void OnKeyUp(ActionEventArgs<KeyPayload> args)
-            => this.KeyUp?.Invoke(this, args);
+        protected virtual Task OnKeyUp(ActionEventArgs<KeyPayload> args)
+        {
+            this.KeyUp?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when the property inspector sends a message to the plugin.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
-        protected virtual void OnSendToPlugin(ActionEventArgs<JObject> args)
-            => this.SendToPlugin?.Invoke(this, args);
+        protected virtual Task OnSendToPlugin(ActionEventArgs<JObject> args)
+        {
+            this.SendToPlugin?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{TitlePayload}" /> instance containing the event data.</param>
-        protected virtual void OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
-            => this.TitleParametersDidChange?.Invoke(this, args);
+        protected virtual Task OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
+        {
+            this.TitleParametersDidChange?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when an instance of an action appears.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        protected virtual void OnWillAppear(ActionEventArgs<ActionPayload> args)
-            => this.WillAppear?.Invoke(this, args);
+        protected virtual Task OnWillAppear(ActionEventArgs<ActionPayload> args)
+        {
+            this.WillAppear?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when an instance of an action disappears.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        protected virtual void OnWillDisappear(ActionEventArgs<ActionPayload> args)
-            => this.WillDisappear?.Invoke(this, args);
+        protected virtual Task OnWillDisappear(ActionEventArgs<ActionPayload> args)
+        {
+            this.WillDisappear?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
     }
 }
