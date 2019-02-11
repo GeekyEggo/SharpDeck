@@ -1,6 +1,7 @@
 ﻿namespace SharpDeck.Events
 {
     using Newtonsoft.Json.Linq;
+    using SharpDeck.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -42,7 +43,7 @@
         public Task InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
         {
             // attempt to get the method information
-            var @event = args.Payload?.ToObject<SendToPluginPayload>()?.Event;
+            var @event = args.Payload?.ToObject<PropertyInspectorPayload>()?.Event;
             if (string.IsNullOrWhiteSpace(@event) || !this.Methods.TryGetValue(@event, out var piMethodInfo))
             {
                 return Task.CompletedTask;
@@ -50,29 +51,40 @@
 
             return Task.Factory.StartNew(async () =>
             {
-                // invoke the method
-                var result = piMethodInfo.ParameterInfo == null
-                    ? piMethodInfo.MethodInfo.Invoke(action, null)
-                    : piMethodInfo.MethodInfo.Invoke(action, new[] { args.Payload.ToObject(piMethodInfo.ParameterInfo.ParameterType) });
+                // invoke the method asynchronously
+                var task = piMethodInfo.ParameterInfo == null
+                    ? piMethodInfo.MethodInfo.InvokeAsync(action, null)
+                    : piMethodInfo.MethodInfo.InvokeAsync(action, new[] { args.Payload.ToObject(piMethodInfo.ParameterInfo.ParameterType) });
+
+                await task;
 
                 // when the method information has a return type, send the response to the property inspector
                 if (piMethodInfo.MethodInfo.ReturnType != typeof(void))
                 {
-                    result = this.TryGetResultWithEvent(result, piMethodInfo);
+                    var result = this.TryGetResultWithEvent(task.Result, piMethodInfo);
                     await action.SendToPropertyInspectorAsync(result);
                 }
             });
         }
 
         /// <summary>
-        /// Determines whether the specified result, as an object, inherits from <see cref="SendToPluginPayload"/> so that the event name can be set.
+        /// Determines whether the specified result, as an object, inherits from <see cref="PropertyInspectorPayload"/> so that the event name can be set.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <param name="methodInfo">The property inspector method information.</param>
         /// <returns>The result to be sent to the property inspector.</returns>
         private object TryGetResultWithEvent(object result, PropertyInspectorMethodInfo methodInfo)
         {
-            if (result is SendToPluginPayload payload)
+            // when the result is a task, get the underlying result
+            if (result is Task task)
+            {
+                result = task.GetType()
+                    .GetProperty(nameof(Task<object>.Result))
+                    .GetValue(result);
+            }
+
+            // attempt to update the event name when the result is a payload
+            if (result is PropertyInspectorPayload payload)
             {
                 payload.Event = methodInfo.SendToPropertyInspectorEvent;
                 return payload;

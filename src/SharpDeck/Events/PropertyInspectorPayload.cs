@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides an optional payload which can be used in association with <see cref="PropertyInspectorMethodAttribute"/> to expose a method to the property inspector.
     /// </summary>
-    public class SendToPluginPayload
+    public class PropertyInspectorPayload
     {
         /// <summary>
         /// Gets or sets the event.
