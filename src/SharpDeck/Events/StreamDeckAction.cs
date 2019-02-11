@@ -1,6 +1,9 @@
 ﻿namespace SharpDeck.Events
 {
     using Enums;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Concurrent;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -9,9 +12,14 @@
     public class StreamDeckAction : StreamDeckActionReceiver
     {
         /// <summary>
+        /// Gets the property inspector method factories cache.
+        /// </summary>
+        private static ConcurrentDictionary<Type, PropertyInspectorMethodFactory> PropertyInspectorMethodFactories { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodFactory>();
+
+        /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
         /// </summary>
-        public string ActionUUID { get; set; }
+        public string ActionUUID { get; private set; }
 
         /// <summary>
         /// Gets an opaque value identifying the instance of the action. You will need to pass this opaque value to several APIs like the `setTitle` API.
@@ -22,6 +30,11 @@
         /// Gets an opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.
         /// </summary>
         public string Device { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable property inspector methods.
+        /// </summary>
+        protected bool EnablePropertyInspectorMethods { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the Elgato Stream Deck client.
@@ -100,6 +113,23 @@
         {
             base.Dispose(disposing);
             this.StreamDeck = null;
+        }
+
+        /// <summary>
+        /// Occurs when the property inspector sends a message to the plugin.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{JObject}" /> instance containing the event data.</param>
+        protected override Task OnSendToPlugin(ActionEventArgs<JObject> args)
+        {
+            base.OnSendToPlugin(args);
+
+            if (this.EnablePropertyInspectorMethods)
+            {
+                var factory = PropertyInspectorMethodFactories.GetOrAdd(this.GetType(), t => new PropertyInspectorMethodFactory(t));
+                return factory.InvokeAsync(this, args);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
