@@ -52,8 +52,8 @@
             var task = piMethodInfo.InvokeAsync(action, args);
             await task;
 
-            // when the method information has a return type, send the response to the property inspector
-            if (piMethodInfo.MethodInfo.ReturnType != typeof(void))
+            // when the method has a result, send it to the property inspector
+            if (piMethodInfo.HasResult)
             {
                 var result = this.TryGetResultWithEvent(task.Result, piMethodInfo);
                 await action.SendToPropertyInspectorAsync(result);

@@ -31,20 +31,16 @@
 
             this.MethodInfo = methodInfo;
             this.ParameterInfo = methodInfo.GetParameters().FirstOrDefault();
+            this.HasResult = methodInfo.ReturnType != typeof(void) && methodInfo.ReturnType != typeof(Task);
 
             this.InternalInvokeAsync = this.GetInternalInvokeAsync();
         }
 
         /// <summary>
-        /// Gets the method information.
+        /// Gets a value indicating whether <see cref="MethodInfo"/> has a result.
         /// </summary>
-        public MethodInfo MethodInfo { get; }
-
-        /// <summary>
-        /// Gets the information for the parameter that should be supplied to the method information.
-        /// </summary>
-        public ParameterInfo ParameterInfo { get; }
-
+        public bool HasResult { get; private set; }
+        
         /// <summary>
         /// Gets the `sendToPlugin` event name.
         /// </summary>
@@ -59,6 +55,16 @@
         /// Gets or sets the internal invoker used to asynchronously invoke <see cref="MethodInfo" />
         /// </summary>
         private AsyncMethodInvoker InternalInvokeAsync { get; set; }
+
+        /// <summary>
+        /// Gets the method information.
+        /// </summary>
+        private MethodInfo MethodInfo { get; }
+
+        /// <summary>
+        /// Gets the information for the parameter that should be supplied to the method information.
+        /// </summary>
+        private ParameterInfo ParameterInfo { get; }
 
         /// <summary>
         /// Invokes the method asynchronously.
