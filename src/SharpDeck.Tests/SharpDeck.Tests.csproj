@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20190203-03" />
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
