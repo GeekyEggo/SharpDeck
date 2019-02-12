@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-4
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Tests", "SharpDeck.Tests\SharpDeck.Tests.csproj", "{DA2E73D0-687E-4429-B481-5F5757743C32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA2E73D0-687E-4429-B481-5F5757743C32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA2E73D0-687E-4429-B481-5F5757743C32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA2E73D0-687E-4429-B481-5F5757743C32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA2E73D0-687E-4429-B481-5F5757743C32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
