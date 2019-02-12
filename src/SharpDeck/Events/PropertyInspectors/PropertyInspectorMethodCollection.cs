@@ -1,22 +1,21 @@
-﻿namespace SharpDeck.Events
+﻿namespace SharpDeck.Events.PropertyInspectors
 {
     using Newtonsoft.Json.Linq;
-    using SharpDeck.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a factory that maintains information about <see cref="PropertyInspectorMethodInfo"/> associated with an action.
+    /// Provides a collection that maintains information about <see cref="PropertyInspectorMethodInfo"/> associated with an action.
     /// </summary>
-    internal class PropertyInspectorMethodFactory
+    internal class PropertyInspectorMethodCollection
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyInspectorMethodFactory"/> class.
+        /// Initializes a new instance of the <see cref="PropertyInspectorMethodCollection"/> class.
         /// </summary>
         /// <param name="type">The <see cref="StreamDeckAction"/> type.</param>
-        public PropertyInspectorMethodFactory(Type type)
+        public PropertyInspectorMethodCollection(Type type)
         {
             // add all methods that are decorated with the attribute
             foreach (var methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
@@ -40,31 +39,25 @@
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="args">The <see cref="ActionEventArgs{JObject}" /> instance containing the event data.</param>
-        public Task InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
+        public async Task InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
         {
             // attempt to get the method information
             var @event = args.Payload?.ToObject<PropertyInspectorPayload>()?.Event;
             if (string.IsNullOrWhiteSpace(@event) || !this.Methods.TryGetValue(@event, out var piMethodInfo))
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            return Task.Factory.StartNew(async () =>
+            // invoke and await the method
+            var task = piMethodInfo.InvokeAsync(action, args);
+            await task;
+
+            // when the method information has a return type, send the response to the property inspector
+            if (piMethodInfo.MethodInfo.ReturnType != typeof(void))
             {
-                // invoke the method asynchronously
-                var task = piMethodInfo.ParameterInfo == null
-                    ? piMethodInfo.MethodInfo.InvokeAsync(action, null)
-                    : piMethodInfo.MethodInfo.InvokeAsync(action, new[] { args.Payload.ToObject(piMethodInfo.ParameterInfo.ParameterType) });
-
-                await task;
-
-                // when the method information has a return type, send the response to the property inspector
-                if (piMethodInfo.MethodInfo.ReturnType != typeof(void))
-                {
-                    var result = this.TryGetResultWithEvent(task.Result, piMethodInfo);
-                    await action.SendToPropertyInspectorAsync(result);
-                }
-            });
+                var result = this.TryGetResultWithEvent(task.Result, piMethodInfo);
+                await action.SendToPropertyInspectorAsync(result);
+            }
         }
 
         /// <summary>
@@ -75,14 +68,6 @@
         /// <returns>The result to be sent to the property inspector.</returns>
         private object TryGetResultWithEvent(object result, PropertyInspectorMethodInfo methodInfo)
         {
-            // when the result is a task, get the underlying result
-            if (result is Task task)
-            {
-                result = task.GetType()
-                    .GetProperty(nameof(Task<object>.Result))
-                    .GetValue(result);
-            }
-
             // attempt to update the event name when the result is a payload
             if (result is PropertyInspectorPayload payload)
             {

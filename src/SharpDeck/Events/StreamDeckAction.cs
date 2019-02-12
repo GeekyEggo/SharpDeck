@@ -2,6 +2,7 @@
 {
     using Enums;
     using Newtonsoft.Json.Linq;
+    using SharpDeck.Events.PropertyInspectors;
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
@@ -12,9 +13,9 @@
     public class StreamDeckAction : StreamDeckActionReceiver
     {
         /// <summary>
-        /// Gets the property inspector method factories cache.
+        /// Gets the property inspector method collection caches.
         /// </summary>
-        private static ConcurrentDictionary<Type, PropertyInspectorMethodFactory> PropertyInspectorMethodFactories { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodFactory>();
+        private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
 
         /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
@@ -125,7 +126,7 @@
 
             if (this.EnablePropertyInspectorMethods)
             {
-                var factory = PropertyInspectorMethodFactories.GetOrAdd(this.GetType(), t => new PropertyInspectorMethodFactory(t));
+                var factory = PropertyInspectorMethodCollections.GetOrAdd(this.GetType(), t => new PropertyInspectorMethodCollection(t));
                 return factory.InvokeAsync(this, args);
             }
 
