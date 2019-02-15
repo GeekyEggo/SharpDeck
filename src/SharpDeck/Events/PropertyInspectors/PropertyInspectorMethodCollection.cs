@@ -9,7 +9,7 @@
     /// <summary>
     /// Provides a collection that maintains information about <see cref="PropertyInspectorMethodInfo"/> associated with an action.
     /// </summary>
-    internal class PropertyInspectorMethodCollection
+    public class PropertyInspectorMethodCollection
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyInspectorMethodCollection"/> class.
