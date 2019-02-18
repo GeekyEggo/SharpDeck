@@ -31,6 +31,74 @@ class CounterAction : StreamDeckAction
 }
 ```
 
+## Interacting with the Property Inspector
+
+It is possible to interact with the Property Inspector by _exposing_ methods from your action, using the  `PropertyInspectorMethodAttribute` attribute, similiar to MVC .NET decorators. The attribute supports tasks, and also allows for results.
+
+### Example
+```csharp
+// Action.cs
+[PropertyInspectorMethod("load")]
+protected void OnPropertyInspectorLoad()
+  => // ... execute code
+```
+```js
+// Property Inspector js file
+websocket.send(JSON.stringify({
+    "action": actionUUID,
+    "event": "sendToPlugin",
+    "context": uuid,
+    "payload": {
+        "event": "load"
+    }
+}));
+```
+
+### Example 2 (parameters and results)
+```csharp
+// Action.cs
+[PropertyInspectorMethod("load")]
+protected Task<ActionResponse> OnPropertyInspectorLoad(ActionPayload args)
+  => // ... execute code, with access to args
+
+// ActionPayload.cs
+public class ActionPayload : SharpDeck.Events.PropertyInspectors.PropertyInspectorPayload
+{
+    public string UserId { get; set; }
+}
+
+// ActionResponse.cs
+public class ActionResponse : SharpDeck.Events.PropertyInspectors.PropertyInspectorPayload
+{
+    public string SessionKey { get; set; }
+}
+```
+```js
+// Property Inspector js file
+websocket.send(JSON.stringify({
+    "action": actionUUID,
+    "event": "sendToPlugin",
+    "context": uuid,
+    "payload": {
+        "event": "load",
+        "userId": "1337"
+    }
+}));
+
+/*
+upon Action.OnPropertyInspectorLoad completing, websocket will receive a message with the payload data:
+{
+    "action": actionUUID,
+    "event": "sendToPropertyInspector",
+    "context": context,
+    "payload": {
+        "event": "load",
+        "sessionKey": <<sessionKey>>
+    }
+}
+*/
+```
+
 ## Contributing
 
 Having a problem, or got an idea? Let me know!

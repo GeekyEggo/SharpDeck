@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Richard Herman</Authors>
-    <PackageOutputPath>$(TargetDir)..\..\build</PackageOutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>$(TargetDir)..\..\dist</PackageOutputPath>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Title>SharpDeck</Title>
     <PackageProjectUrl>https://github.com/GeekyEggo/Sharpdeck</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
