@@ -59,7 +59,10 @@ websocket.send(JSON.stringify({
 // Action.cs
 [PropertyInspectorMethod("load")]
 protected Task<ActionResponse> OnPropertyInspectorLoad(ActionPayload args)
-  => // ... execute code, with access to args
+{
+    // ... execute code, with access to args
+    return this.GetSessionKeyAsync(args.UserId);
+}
 
 // ActionPayload.cs
 public class ActionPayload : SharpDeck.Events.PropertyInspectors.PropertyInspectorPayload
