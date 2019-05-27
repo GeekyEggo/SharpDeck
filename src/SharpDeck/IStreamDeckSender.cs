@@ -71,5 +71,11 @@
         /// </summary>
         /// <param name="url">A URL to open in the default browser.</param>
         Task OpenUrlAsync(string url);
+
+        /// <summary>
+        /// Write a debug log to the logs file.
+        /// </summary>
+        /// <param name="msg">The message to log.</param>
+        Task LogMessage(string msg);
     }
 }

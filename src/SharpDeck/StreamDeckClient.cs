@@ -202,6 +202,13 @@
             => this.WebSocket.SendJsonAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
 
         /// <summary>
+        /// Write a debug log to the logs file.
+        /// </summary>
+        /// <param name="msg">The message to log.</param>
+        public Task LogMessage(string msg)
+            => this.WebSocket.SendJsonAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)));
+
+        /// <summary>
         /// Raises the event, based on the <paramref name="event"/>, using the specified <paramref name="args"/>.
         /// </summary>
         /// <param name="event">The event name.</param>

@@ -38,9 +38,9 @@
         protected bool EnablePropertyInspectorMethods { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the Elgato Stream Deck client.
+        /// Gets the Elgato Stream Deck client.
         /// </summary>
-        private IStreamDeckSender StreamDeck { get; set; }
+        protected IStreamDeckSender StreamDeck { get; private set; }
 
         /// <summary>
         /// Initializes the action.
