@@ -11,6 +11,16 @@
         public Application Application { get; set; }
 
         /// <summary>
+        /// Gets or sets the device pixel ratio.
+        /// </summary>
+        public int DevicePixelRatio { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plugin information.
+        /// </summary>
+        public PluginInfo Plugin { get; set; }
+
+        /// <summary>
         /// Gets or sets an array of devices.
         /// </summary>
         public IdentifiableDeviceInfo[] Devices { get; set; }
