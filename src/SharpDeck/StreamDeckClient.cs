@@ -249,6 +249,7 @@
         /// Occurs when a monitored application is launched.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
+        [StreamDeckEvent("applicationDidLaunch")]
         protected virtual Task OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
         {
             this.ApplicationDidLaunch?.Invoke(this, args);
@@ -259,6 +260,7 @@
         /// Occurs when a monitored application is terminated.
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
+        [StreamDeckEvent("applicationDidTerminate")]
         protected virtual Task OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
         {
             this.ApplicationDidTerminate?.Invoke(this, args);
@@ -269,6 +271,7 @@
         /// Occurs when a device is plugged to the computer.
         /// </summary>
         /// <param name="args">The <see cref="DeviceConnectEventArgs"/> instance containing the event data.</param>
+        [StreamDeckEvent("deviceDidConnect")]
         protected virtual Task OnDeviceDidConnect(DeviceConnectEventArgs args)
         {
             this.DeviceDidConnect?.Invoke(this, args);
@@ -279,6 +282,7 @@
         /// Occurs when a device is unplugged from the computer.
         /// </summary>
         /// <param name="args">The <see cref="DeviceEventArgs"/> instance containing the event data.</param>
+        [StreamDeckEvent("deviceDidDisconnect")]
         protected virtual Task OnDeviceDidDisconnect(DeviceEventArgs args)
         {
             this.DeviceDidDisconnect?.Invoke(this, args);
