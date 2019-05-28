@@ -199,7 +199,7 @@
         /// </summary>
         /// <param name="url">A URL to open in the default browser.</param>
         public Task OpenUrlAsync(string url)
-            => this.WebSocket.SendJsonAsync(new Message<UrlPayload>(url, new UrlPayload(url)));
+            => this.WebSocket.SendJsonAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)));
 
         /// <summary>
         /// Write a debug log to the logs file.
