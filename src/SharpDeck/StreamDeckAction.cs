@@ -19,6 +19,11 @@
         private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
 
         /// <summary>
+        /// Occurs when this action instance has been initialized.
+        /// </summary>
+        public event EventHandler Initialize;
+
+        /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
         /// </summary>
         public string ActionUUID { get; private set; }
@@ -42,21 +47,6 @@
         /// Gets the Elgato Stream Deck client.
         /// </summary>
         protected IStreamDeckSender StreamDeck { get; private set; }
-
-        /// <summary>
-        /// Initializes the action.
-        /// </summary>
-        /// <param name="action">The actions unique identifier.</param>
-        /// <param name="context">The opaque value identifying the instance of the action.</param>
-        /// <param name="device">The opaque value identifying the device.</param>
-        /// <param name="streamDeck">An Elgato Stream Deck sender.</param>
-        public void Initialize(string action, string context, string device, IStreamDeckSender streamDeck)
-        {
-            this.ActionUUID = action;
-            this.Context = context;
-            this.Device = device;
-            this.StreamDeck = streamDeck;
-        }
 
         /// <summary>
         /// Gets this action's instances settings asynchronously.
@@ -123,6 +113,22 @@
         /// </summary>
         public Task ShowOkAsync()
             => this.StreamDeck.ShowOkAsync(this.Context);
+
+        /// <summary>
+        /// Sets the context and initializes the action.
+        /// </summary>
+        /// <param name="args">The arguments containing the context.</param>
+        /// <param name="streamDeck">The Stream Deck client.</param>
+        /// <returns>The task of setting the context and initialization.</returns>
+        internal virtual void SetContext(ActionEventArgs<AppearancePayload> args, IStreamDeckSender streamDeck)
+        {
+            this.ActionUUID = args.Action;
+            this.Context = args.Context;
+            this.Device = args.Device;
+            this.StreamDeck = streamDeck;
+
+            this.Initialize?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

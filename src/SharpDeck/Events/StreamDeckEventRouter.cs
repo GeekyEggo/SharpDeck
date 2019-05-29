@@ -85,7 +85,7 @@
 
             // determine the owner of the delegate, based on the event args
             var owner = this.TryGetActionInfo(args, out var actionInfo)
-                ? this.GetActionOrClient(actionInfo, client)
+                ? this.GetActionOrClient(args, actionInfo, client)
                 : client;
 
             return (Task)@delegate.Invoke(owner, new[] { args.ToObject(@delegate.GetParameters()[0].ParameterType) });
@@ -109,10 +109,11 @@
         /// <summary>
         /// Gets the <see cref="StreamDeckAction"/> for the specified parameters; otherwise the default is returned.
         /// </summary>
+        /// <param name="args">The original arguments from the Stream Deck event.</param>
         /// <param name="info">The action information.</param>
         /// <param name="client">The Stream Deck client.</param>
         /// <returns>The action instance, a new instance of an action, or the default.</returns>
-        private IStreamDeckActionReceiver GetActionOrClient((string actionUUID, string context, string device) info, StreamDeckClient client)
+        private IStreamDeckActionReceiver GetActionOrClient(JObject args, (string actionUUID, string context, string device) info, StreamDeckClient client)
         {
             // when there is no registered action for the action UUID, return the default handler
             if (!this.ActionFactory.TryGetValue(info.actionUUID, out var valueFactory))
@@ -120,14 +121,21 @@
                 return client;
             }
 
-            // otherwise attempt to get the instance of the action or initiate a new one
-            return this.Actions.GetOrAdd(info.context, _ =>
+            // otherwise attempt to get the instance of the action
+            var isNewAction = false;
+            var action = this.Actions.GetOrAdd(info.context, _ =>
             {
-                var action = valueFactory();
-                action.Initialize(info.actionUUID, info.context, info.device, client);
-
-                return action;
+                isNewAction = true;
+                return valueFactory();
             });
+
+            // initialize the new action
+            if (isNewAction)
+            {
+                action.SetContext(args.ToObject<ActionEventArgs<AppearancePayload>>(), client);
+            }
+
+            return action;
         }
 
         /// <summary>
