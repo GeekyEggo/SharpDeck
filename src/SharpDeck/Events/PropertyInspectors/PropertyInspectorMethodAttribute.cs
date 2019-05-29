@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// Provides a decorator for methods, allowing them to be automatically triggered by <see cref="StreamDeckActionReceiver.SendToPlugin"/>.
+    /// Provides a decorator for methods, allowing them to be automatically triggered by <see cref="StreamDeckActionEventReceiver.SendToPlugin"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class PropertyInspectorMethodAttribute : Attribute

@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides information about method that should be invoked when receiving a specific message from <see cref="StreamDeckActionReceiver.SendToPlugin"/>.
+    /// Provides information about method that should be invoked when receiving a specific message from <see cref="StreamDeckActionEventReceiver.SendToPlugin"/>.
     /// </summary>
     public class PropertyInspectorMethodInfo
     {

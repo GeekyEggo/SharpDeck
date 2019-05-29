@@ -1,14 +1,15 @@
-﻿namespace SharpDeck.Events
+﻿namespace SharpDeck
 {
     using Enums;
     using Newtonsoft.Json.Linq;
+    using SharpDeck.Events;
     using SharpDeck.Events.PropertyInspectors;
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeck"/>.
+    /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeckClient"/>.
     /// </summary>
     public class StreamDeckAction : StreamDeckActionReceiver
     {
@@ -58,12 +59,35 @@
         }
 
         /// <summary>
-        /// Dynamically change the title of an instance of an action.
+        /// Gets this action's instances settings asynchronously.
         /// </summary>
-        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
-        /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        public Task SetTitleAsync(string title = "", TargetType target = TargetType.Both)
-            => this.StreamDeck.SetTitleAsync(this.Context, title, target);
+        /// <typeparam name="T">The type of the settings.</typeparam>
+        /// <returns>The task containing the settings.</returns>
+        public Task<T> GetSettingsAsync<T>()
+            where T : class
+        {
+            var taskSource = new TaskCompletionSource<T>();
+
+            // declare the local function handler that sets the task result
+            void handler(object sender, ActionEventArgs<ActionPayload> e)
+            {
+                this.DidReceiveSettings -= handler;
+                taskSource.TrySetResult(e.Payload.GetSettings<T>());
+            }
+
+            // listen for receiving events, and trigger a request
+            this.DidReceiveSettings += handler;
+            this.StreamDeck.GetSettingsAsync(this.Context);
+
+            return taskSource.Task;
+        }
+
+        /// <summary>
+        /// Send a payload to the Property Inspector.
+        /// </summary>
+        /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
+        public Task SendToPropertyInspectorAsync(object payload)
+            => this.StreamDeck.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action.
@@ -72,6 +96,21 @@
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         public Task SetImageAsync(string base64Image, TargetType target = TargetType.Both)
             => this.StreamDeck.SetImageAsync(this.Context, base64Image, target);
+
+        /// <summary>
+        /// Dynamically change the title of an instance of an action.
+        /// </summary>
+        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
+        /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
+        public Task SetTitleAsync(string title = "", TargetType target = TargetType.Both)
+            => this.StreamDeck.SetTitleAsync(this.Context, title, target);
+
+        /// <summary>
+        ///	Change the state of the actions instance supporting multiple states.
+        /// </summary>
+        /// <param name="state">A 0-based integer value representing the state requested.</param>
+        public Task SetStateAsync(int state = 0)
+            => this.StreamDeck.SetStateAsync(this.Context, state);
 
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
@@ -84,27 +123,6 @@
         /// </summary>
         public Task ShowOkAsync()
             => this.StreamDeck.ShowOkAsync(this.Context);
-
-        /// <summary>
-        /// Save persistent data for the actions instance.
-        /// </summary>
-        /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
-        public Task SetSettingsAsync(object settings)
-            => this.StreamDeck.SetSettingsAsync(this.Context, settings);
-
-        /// <summary>
-        ///	Change the state of the actions instance supporting multiple states.
-        /// </summary>
-        /// <param name="state">A 0-based integer value representing the state requested.</param>
-        public Task SetStateAsync(int state = 0)
-            => this.StreamDeck.SetStateAsync(this.Context, state);
-
-        /// <summary>
-        /// Send a payload to the Property Inspector.
-        /// </summary>
-        /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
-        public Task SendToPropertyInspectorAsync(object payload)
-            => this.StreamDeck.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
