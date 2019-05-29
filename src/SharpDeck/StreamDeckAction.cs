@@ -11,7 +11,7 @@
     /// <summary>
     /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeckClient"/>.
     /// </summary>
-    public class StreamDeckAction : StreamDeckActionReceiver
+    public class StreamDeckAction : StreamDeckActionEventReceiver
     {
         /// <summary>
         /// Gets the property inspector method collection caches.
