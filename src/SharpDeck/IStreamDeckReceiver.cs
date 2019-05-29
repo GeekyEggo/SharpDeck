@@ -27,5 +27,10 @@
         /// Occurs when a device is unplugged from the computer.
         /// </summary>
         event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync(string)"/> has been called to retrieve the persistent global data stored for the plugin.
+        /// </summary>
+        event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
     }
 }

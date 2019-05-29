@@ -65,6 +65,11 @@
         public event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
+        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync(string)"/> has been called to retrieve the persistent global data stored for the plugin.
+        /// </summary>
+        public event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
+
+        /// <summary>
         /// Gets the event router.
         /// </summary>
         private StreamDeckEventRouter EventRouter { get; }
@@ -289,6 +294,17 @@
         protected virtual Task OnDeviceDidDisconnect(DeviceEventArgs args)
         {
             this.DeviceDidDisconnect?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Raises the <see cref="DidReceiveGlobalSettings" /> event.
+        /// </summary>
+        /// <param name="args">The <see cref="StreamDeckEventArgs{SettingsPayload}"/> instance containing the event data.</param>
+        [StreamDeckEvent("didReceiveGlobalSettings")]
+        protected virtual Task OnDidReceiveGlobalSettings(StreamDeckEventArgs<SettingsPayload> args)
+        {
+            this.DidReceiveGlobalSettings?.Invoke(this, args);
             return Task.CompletedTask;
         }
 

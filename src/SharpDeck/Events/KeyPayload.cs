@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides payload information relating to a key.
     /// </summary>
-    public class KeyPayload : ActionPayload
+    public class KeyPayload : AppearancePayload
     {
         /// <summary>
         /// Gets or sets a value that is set when the action is triggered with a specific value from a Multi Action.

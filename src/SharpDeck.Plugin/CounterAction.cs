@@ -42,7 +42,7 @@
         /// Occurs when an instance of an action appears.
         /// </summary>
         /// <param name="args">The <see cref="T:SharpDeck.Events.ActionEventArgs`1" /> instance containing the event data.</param>
-        protected override Task OnWillAppear(ActionEventArgs<ActionPayload> args)
+        protected override Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
             => this.SetTitleAsync(this.Count.ToString());
     }
 }
