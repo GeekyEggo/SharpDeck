@@ -1,6 +1,5 @@
 ﻿namespace SharpDeck
 {
-    using Newtonsoft.Json.Linq;
     using SharpDeck.Events;
     using System.Threading.Tasks;
 
@@ -21,23 +20,8 @@
         /// </summary>
         /// <returns>The task containing the settings.</returns>
         public Task<TSettings> GetSettingsAsync()
-        {
-            var taskSource = new TaskCompletionSource<TSettings>();
-
-            // declare the local function handler that sets the task result
-            void handler(object sender, ActionEventArgs<ActionPayload> e)
-            {
-                this.DidReceiveSettings -= handler;
-                taskSource.TrySetResult(e.Payload.GetSettings<TSettings>());
-            }
-
-            // listen for receiving events, and trigger a request
-            this.DidReceiveSettings += handler;
-            this.StreamDeck.GetSettingsAsync(this.Context);
-
-            return taskSource.Task;
-        }
-
+            => this.GetSettingsAsync<TSettings>();
+        
         /// <summary>
         /// Save persistent data for the actions instance.
         /// </summary>
@@ -51,10 +35,10 @@
         /// <param name="args">The arguments containing the context.</param>
         /// <param name="streamDeck">The Stream Deck client.</param>
         /// <returns>The task of setting the context and initialization.</returns>
-        internal override void SetContext(ActionEventArgs<AppearancePayload> args, IStreamDeckSender streamDeck)
+        internal override void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckSender streamDeck)
         {
             this.Settings = args.Payload.GetSettings<TSettings>();
-            base.SetContext(args, streamDeck);
+            base.Initialize(args, streamDeck);
         }
     }
 }

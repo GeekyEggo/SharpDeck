@@ -21,7 +21,7 @@
         /// <summary>
         /// Occurs when this action instance has been initialized.
         /// </summary>
-        public event EventHandler Initialize;
+        public event EventHandler Initialized;
 
         /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
@@ -47,7 +47,7 @@
         /// Gets the Elgato Stream Deck client.
         /// </summary>
         protected IStreamDeckSender StreamDeck { get; private set; }
-
+        
         /// <summary>
         /// Gets this action's instances settings asynchronously.
         /// </summary>
@@ -120,14 +120,14 @@
         /// <param name="args">The arguments containing the context.</param>
         /// <param name="streamDeck">The Stream Deck client.</param>
         /// <returns>The task of setting the context and initialization.</returns>
-        internal virtual void SetContext(ActionEventArgs<AppearancePayload> args, IStreamDeckSender streamDeck)
+        internal virtual void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckSender streamDeck)
         {
             this.ActionUUID = args.Action;
             this.Context = args.Context;
             this.Device = args.Device;
             this.StreamDeck = streamDeck;
 
-            this.Initialize?.Invoke(this, EventArgs.Empty);
+            this.Initialized?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

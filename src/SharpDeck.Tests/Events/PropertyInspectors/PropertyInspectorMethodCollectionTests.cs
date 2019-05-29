@@ -15,14 +15,15 @@
     public class PropertyInspectorMethodCollectionTests
     {
         /// <summary>
-        /// The mock action UUID.
+        /// Gets the mock context.
         /// </summary>
-        private const string ACTION_UUID = "ACTION_MOCK_UUID";
-
-        /// <summary>
-        /// The mock context UUID.
-        /// </summary>
-        private const string CONTEXT_UUID = "CONTEXT_MOCK_UUID";
+        private static ActionEventArgs<AppearancePayload> CONTEXT { get; } = new ActionEventArgs<AppearancePayload>
+        {
+            Action = "ACTION_MOCK_UUID",
+            Context = "CONTEXT_MOCK_UUID",
+            Device = "DEVICE_MOCK_UUID",
+            Payload = new AppearancePayload()
+        };
 
         /// <summary>
         /// Gets or sets the collection, used as the primary test case.
@@ -54,7 +55,7 @@
         {
             // given
             var action = new FooStreamDeckAction();
-            action.Initialize(null, null, null, new Mock<IStreamDeckSender>().Object);
+            action.Initialize(CONTEXT, new Mock<IStreamDeckSender>().Object);
             var args = this.GetArgs(@event);
 
             // when, then
@@ -83,15 +84,15 @@
             var streamDeckSender = new Mock<IStreamDeckSender>();
             streamDeckSender.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
                 .Callback<string, string, object>((contextUUID, actionUUID, payload) => {
-                    if (actionUUID == ACTION_UUID && contextUUID == CONTEXT_UUID && ((FooPropertyInspectorPayload)payload).Event == sendToPropertyInspectorEvent)
+                    if (actionUUID == CONTEXT.Action && contextUUID == CONTEXT.Context && ((FooPropertyInspectorPayload)payload).Event == sendToPropertyInspectorEvent)
                     {
                         callCount++;
                     }
                 }).Returns(() => Task.CompletedTask);
 
             var action = new FooStreamDeckAction();
-            action.Initialize(ACTION_UUID, CONTEXT_UUID, null, streamDeckSender.Object);
             var args = this.GetArgs(sendToPluginEvent);
+            action.Initialize(CONTEXT, streamDeckSender.Object);
 
             // when
             await this.Collection.InvokeAsync(action, args);

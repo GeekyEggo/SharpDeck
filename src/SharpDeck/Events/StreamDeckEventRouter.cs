@@ -132,7 +132,7 @@
             // initialize the new action
             if (isNewAction)
             {
-                action.SetContext(args.ToObject<ActionEventArgs<AppearancePayload>>(), client);
+                action.Initialize(args.ToObject<ActionEventArgs<AppearancePayload>>(), client);
             }
 
             return action;

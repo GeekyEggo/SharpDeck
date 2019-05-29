@@ -1,4 +1,6 @@
-﻿namespace SharpDeck
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("SharpDeck.Tests")]
+
+namespace SharpDeck
 {
     using Events;
     using Microsoft.Extensions.Logging;
