@@ -56,37 +56,6 @@
         protected virtual void Dispose(bool disposing) {}
 
         /// <summary>
-        /// Raises the event, based on the <paramref name="event"/>, using the specified <paramref name="args"/>.
-        /// </summary>
-        /// <param name="event">The event name.</param>
-        /// <param name="args">The message as arguments.</param>
-        internal virtual Task RaiseEventAsync(string @event, JObject args)
-        {
-            switch (@event)
-            {
-                case "keyDown":
-                    return this.OnKeyDown(args.ToObject<ActionEventArgs<KeyPayload>>());
-
-                case "keyUp":
-                    return this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>());
-
-                case "sendToPlugin":
-                    return this.OnSendToPlugin(args.ToObject<ActionEventArgs<JObject>>());
-
-                case "titleParametersDidChange":
-                    return this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>());
-
-                case "willAppear":
-                    return this.OnWillAppear(args.ToObject<ActionEventArgs<ActionPayload>>());
-
-                case "willDisappear":
-                    return this.OnWillDisappear(args.ToObject<ActionEventArgs<ActionPayload>>());
-            }
-
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// Occurs when the user presses a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>

@@ -1,6 +1,7 @@
 ﻿namespace SharpDeck
 {
     using Events;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Enums;
     using SharpDeck.Messages;
@@ -18,17 +19,20 @@
         /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public StreamDeckClient(string[] args)
-            : this(RegistrationParameters.Parse(args))
+        /// <param name="logger">The optional logger.</param>
+        public StreamDeckClient(string[] args, ILogger logger = null)
+            : this(RegistrationParameters.Parse(args), logger)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckClient" /> class.
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
-        public StreamDeckClient(RegistrationParameters registrationParameters)
+        /// <param name="logger">The optional logger.</param>
+        public StreamDeckClient(RegistrationParameters registrationParameters, ILogger logger = null)
         {
+            this.EventRouter = new StreamDeckEventRouter(logger);
             this.RegistrationParameters = registrationParameters;
 
             this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{registrationParameters.Port}/");
@@ -63,7 +67,7 @@
         /// <summary>
         /// Gets the event router.
         /// </summary>
-        private StreamDeckEventRouter EventRouter { get; } = new StreamDeckEventRouter();
+        private StreamDeckEventRouter EventRouter { get; }
 
         /// <summary>
         /// Gets or sets the registration parameters.
@@ -207,31 +211,6 @@
         /// <param name="msg">The message to log.</param>
         public Task LogMessage(string msg)
             => this.WebSocket.SendJsonAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)));
-
-        /// <summary>
-        /// Raises the event, based on the <paramref name="event"/>, using the specified <paramref name="args"/>.
-        /// </summary>
-        /// <param name="event">The event name.</param>
-        /// <param name="args">The message as arguments.</param>
-        internal override Task RaiseEventAsync(string @event, JObject args)
-        {
-            switch (@event)
-            {
-                case "applicationDidLaunch":
-                    return this.OnApplicationDidLaunch(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
-
-                case "applicationDidTerminate":
-                    return this.OnApplicationDidTerminate(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
-
-                case "deviceDidConnect":
-                    return this.OnDeviceDidConnect(args.ToObject<DeviceConnectEventArgs>());
-
-                case "deviceDidDisconnect":
-                    return this.OnDeviceDidDisconnect(args.ToObject<DeviceEventArgs>());
-            }
-
-            return base.RaiseEventAsync(@event, args);
-        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
