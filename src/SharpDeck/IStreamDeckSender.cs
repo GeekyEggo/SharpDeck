@@ -9,10 +9,17 @@
     public interface IStreamDeckSender
     {
         /// <summary>
+        /// Requests the persistent global data stored for the plugin.
+        /// </summary>
+        /// <param name="context">An opaque value identifying the plugin.</param>
+        /// <returns>The task of sending the message; this result does not contain the settings.</returns>
+        Task GetGlobalSettingsAsync(string context);
+
+        /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <returns>The task of sending the message; the result does not contain the settings.</returns>
+        /// <returns>The task of sending the message; this result does not contain the settings.</returns>
         Task GetSettingsAsync(string context);
 
         /// <summary>

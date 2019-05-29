@@ -133,6 +133,14 @@
             => Task.WaitAll(this.WebSocket.DisconnectAsync());
 
         /// <summary>
+        /// Requests the persistent global data stored for the plugin.
+        /// </summary>
+        /// <param name="context">An opaque value identifying the plugin.</param>
+        /// <returns>The task of sending the message; this result does not contain the settings.</returns>
+        public Task GetGlobalSettingsAsync(string context)
+            => this.WebSocket.SendJsonAsync(new ContextMessage("getGlobalSettings", context));
+
+        /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.
         /// </summary>
         /// <param name="context">The context.</param>
