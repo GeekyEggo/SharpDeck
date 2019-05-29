@@ -133,6 +133,28 @@
             => Task.WaitAll(this.WebSocket.DisconnectAsync());
 
         /// <summary>
+        /// Requests the persistent data stored for the specified context's action instance.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>The task of sending the message; the result does not contain the settings.</returns>
+        public Task GetSettings(string context)
+            => this.WebSocket.SendJsonAsync(new ContextMessage("getSettings", context));
+
+        /// <summary>
+        /// Write a debug log to the logs file.
+        /// </summary>
+        /// <param name="msg">The message to log.</param>
+        public Task LogMessage(string msg)
+            => this.WebSocket.SendJsonAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)));
+
+        /// <summary>
+        /// Open a URL in the default browser.
+        /// </summary>
+        /// <param name="url">A URL to open in the default browser.</param>
+        public Task OpenUrlAsync(string url)
+            => this.WebSocket.SendJsonAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)));
+
+        /// <summary>
         /// Dynamically change the title of an instance of an action.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action you want to modify.</param>
@@ -197,20 +219,6 @@
         /// <param name="profile">The name of the profile to switch to. The name should be identical to the name provided in the manifest.json file.</param>
         public Task SwitchToProfileAsync(string context, string device, string profile)
             => this.WebSocket.SendJsonAsync(new DeviceMessage<SwitchToProfilePayload>("switchToProfile", context, device, new SwitchToProfilePayload(profile)));
-
-        /// <summary>
-        /// Open a URL in the default browser.
-        /// </summary>
-        /// <param name="url">A URL to open in the default browser.</param>
-        public Task OpenUrlAsync(string url)
-            => this.WebSocket.SendJsonAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)));
-
-        /// <summary>
-        /// Write a debug log to the logs file.
-        /// </summary>
-        /// <param name="msg">The message to log.</param>
-        public Task LogMessage(string msg)
-            => this.WebSocket.SendJsonAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)));
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
