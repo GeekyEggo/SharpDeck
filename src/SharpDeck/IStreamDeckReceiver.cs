@@ -32,5 +32,14 @@
         /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync(string)"/> has been called to retrieve the persistent global data stored for the plugin.
         /// </summary>
         event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
+
+        /// <summary>
+        /// Occurs when the computer is woken up.
+        /// </summary>
+        /// <remarks>
+        /// A plugin may receive multiple <see cref="SystemDidWakeUp"/> events when waking up the computer.
+        /// When the plugin receives the <see cref="SystemDidWakeUp"/> event, there is no garantee that the devices are available.
+        /// </remarks>
+        event EventHandler<StreamDeckEventArgs> SystemDidWakeUp;
     }
 }

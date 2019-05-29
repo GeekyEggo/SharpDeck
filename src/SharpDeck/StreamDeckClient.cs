@@ -70,6 +70,15 @@
         public event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
 
         /// <summary>
+        /// Occurs when the computer is woken up.
+        /// </summary>
+        /// <remarks>
+        /// A plugin may receive multiple <see cref="SystemDidWakeUp"/> events when waking up the computer.
+        /// When the plugin receives the <see cref="SystemDidWakeUp"/> event, there is no garantee that the devices are available.
+        /// </remarks>
+        public event EventHandler<StreamDeckEventArgs> SystemDidWakeUp;
+
+        /// <summary>
         /// Gets the event router.
         /// </summary>
         private StreamDeckEventRouter EventRouter { get; }
@@ -305,6 +314,16 @@
         protected virtual Task OnDidReceiveGlobalSettings(StreamDeckEventArgs<SettingsPayload> args)
         {
             this.DidReceiveGlobalSettings?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Raises the <see cref="SystemDidWakeUp" /> event.
+        /// </summary>
+        /// <param name="args">The <see cref="StreamDeckEventArgs"/> instance containing the event data.</param>
+        protected virtual Task OnSystemDidWakeUp(StreamDeckEventArgs args)
+        {
+            this.SystemDidWakeUp?.Invoke(this, args);
             return Task.CompletedTask;
         }
 
