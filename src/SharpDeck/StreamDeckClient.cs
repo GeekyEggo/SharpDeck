@@ -137,14 +137,14 @@
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>The task of sending the message; the result does not contain the settings.</returns>
-        public Task GetSettings(string context)
+        public Task GetSettingsAsync(string context)
             => this.WebSocket.SendJsonAsync(new ContextMessage("getSettings", context));
 
         /// <summary>
         /// Write a debug log to the logs file.
         /// </summary>
         /// <param name="msg">The message to log.</param>
-        public Task LogMessage(string msg)
+        public Task LogMessageAsync(string msg)
             => this.WebSocket.SendJsonAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)));
 
         /// <summary>
@@ -155,13 +155,21 @@
             => this.WebSocket.SendJsonAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)));
 
         /// <summary>
-        /// Dynamically change the title of an instance of an action.
+        /// Send a payload to the Property Inspector.
         /// </summary>
-        /// <param name="context">An opaque value identifying the instance's action you want to modify.</param>
-        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
-        /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        public Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both)
-            => this.WebSocket.SendJsonAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target)));
+        /// <param name="context">An opaque value identifying the instances action.</param>
+        /// <param name="action">The action unique identifier.</param>
+        /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
+        public Task SendToPropertyInspectorAsync(string context, string action, object payload)
+            => this.WebSocket.SendJsonAsync(new ActionMessage<object>("sendToPropertyInspector", context, action, payload));
+
+        /// <summary>
+        /// Save persistent data for the plugin.
+        /// </summary>
+        /// <param name="context">An opaque value identifying the plugin.</param>
+        /// <param name="settings">An object which persistently saved globally.</param>
+        public Task SetGlobalSettingsAsync(string context, object settings)
+            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setGlobalSettings", context, JObject.FromObject(settings)));
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action.
@@ -171,6 +179,31 @@
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         public Task SetImageAsync(string context, string base64Image, TargetType target = TargetType.Both)
             => this.WebSocket.SendJsonAsync(new ContextMessage<SetImagePayload>("setImage", context, new SetImagePayload(base64Image, target)));
+
+        /// <summary>
+        /// Save persistent data for the action's instance.
+        /// </summary>
+        /// <param name="context">An opaque value identifying the instance's action.</param>
+        /// <param name="settings">An object which is persistently saved for the action's instance.</param>
+        public Task SetSettingsAsync(string context, object settings)
+            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings)));
+
+        /// <summary>
+        ///	Change the state of the actions instance supporting multiple states.
+        /// </summary>
+        /// <param name="context">An opaque value identifying the instance's action.</param>
+        /// <param name="state">A 0-based integer value representing the state requested.</param>
+        public Task SetStateAsync(string context, int state = 0)
+            => this.WebSocket.SendJsonAsync(new ContextMessage<SetStatePayload>("setState", context, new SetStatePayload(state)));
+
+        /// <summary>
+        /// Dynamically change the title of an instance of an action.
+        /// </summary>
+        /// <param name="context">An opaque value identifying the instance's action you want to modify.</param>
+        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
+        /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
+        public Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both)
+            => this.WebSocket.SendJsonAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target)));
 
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
@@ -185,31 +218,6 @@
         /// <param name="context">An opaque value identifying the instance's action.</param>
         public Task ShowOkAsync(string context)
             => this.WebSocket.SendJsonAsync(new ContextMessage("showOk", context));
-
-        /// <summary>
-        /// Save persistent data for the actions instance.
-        /// </summary>
-        /// <param name="context">An opaque value identifying the instance's action.</param>
-        /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
-        public Task SetSettingsAsync(string context, object settings)
-            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings)));
-
-        /// <summary>
-        ///	Change the state of the actions instance supporting multiple states.
-        /// </summary>
-        /// <param name="context">An opaque value identifying the instance's action.</param>
-        /// <param name="state">A 0-based integer value representing the state requested.</param>
-        public Task SetStateAsync(string context, int state = 0)
-            => this.WebSocket.SendJsonAsync(new ContextMessage<SetStatePayload>("setState", context, new SetStatePayload(state)));
-
-        /// <summary>
-        /// Send a payload to the Property Inspector.
-        /// </summary>
-        /// <param name="context">An opaque value identifying the instances action.</param>
-        /// <param name="action">The action unique identifier.</param>
-        /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
-        public Task SendToPropertyInspectorAsync(string context, string action, object payload)
-            => this.WebSocket.SendJsonAsync(new ActionMessage<object>("sendToPropertyInspector", context, action, payload));
 
         /// <summary>
         /// Switch to one of the preconfigured read-only profiles.
