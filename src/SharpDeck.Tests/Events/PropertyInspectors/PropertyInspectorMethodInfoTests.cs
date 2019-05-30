@@ -2,8 +2,8 @@
 {
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
-    using SharpDeck.Events;
-    using SharpDeck.Events.PropertyInspectors;
+    using SharpDeck.Events.Received;
+    using SharpDeck.PropertyInspectors;
     using SharpDeck.Tests.Mocks;
     using System.Reflection;
     using System.Threading.Tasks;

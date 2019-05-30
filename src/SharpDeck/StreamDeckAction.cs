@@ -2,8 +2,8 @@
 {
     using Enums;
     using Newtonsoft.Json.Linq;
-    using SharpDeck.Events;
-    using SharpDeck.Events.PropertyInspectors;
+    using SharpDeck.Events.Received;
+    using SharpDeck.PropertyInspectors;
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;

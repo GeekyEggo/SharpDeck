@@ -2,11 +2,11 @@
 
 namespace SharpDeck
 {
-    using Events;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Enums;
-    using SharpDeck.Messages;
+    using SharpDeck.Events.Received;
+    using SharpDeck.Events.Sent;
     using SharpDeck.Net;
     using System;
     using System.Threading;

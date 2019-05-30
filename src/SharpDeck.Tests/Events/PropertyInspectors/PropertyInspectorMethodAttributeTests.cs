@@ -1,7 +1,7 @@
 ﻿namespace SharpDeck.Tests.Events.PropertyInspectors
 {
     using NUnit.Framework;
-    using SharpDeck.Events.PropertyInspectors;
+    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides assertions for expected behaviour within <see cref="PropertyInspectorMethodAttribute"/>.

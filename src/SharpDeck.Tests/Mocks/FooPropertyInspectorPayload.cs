@@ -1,6 +1,6 @@
 ﻿namespace SharpDeck.Tests.Mocks
 {
-    using SharpDeck.Events.PropertyInspectors;
+    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a mock implementation of <see cref="PropertyInspectorPayload"/>.

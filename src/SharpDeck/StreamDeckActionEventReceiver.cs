@@ -1,7 +1,7 @@
 ﻿namespace SharpDeck
 {
     using Newtonsoft.Json.Linq;
-    using SharpDeck.Events;
+    using SharpDeck.Events.Received;
     using System;
     using System.Threading.Tasks;
 

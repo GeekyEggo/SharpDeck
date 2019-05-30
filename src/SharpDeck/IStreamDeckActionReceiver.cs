@@ -1,6 +1,6 @@
 ﻿namespace SharpDeck
 {
-    using Events;
+    using SharpDeck.Events.Received;
     using System;
 
     /// <summary>

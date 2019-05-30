@@ -1,7 +1,6 @@
 ﻿namespace SharpDeck.Tests.Mocks
 {
-    using SharpDeck.Events;
-    using SharpDeck.Events.PropertyInspectors;
+    using SharpDeck.PropertyInspectors;
     using System;
     using System.Collections.Generic;
     using System.Linq;

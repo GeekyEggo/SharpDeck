@@ -65,13 +65,13 @@ protected Task<ActionResponse> OnPropertyInspectorLoad(ActionPayload args)
 }
 
 // ActionPayload.cs
-public class ActionPayload : SharpDeck.Events.PropertyInspectors.PropertyInspectorPayload
+public class ActionPayload : SharpDeck.PropertyInspectors.PropertyInspectorPayload
 {
     public string UserId { get; set; }
 }
 
 // ActionResponse.cs
-public class ActionResponse : SharpDeck.Events.PropertyInspectors.PropertyInspectorPayload
+public class ActionResponse : SharpDeck.PropertyInspectors.PropertyInspectorPayload
 {
     public string SessionKey { get; set; }
 }
