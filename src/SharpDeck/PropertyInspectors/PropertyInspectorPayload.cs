@@ -9,5 +9,10 @@
         /// Gets or sets the event.
         /// </summary>
         public string Event { get; set; }
+
+        /// <summary>
+        /// Gets or sets the request identifier.
+        /// </summary>
+        public string RequestId { get; set; }
     }
 }

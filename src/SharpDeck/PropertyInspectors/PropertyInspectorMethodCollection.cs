@@ -2,6 +2,7 @@
 {
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events.Received;
+    using SharpDeck.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -43,7 +44,7 @@
         public async Task InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
         {
             // attempt to get the method information
-            var @event = args.Payload?.ToObject<PropertyInspectorPayload>()?.Event;
+            args.Payload.TryGetString(nameof(PropertyInspectorPayload.Event), out var @event);
             if (string.IsNullOrWhiteSpace(@event) || !this.Methods.TryGetValue(@event, out var piMethodInfo))
             {
                 return;
@@ -56,7 +57,8 @@
             // when the method has a result, send it to the property inspector
             if (piMethodInfo.HasResult)
             {
-                var result = this.TryGetResultWithEvent(task.Result, piMethodInfo);
+                args.Payload.TryGetString(nameof(PropertyInspectorPayload.RequestId), out var requestId);
+                var result = this.TryGetResultWithContext(task.Result, piMethodInfo, requestId);
                 await action.SendToPropertyInspectorAsync(result);
             }
         }
@@ -66,13 +68,15 @@
         /// </summary>
         /// <param name="result">The result.</param>
         /// <param name="methodInfo">The property inspector method information.</param>
+        /// <param name="requestId">The request identifier from the original request.</param>
         /// <returns>The result to be sent to the property inspector.</returns>
-        private object TryGetResultWithEvent(object result, PropertyInspectorMethodInfo methodInfo)
+        private object TryGetResultWithContext(object result, PropertyInspectorMethodInfo methodInfo, string requestId)
         {
             // attempt to update the event name when the result is a payload
             if (result is PropertyInspectorPayload payload)
             {
                 payload.Event = methodInfo.SendToPropertyInspectorEvent;
+                payload.RequestId = requestId;
                 return payload;
             }
 
