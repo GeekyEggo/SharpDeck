@@ -24,11 +24,13 @@
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientWebSocketWrapper"/> class.
+        /// Initializes a new instance of the <see cref="ClientWebSocketWrapper" /> class.
         /// </summary>
         /// <param name="uri">The URI.</param>
-        public ClientWebSocketWrapper(string uri)
+        /// <param name="jsonSettings">The JSON settings.</param>
+        public ClientWebSocketWrapper(string uri, JsonSerializerSettings jsonSettings = null)
         {
+            this.JsonSettings = jsonSettings;
             this.Uri = new Uri(uri);
         }
 
@@ -36,11 +38,16 @@
         /// Occurs when a message is received.
         /// </summary>
         public event EventHandler<WebSocketMessageEventArgs> MessageReceived;
-        
+
         /// <summary>
         /// Gets or sets the encoding.
         /// </summary>
         public Encoding Encoding { get; set; } = Encoding.UTF8;
+
+        /// <summary>
+        /// Gets the JSON settings.
+        /// </summary>
+        public JsonSerializerSettings JsonSettings { get; }
 
         /// <summary>
         /// Gets the URI.
@@ -171,16 +178,7 @@
         /// <param name="value">The value to serialize and send.</param>
         public Task SendJsonAsync(object value)
         {
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                },
-                Formatting = Formatting.None
-            };
-
-            var json = JsonConvert.SerializeObject(value, settings);
+            var json = JsonConvert.SerializeObject(value, this.JsonSettings);
             return this.SendAsync(json);
         }
     }

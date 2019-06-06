@@ -11,9 +11,8 @@
         /// <summary>
         /// Requests the persistent global data stored for the plugin.
         /// </summary>
-        /// <param name="context">An opaque value identifying the plugin.</param>
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
-        Task GetGlobalSettingsAsync(string context);
+        Task GetGlobalSettingsAsync();
 
         /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.
@@ -45,9 +44,8 @@
         /// <summary>
         /// Save persistent data for the plugin.
         /// </summary>
-        /// <param name="context">An opaque value identifying the plugin.</param>
         /// <param name="settings">An object which persistently saved globally.</param>
-        Task SetGlobalSettingsAsync(string context, object settings);
+        Task SetGlobalSettingsAsync(object settings);
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action.

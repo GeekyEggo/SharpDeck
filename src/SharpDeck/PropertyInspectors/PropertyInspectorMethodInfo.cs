@@ -41,7 +41,7 @@
         /// Gets a value indicating whether <see cref="MethodInfo"/> has a result.
         /// </summary>
         public bool HasResult { get; private set; }
-        
+
         /// <summary>
         /// Gets the `sendToPlugin` event name.
         /// </summary>
@@ -94,7 +94,7 @@
 
             // otherwise return the asynchronous invoker, based on whether it contains a result
             var resultProp = this.MethodInfo.ReturnType.GetProperty(nameof(Task<object>.Result));
-            return resultProp == null ? this.InvokeVoidAsync : this.GetResultAsyncInvoker(resultProp);            
+            return resultProp == null ? this.InvokeVoidAsync : this.GetResultAsyncInvoker(resultProp);
         }
 
         /// <summary>

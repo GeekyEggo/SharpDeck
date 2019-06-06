@@ -47,7 +47,7 @@
         /// Gets the Elgato Stream Deck client.
         /// </summary>
         protected IStreamDeckSender StreamDeck { get; private set; }
-        
+
         /// <summary>
         /// Gets this action's instances settings asynchronously.
         /// </summary>

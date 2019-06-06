@@ -21,7 +21,7 @@
         /// <returns>The task containing the settings.</returns>
         public Task<TSettings> GetSettingsAsync()
             => this.GetSettingsAsync<TSettings>();
-        
+
         /// <summary>
         /// Save persistent data for the actions instance.
         /// </summary>
@@ -40,5 +40,23 @@
             this.Settings = args.Payload.GetSettings<TSettings>();
             base.Initialize(args, streamDeck);
         }
+
+        /// <summary>
+        /// Raises the <see cref="StreamDeckActionEventReceiver.DidReceiveSettings" /> event.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
+        protected async override Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
+        {
+            await base.OnDidReceiveSettings(args);
+            await this.OnDidReceiveSettings(args, args.Payload.GetSettings<TSettings>());
+        }
+
+        /// <summary>
+        /// A wrapper for <see cref="OnDidReceiveSettings(ActionEventArgs{ActionPayload})" />, with the addition of the strongly typed <paramref name="settings" />.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
+        /// <param name="settings">The settings.</param>
+        protected virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args, TSettings settings)
+            => Task.CompletedTask;
     }
 }

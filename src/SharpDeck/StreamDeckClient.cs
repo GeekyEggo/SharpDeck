@@ -3,7 +3,9 @@
 namespace SharpDeck
 {
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json.Serialization;
     using SharpDeck.Enums;
     using SharpDeck.Events.Received;
     using SharpDeck.Events.Sent;
@@ -37,7 +39,7 @@ namespace SharpDeck
             this.EventRouter = new StreamDeckEventRouter(logger);
             this.RegistrationParameters = registrationParameters;
 
-            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{registrationParameters.Port}/");
+            this.WebSocket = new ClientWebSocketWrapper($"ws://localhost:{registrationParameters.Port}/", DEFAULT_JSON_SETTINGS);
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
         }
 
@@ -67,7 +69,7 @@ namespace SharpDeck
         public event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync(string)"/> has been called to retrieve the persistent global data stored for the plugin.
+        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync()"/> has been called to retrieve the persistent global data stored for the plugin.
         /// </summary>
         public event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
 
@@ -79,6 +81,18 @@ namespace SharpDeck
         /// When the plugin receives the <see cref="SystemDidWakeUp"/> event, there is no garantee that the devices are available.
         /// </remarks>
         public event EventHandler<StreamDeckEventArgs> SystemDidWakeUp;
+
+        /// <summary>
+        /// Gets the default JSON settings.
+        /// </summary>
+        internal static JsonSerializerSettings DEFAULT_JSON_SETTINGS { get; } = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            },
+            Formatting = Formatting.None
+        };
 
         /// <summary>
         /// Gets the event router.
@@ -151,10 +165,9 @@ namespace SharpDeck
         /// <summary>
         /// Requests the persistent global data stored for the plugin.
         /// </summary>
-        /// <param name="context">An opaque value identifying the plugin.</param>
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
-        public Task GetGlobalSettingsAsync(string context)
-            => this.WebSocket.SendJsonAsync(new ContextMessage("getGlobalSettings", context));
+        public Task GetGlobalSettingsAsync()
+            => this.WebSocket.SendJsonAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID));
 
         /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.
@@ -190,10 +203,9 @@ namespace SharpDeck
         /// <summary>
         /// Save persistent data for the plugin.
         /// </summary>
-        /// <param name="context">An opaque value identifying the plugin.</param>
         /// <param name="settings">An object which persistently saved globally.</param>
-        public Task SetGlobalSettingsAsync(string context, object settings)
-            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setGlobalSettings", context, JObject.FromObject(settings)));
+        public Task SetGlobalSettingsAsync(object settings)
+            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, JObject.FromObject(settings, JsonSerializer.Create(DEFAULT_JSON_SETTINGS))));
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action.
@@ -210,7 +222,7 @@ namespace SharpDeck
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="settings">An object which is persistently saved for the action's instance.</param>
         public Task SetSettingsAsync(string context, object settings)
-            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings)));
+            => this.WebSocket.SendJsonAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings, JsonSerializer.Create(DEFAULT_JSON_SETTINGS))));
 
         /// <summary>
         ///	Change the state of the actions instance supporting multiple states.
