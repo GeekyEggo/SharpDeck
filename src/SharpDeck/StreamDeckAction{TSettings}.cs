@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets or sets the settings.
         /// </summary>
-        public TSettings Settings { get; set; }
+        public virtual TSettings Settings { get; set; }
 
         /// <summary>
         /// Gets this action's instances settings asynchronously.
@@ -57,6 +57,9 @@
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <param name="settings">The settings.</param>
         protected virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args, TSettings settings)
-            => Task.CompletedTask;
+        {
+            this.Settings = settings;
+            return Task.CompletedTask;
+        }
     }
 }
