@@ -1,10 +1,13 @@
 ﻿namespace SharpDeck.Enums
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using System.Runtime.Serialization;
 
     /// <summary>
     /// Provides an enumeration of alignments
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum TitleAlignmentType
     {
         /// <summary>

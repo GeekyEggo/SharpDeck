@@ -29,7 +29,7 @@
         event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync(string)"/> has been called to retrieve the persistent global data stored for the plugin.
+        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync()"/> has been called to retrieve the persistent global data stored for the plugin.
         /// </summary>
         event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
 
