@@ -19,11 +19,6 @@
         private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
 
         /// <summary>
-        /// Occurs when this action instance has been initialized.
-        /// </summary>
-        public event EventHandler Initialized;
-
-        /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
         /// </summary>
         public string ActionUUID { get; private set; }
@@ -126,8 +121,6 @@
             this.Context = args.Context;
             this.Device = args.Device;
             this.StreamDeck = streamDeck;
-
-            this.Initialized?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

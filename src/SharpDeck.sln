@@ -9,7 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Plugin", "SharpDe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-40D7-4053-AF79-B3A1B3043A3A}"
 	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.gitattributes = ..\.gitattributes
+		..\.gitignore = ..\.gitignore
 		..\LICENSE.md = ..\LICENSE.md
+		..\package.json = ..\package.json
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject

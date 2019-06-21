@@ -32,7 +32,7 @@
         /// <summary>
         /// Gets the actions factory, used to initialize new instances of actions.
         /// </summary>
-        private IDictionary<string, Func<StreamDeckAction>> ActionFactory { get; } = new Dictionary<string, Func<StreamDeckAction>>();
+        private IDictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>> ActionFactory { get; } = new Dictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>>();
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -63,7 +63,7 @@
         /// <typeparam name="T">The type of Stream Deck action.</typeparam>
         /// <param name="actionUUID">The action UUID.</param>
         /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
-        public void Register<T>(string actionUUID, Func<T> valueFactory)
+        public void Register<T>(string actionUUID, Func<ActionEventArgs<AppearancePayload>, T> valueFactory)
             where T : StreamDeckAction
             => this.ActionFactory.Add(actionUUID, valueFactory);
 
@@ -75,8 +75,8 @@
         public Task RouteAsync(StreamDeckClient client, WebSocketMessageEventArgs e)
         {
             // determine if there is an event specified, and a delegate handler
-            var args = JObject.Parse(e.Message);
-            if (!args.TryGetString(nameof(StreamDeckEventArgs.Event), out var @event)
+            var jArgs = JObject.Parse(e.Message);
+            if (!jArgs.TryGetString(nameof(StreamDeckEventArgs.Event), out var @event)
                 || !EventMethodCache.Value.TryGetValue(@event, out var @delegate))
             {
                 this.Logger?.LogWarning("Unrecognised event received from Elgato Stream Deck: {0}", @event);
@@ -84,36 +84,36 @@
             }
 
             // determine the owner of the delegate, based on the event args
-            var owner = this.TryGetActionInfo(args, out var actionInfo)
-                ? this.GetActionOrClient(args, actionInfo, client)
+            var owner = this.TryGetActionInfo(jArgs, out var actionInfo)
+                ? this.GetActionOrClient(jArgs, actionInfo, client)
                 : client;
 
-            return (Task)@delegate.Invoke(owner, new[] { args.ToObject(@delegate.GetParameters()[0].ParameterType) });
+            return (Task)@delegate.Invoke(owner, new[] { jArgs.ToObject(@delegate.GetParameters()[0].ParameterType) });
         }
 
         /// <summary>
-        /// Tries to get the action information based on the <paramref name="args"/>.
+        /// Tries to get the action information based on the <paramref name="jArgs"/>.
         /// </summary>
-        /// <param name="args">The arguments.</param>
+        /// <param name="jArgs">The arguments.</param>
         /// <param name="info">The action information.</param>
         /// <returns><c>true</c> when action information was parsed from the arguments; otherwise <c>false</c>.</returns>
-        private bool TryGetActionInfo(JObject args, out (string actionUUID, string context, string device) info)
+        private bool TryGetActionInfo(JObject jArgs, out (string actionUUID, string context, string device) info)
         {
             // attempt to get the device, action identifier and context
-            args.TryGetString(nameof(ActionEventArgs<object>.Device), out info.device);
+            jArgs.TryGetString(nameof(ActionEventArgs<object>.Device), out info.device);
 
-            return args.TryGetString(nameof(ActionEventArgs<object>.Action), out info.actionUUID)
-                & args.TryGetString(nameof(ActionEventArgs<object>.Context), out info.context);
+            return jArgs.TryGetString(nameof(ActionEventArgs<object>.Action), out info.actionUUID)
+                & jArgs.TryGetString(nameof(ActionEventArgs<object>.Context), out info.context);
         }
 
         /// <summary>
         /// Gets the <see cref="StreamDeckAction"/> for the specified parameters; otherwise the default is returned.
         /// </summary>
-        /// <param name="args">The original arguments from the Stream Deck event.</param>
+        /// <param name="jArgs">The original arguments from the Stream Deck event.</param>
         /// <param name="info">The action information.</param>
         /// <param name="client">The Stream Deck client.</param>
         /// <returns>The action instance, a new instance of an action, or the default.</returns>
-        private IStreamDeckActionReceiver GetActionOrClient(JObject args, (string actionUUID, string context, string device) info, StreamDeckClient client)
+        private IStreamDeckActionReceiver GetActionOrClient(JObject jArgs, (string actionUUID, string context, string device) info, StreamDeckClient client)
         {
             // when there is no registered action for the action UUID, return the default handler
             if (!this.ActionFactory.TryGetValue(info.actionUUID, out var valueFactory))
@@ -122,20 +122,14 @@
             }
 
             // otherwise attempt to get the instance of the action
-            var isNewAction = false;
-            var action = this.Actions.GetOrAdd(info.context, _ =>
+            return this.Actions.GetOrAdd(info.context, _ =>
             {
-                isNewAction = true;
-                return valueFactory();
+                var args = jArgs.ToObject<ActionEventArgs<AppearancePayload>>();
+                var action = valueFactory(args);
+                action.Initialize(args, client);
+
+                return action;
             });
-
-            // initialize the new action
-            if (isNewAction)
-            {
-                action.Initialize(args.ToObject<ActionEventArgs<AppearancePayload>>(), client);
-            }
-
-            return action;
         }
 
         /// <summary>

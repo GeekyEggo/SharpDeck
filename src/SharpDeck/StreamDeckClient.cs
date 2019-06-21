@@ -116,7 +116,7 @@ namespace SharpDeck
         /// <param name="actionUUID">The action UUID.</param>
         public void RegisterAction<T>(string actionUUID)
             where T : StreamDeckAction, new()
-            => this.RegisterAction<T>(actionUUID, () => new T());
+            => this.RegisterAction<T>(actionUUID, _ => new T());
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
@@ -125,6 +125,16 @@ namespace SharpDeck
         /// <param name="actionUUID">The action UUID.</param>
         /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
         public void RegisterAction<T>(string actionUUID, Func<T> valueFactory)
+            where T : StreamDeckAction
+            => this.EventRouter.Register(actionUUID, _ => valueFactory());
+
+        /// <summary>
+        /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
+        /// </summary>
+        /// <typeparam name="T">The type of Stream Deck action.</typeparam>
+        /// <param name="actionUUID">The action UUID.</param>
+        /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
+        public void RegisterAction<T>(string actionUUID, Func<ActionEventArgs<AppearancePayload>, T> valueFactory)
             where T : StreamDeckAction
             => this.EventRouter.Register(actionUUID, valueFactory);
 
