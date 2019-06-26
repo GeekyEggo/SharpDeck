@@ -1,6 +1,7 @@
-﻿namespace SharpDeck.PropertyInspectors.Payloads
+namespace SharpDeck.PropertyInspectors.Payloads
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Provides a payload containing options that can serve as a data source for an HTML select input.
@@ -19,9 +20,9 @@
         /// Initializes a new instance of the <see cref="OptionsPayload"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public OptionsPayload(List<Option> options)
+        public OptionsPayload(IEnumerable<Option> options)
         {
-            this.Options = options;
+            this.Options = options.ToList();
         }
 
         /// <summary>
