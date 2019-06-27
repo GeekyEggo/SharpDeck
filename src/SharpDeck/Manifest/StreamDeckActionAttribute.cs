@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Manifest
+namespace SharpDeck.Manifest
 {
     using System;
 
@@ -39,7 +39,7 @@
         /// <summary>
         /// Gets or sets boolean to prevent the action from being used in a Multi Action. True by default.
         /// </summary>
-        public bool? SupportedInMultiActions { get; set; } = null;
+        public bool SupportedInMultiActions { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the string displayed as tooltip when the user leaves the mouse over your action in the actions list.
@@ -54,6 +54,6 @@
         /// <summary>
         /// Gets or sets boolean to hide the action in the actions list. This can be used for plugin that only works with a specific profile. True by default.
         /// </summary>
-        public bool? VisibleInActionsList { get; set; } = null;
+        public bool VisibleInActionsList { get; set; } = true;
     }
 }
