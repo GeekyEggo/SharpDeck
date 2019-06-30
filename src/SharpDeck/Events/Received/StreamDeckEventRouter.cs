@@ -1,9 +1,10 @@
-﻿namespace SharpDeck.Events.Received
+namespace SharpDeck.Events.Received
 {
     using Extensions;
     using Microsoft.Extensions.Logging;
     using Net;
     using Newtonsoft.Json.Linq;
+    using SharpDeck.Exceptions;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -88,7 +89,14 @@
                 ? this.GetActionOrClient(jArgs, actionInfo, client)
                 : client;
 
-            return (Task)@delegate.Invoke(owner, new[] { jArgs.ToObject(@delegate.GetParameters()[0].ParameterType) });
+            try
+            {
+                return (Task)@delegate.Invoke(owner, new[] { jArgs.ToObject(@delegate.GetParameters()[0].ParameterType) });
+            }
+            catch (Exception ex)
+            {
+                throw new ActionInvokeException(actionInfo.context, ex);
+            }
         }
 
         /// <summary>

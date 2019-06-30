@@ -1,4 +1,4 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("SharpDeck.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("SharpDeck.Tests")]
 
 namespace SharpDeck
 {
@@ -9,6 +9,7 @@ namespace SharpDeck
     using SharpDeck.Enums;
     using SharpDeck.Events.Received;
     using SharpDeck.Events.Sent;
+    using SharpDeck.Exceptions;
     using SharpDeck.Net;
     using System;
     using System.Threading;
@@ -363,9 +364,15 @@ namespace SharpDeck
                 this.EventRouter.RouteAsync(this, e)
                     .ConfigureAwait(false);
             }
+            catch (ActionInvokeException ex)
+            {
+                // attempt to invoke the error with a context
+                this.Error?.Invoke(this, new StreamDeckClientErrorEventArgs(ex.InnerException, e.Message, ex.Context));
+            }
             catch (Exception ex)
             {
-                this.Error?.Invoke(this, new StreamDeckClientErrorEventArgs(ex.Message));
+                // otherwise simply invoke the error
+                this.Error?.Invoke(this, new StreamDeckClientErrorEventArgs(ex, e?.Message));
             }
         }
     }
