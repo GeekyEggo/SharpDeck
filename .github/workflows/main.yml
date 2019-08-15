@@ -18,3 +18,5 @@ jobs:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     - name: Test
       run: dotnet test ./src/SharpDeck.Tests/ --configuration Release --no-build
+      env:
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
