@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "SharpDeck\SharpDeck.csproj", "{F2F0202D-630A-429C-86E6-F9D900CB7E74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Plugin", "SharpDeck.Plugin\SharpDeck.Plugin.csproj", "{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-40D7-4053-AF79-B3A1B3043A3A}"
 	ProjectSection(SolutionItems) = preProject
 		..\.editorconfig = ..\.editorconfig
@@ -19,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Tests", "SharpDeck.Tests\SharpDeck.Tests.csproj", "{DA2E73D0-687E-4429-B481-5F5757743C32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Plugin", "SharpDeck.Plugin\SharpDeck.Plugin.csproj", "{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,14 +29,14 @@ Global
 		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16F1F66A-5F7D-48CA-A93B-E7AE1204BF7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA2E73D0-687E-4429-B481-5F5757743C32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA2E73D0-687E-4429-B481-5F5757743C32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA2E73D0-687E-4429-B481-5F5757743C32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA2E73D0-687E-4429-B481-5F5757743C32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
