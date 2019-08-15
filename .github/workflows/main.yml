@@ -8,9 +8,9 @@ jobs:
     
         steps:
         - uses: actions/checkout@v1
-        
         - uses: actions/setup-dotnet@v1
-          dotnet-version: '2.2.6'
+          with:
+          dotnet-version: '2.2.103'
           
         - name: Build SharpDeck
           run: dotnet build .\src\SharpDeck\SharpDeck.csproj --configuration Release
