@@ -19,4 +19,4 @@ jobs:
     - name: Test
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      run: dotnet test ./src/SharpDeck.Tests/
+      run: dotnet test ./src/SharpDeck.Tests/ --no-build
