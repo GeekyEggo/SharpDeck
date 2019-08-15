@@ -4,11 +4,11 @@ on: [push]
 
 jobs:
   build:
-  runs-on: windows-latest
+  runs-on: 'windows-latest'
   steps:
   - uses: actions/checkout@v1
   - uses: actions/setup-dotnet@v1
     with:
-      dotnet-version: '2.2.103'
+      dotnet-version: 2.2.103
   - name: Build SharpDeck
     run: dotnet build .\src\SharpDeck\SharpDeck.csproj --configuration Release
