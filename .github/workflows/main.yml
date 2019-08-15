@@ -9,12 +9,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Setup .NET Core
-      env:
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
     - name: Build
+      env:
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       run: dotnet build ./src/SharpDeck/ --configuration Release
     - name: Test
       run: dotnet test ./src/SharpDeck.Tests/
