@@ -8,10 +8,9 @@ jobs:
     
         steps:
         - uses: actions/checkout@v1
-        - name: Setup .NET Core
         
-        uses: actions/setup-dotnet@v1
-        with:
-            dotnet-version: 2.2.103
-        - name: Build with SharpDeck
-        run: dotnet build .\src\SharpDeck\SharpDeck.csproj --configuration Release
+        - uses: actions/setup-dotnet@v1
+          dotnet-version: 2.2.103
+          
+        - name: Build SharpDeck
+          run: dotnet build .\src\SharpDeck\SharpDeck.csproj --configuration Release
