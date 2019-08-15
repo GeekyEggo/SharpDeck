@@ -3,7 +3,7 @@ name: Main Workflow
 on: [push]
 
 jobs:
-  main:
+  Main:
     runs-on: windows-latest
     steps:
     - name: Checkout
@@ -13,10 +13,12 @@ jobs:
       with:
         dotnet-version: 2.2.108
     - name: Build
-      env:
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       run: dotnet build ./src/SharpDeck/ --configuration Release
-    - name: Test
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    - name: Build Tests
+      run: dotnet build ./src/SharpDeck.Tests/ --configuration Release
+      env:
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    - name: Test
       run: dotnet test ./src/SharpDeck.Tests/ --no-build
