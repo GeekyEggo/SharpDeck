@@ -16,9 +16,7 @@ jobs:
       run: dotnet build ./src/SharpDeck/ --configuration Release
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    - name: Build Tests
-      run: dotnet build ./src/SharpDeck.Tests/ --configuration Release
+    - name: Test
+      run: dotnet test ./src/SharpDeck.Tests/
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    - name: Test
-      run: dotnet test ./src/SharpDeck.Tests/ --no-build
