@@ -3,7 +3,7 @@ name: Main Workflow
 on: [push]
 
 jobs:
-  Main:
+  main:
     runs-on: windows-latest
     steps:
     - name: Checkout
@@ -12,6 +12,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
+    - name: MSBuild
+      run: msbuild -version
     - name: Build
       run: dotnet build ./src/SharpDeck.sln --configuration Release
       env:
