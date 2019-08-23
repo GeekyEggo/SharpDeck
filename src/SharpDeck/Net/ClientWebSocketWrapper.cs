@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Net
+namespace SharpDeck.Net
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
@@ -179,7 +179,10 @@
         public Task SendJsonAsync(object value)
         {
             var json = JsonConvert.SerializeObject(value, this.JsonSettings);
-            return this.SendAsync(json);
+            var task = this.SendAsync(json);
+            task.ConfigureAwait(false);
+
+            return task;
         }
     }
 }
