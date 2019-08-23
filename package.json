@@ -2,14 +2,14 @@
     "name": "sharpdeck",
     "version": "3.0.0",
     "description": "A lightweight .NET wrapper for creating Stream Deck plugins, using the official Elgato Stream Deck SDK.",
-    "main": ".\\src\\SharpDeck\\SharpDeck.csproj",
+    "main": "./src/SharpDeck/SharpDeck.csproj",
     "directories": {
         "doc": "docs"
     },
     "scripts": {
         "pack": "dotnet pack %npm_package_main% -c Release /p:Version=%npm_package_version% /p:AssemblyVersion=%npm_package_version% /p:AssemblyFileVersion=%npm_package_version%",
         "publish": "npm run pack && dotenv npm run publish-env",
-        "publish-env": ".\\build\\nuget push \".\\dist\\SharpDeck.%npm_package_version%.nupkg\" %NUGET_API_KEY% -Source https://api.nuget.org/v3/index.json"
+        "publish-env": "./build/nuget push \"./dist/SharpDeck.%npm_package_version%.nupkg\" %NUGET_API_KEY% -Source https://api.nuget.org/v3/index.json"
     },
     "repository": {
         "type": "git",
