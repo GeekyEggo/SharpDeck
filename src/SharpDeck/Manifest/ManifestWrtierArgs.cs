@@ -1,6 +1,6 @@
-﻿namespace SharpDeck.Manifest
+namespace SharpDeck.Manifest
 {
-    using Microsoft.Extensions.CommandLineUtils;
+    using McMaster.Extensions.CommandLineUtils;
 
     /// <summary>
     /// Provides conversion for arguments supplied to the manifest writer, typically supplied by a CLI.

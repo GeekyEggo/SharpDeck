@@ -1,6 +1,6 @@
-﻿namespace SharpDeck.Manifest
+namespace SharpDeck.Manifest
 {
-    using Microsoft.Extensions.CommandLineUtils;
+    using McMaster.Extensions.CommandLineUtils;
     using System;
     using System.IO;
     using System.Reflection;
