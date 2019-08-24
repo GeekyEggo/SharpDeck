@@ -7,7 +7,7 @@
         "doc": "docs"
     },
     "scripts": {
-        "publish": "dotenv npm run dotnet:pack && ls ./dist",
+        "publish": "npm run dotnet:pack && ls ./dist",
         "dotnet:pack": "dotnet pack %npm_package_main% -c Release /p:Version=%MOCK_VERSION% /p:AssemblyVersion=%MOCK_VERSION% /p:AssemblyFileVersion=%MOCK_VERSION%",
         "nuget:push": "./build/nuget push \"./dist/SharpDeck.%npm_package_version%.nupkg\" %NUGET_API_KEY% -Source https://api.nuget.org/v3/index.json"
     },

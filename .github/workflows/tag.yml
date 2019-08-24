@@ -21,10 +21,8 @@ jobs:
       with:
         dotnet-version: 2.2.108
 
-    - name: npm install, pack
-      run: |
-        npm install
-        npm run publish
+    - name: npm publish
+      run: npm run publish
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
         MOCK_VERSION: ${{ secrets.MOCK_VERSION }}
