@@ -1,6 +1,6 @@
 {
     "name": "sharpdeck",
-    "version": "3.0.0",
+    "version": "4.0.0",
     "description": "A lightweight .NET wrapper for creating Stream Deck plugins, using the official Elgato Stream Deck SDK.",
     "main": "./src/SharpDeck/SharpDeck.csproj",
     "directories": {
