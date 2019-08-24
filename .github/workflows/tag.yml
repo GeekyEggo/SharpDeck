@@ -24,6 +24,7 @@ jobs:
     - name: npm install, pack
       run: |
         npm install
-        npm run pack-test
+        npm run publish
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+        MOCK_VERSION: ${{ secrets.MOCK_VERSION }}
