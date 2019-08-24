@@ -1,21 +1,26 @@
-name: Main Workflow
+name: Main
 
 on: [push]
 
 jobs:
   main:
+
     runs-on: windows-latest
+
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
+
     - name: Build
       run: dotnet build ./src/SharpDeck.sln --configuration Release
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
     - name: Test
       run: dotnet test ./src/SharpDeck.Tests/ --configuration Release --no-build
       env:

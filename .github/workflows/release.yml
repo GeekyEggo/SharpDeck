@@ -1,9 +1,9 @@
-name: Tag Workflow
+name: Release
 
-on: [push]
+on: [release]
 
 jobs:
-  tag:
+  release:
 
     runs-on: windows-latest
 
@@ -21,8 +21,12 @@ jobs:
       with:
         dotnet-version: 2.2.108
 
-    - name: npm publish
-      run: npm run publish
+    - name: Pack
+      run: npm run nuget:pack
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-        MOCK_VERSION: ${{ secrets.MOCK_VERSION }}
+
+    - name: Push to NuGet
+      run: npm run nuget:push
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
