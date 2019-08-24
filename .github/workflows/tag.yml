@@ -1,0 +1,29 @@
+name: Tag Workflow
+
+on: [push]
+
+jobs:
+  tag:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Setup node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: npm install, pack
+      run: |
+        npm install
+        npm run pack-test
+      env:
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
