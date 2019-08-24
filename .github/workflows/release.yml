@@ -40,3 +40,8 @@ jobs:
       run: npm run nuget:pack
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+    - name: Push to NuGet
+      run: npm run nuget:push
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

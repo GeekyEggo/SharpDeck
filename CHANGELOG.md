@@ -1,7 +1,7 @@
 # Change Log 
 
-## 4.0.1
-* Updated deployment to nuget.
+## 4.0.1/2
+* Updated deployment to NuGet.
 
 ## 4.0.0
 * Added automatic manifest generation!
