@@ -7,7 +7,7 @@
 * Improved deadlock prevention for all WebSocket requests.
 * Fixed `DeviceType`, `PlatformType`, and `TitleAlignmentType`.
 
-### Breaking Changes
+#### Breaking Changes
 * Removed `StreamDeckAction.Initialized` event, please use `StreamDeckAction.WillAppear`
 * Removed `StreamDeckAction<TSettings>.Settings` to prevent misuse.
 
@@ -30,7 +30,7 @@
 * Fixed JSON serialization casing inconsistencies when using JObject (specifically action settings).
 * Fixed `openUrl` event.
 
-### Breaking Changes
+#### Breaking Changes
 * Relocated to `SharpDeck.Events.StreamDeckAction` to top level `SharpDeck.StreamDeckAction`.
 * Re-aligned namespaces of events (received) / messages (sent) to match Elgato SDK terminology.
 
