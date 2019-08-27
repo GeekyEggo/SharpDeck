@@ -9,7 +9,7 @@
     "scripts": {
         "nuget:publish": "npm run nuget:pack && npm run nuget:push",
         "nuget:pack": "dotnet pack %npm_package_main% -c Release /p:Version=%npm_package_version% /p:AssemblyVersion=%npm_package_version% /p:AssemblyFileVersion=%npm_package_version%",
-        "nuget:push": ".\\build\\nuget push \"./dist/SharpDeck.%npm_package_version%.nupkg\" %NUGET_API_KEY% -Source https://api.nuget.org/v3/index.json"
+        "nuget:push": ".\\build\\nuget push \"./dist/SharpDeck.%npm_package_version%.nupkg\" %NUGET_API_KEY% -Source https://api.nuget.org/v3/index.json -SkipDuplicate"
     },
     "repository": {
         "type": "git",
