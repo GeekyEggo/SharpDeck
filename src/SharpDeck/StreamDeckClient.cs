@@ -17,7 +17,7 @@ namespace SharpDeck
     /// <summary>
     /// Provides events and methods that allow for communication with an Elgato Stream Deck.
     /// </summary>
-    public class StreamDeckClient : StreamDeckActionEventReceiver, IStreamDeckSender, IDisposable
+    public sealed class StreamDeckClient : StreamDeckActionEventReceiver, IStreamDeckSender, IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
@@ -270,7 +270,7 @@ namespace SharpDeck
         /// Raises the <see cref="E:Error" /> event.
         /// </summary>
         /// <param name="e">The <see cref="StreamDeckClientErrorEventArgs"/> instance containing the event data.</param>
-        internal virtual void OnError(StreamDeckClientErrorEventArgs e)
+        internal void OnError(StreamDeckClientErrorEventArgs e)
             => this.Error?.Invoke(this, e);
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
         [StreamDeckEvent("applicationDidLaunch")]
-        protected internal virtual Task OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
+        internal Task OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
             => this.InvokeAsync(this.ApplicationDidLaunch, args);
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
         [StreamDeckEvent("applicationDidTerminate")]
-        protected internal virtual Task OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
+        internal Task OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
             => this.InvokeAsync(this.ApplicationDidTerminate, args);
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="DeviceConnectEventArgs"/> instance containing the event data.</param>
         [StreamDeckEvent("deviceDidConnect")]
-        protected internal virtual Task OnDeviceDidConnect(DeviceConnectEventArgs args)
+        internal Task OnDeviceDidConnect(DeviceConnectEventArgs args)
             => this.InvokeAsync(this.DeviceDidConnect, args);
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="DeviceEventArgs"/> instance containing the event data.</param>
         [StreamDeckEvent("deviceDidDisconnect")]
-        protected internal virtual Task OnDeviceDidDisconnect(DeviceEventArgs args)
+        internal Task OnDeviceDidDisconnect(DeviceEventArgs args)
             => this.InvokeAsync(this.DeviceDidDisconnect, args);
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs{SettingsPayload}"/> instance containing the event data.</param>
         [StreamDeckEvent("didReceiveGlobalSettings")]
-        protected internal virtual Task OnDidReceiveGlobalSettings(StreamDeckEventArgs<SettingsPayload> args)
+        internal Task OnDidReceiveGlobalSettings(StreamDeckEventArgs<SettingsPayload> args)
             => this.InvokeAsync(this.DidReceiveGlobalSettings, args);
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="StreamDeckEventArgs"/> instance containing the event data.</param>
         [StreamDeckEvent("systemDidWakeUp")]
-        protected internal virtual Task OnSystemDidWakeUp(StreamDeckEventArgs args)
+        internal Task OnSystemDidWakeUp(StreamDeckEventArgs args)
             => this.InvokeAsync(this.SystemDidWakeUp, args);
     }
 }
