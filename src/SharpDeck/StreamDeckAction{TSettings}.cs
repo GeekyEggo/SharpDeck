@@ -18,18 +18,11 @@ namespace SharpDeck
             => this.GetSettingsAsync<TSettings>();
 
         /// <summary>
-        /// Save persistent data for the actions instance.
-        /// </summary>
-        /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
-        public Task SetSettingsAsync(TSettings settings)
-            => this.StreamDeck.SetSettingsAsync(this.Context, settings);
-
-        /// <summary>
         /// Raises the <see cref="StreamDeckActionEventReceiver.DidReceiveSettings" /> event.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of updating the state of the object based on the settings.</returns>
-        protected override async Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
+        protected internal override async Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
         {
             await this.OnDidReceiveSettings(args, args.Payload.GetSettings<TSettings>());
             await base.OnDidReceiveSettings(args);

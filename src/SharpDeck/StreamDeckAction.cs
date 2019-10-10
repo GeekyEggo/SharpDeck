@@ -1,4 +1,4 @@
-﻿namespace SharpDeck
+namespace SharpDeck
 {
     using Enums;
     using Newtonsoft.Json.Linq;
@@ -91,6 +91,13 @@
             => this.StreamDeck.SetTitleAsync(this.Context, title, target);
 
         /// <summary>
+        /// Save persistent data for the actions instance.
+        /// </summary>
+        /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
+        public Task SetSettingsAsync(object settings)
+            => this.StreamDeck.SetSettingsAsync(this.Context, settings);
+
+        /// <summary>
         ///	Change the state of the actions instance supporting multiple states.
         /// </summary>
         /// <param name="state">A 0-based integer value representing the state requested.</param>
@@ -129,15 +136,15 @@
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
             this.StreamDeck = null;
+            base.Dispose(disposing);
         }
 
         /// <summary>
         /// Occurs when the property inspector sends a message to the plugin.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{JObject}" /> instance containing the event data.</param>
-        protected override Task OnSendToPlugin(ActionEventArgs<JObject> args)
+        protected internal override Task OnSendToPlugin(ActionEventArgs<JObject> args)
         {
             base.OnSendToPlugin(args);
 
