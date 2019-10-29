@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Tests.Events.PropertyInspectors
+namespace SharpDeck.Tests.Events.PropertyInspectors
 {
     using NUnit.Framework;
     using SharpDeck.PropertyInspectors;
