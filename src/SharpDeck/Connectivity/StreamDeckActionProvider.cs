@@ -5,7 +5,6 @@ namespace SharpDeck.Connectivity
     using System.Threading;
     using System.Threading.Tasks;
     using SharpDeck.Events.Received;
-    using SharpDeck.Extensions;
 
     /// <summary>
     /// Provides connectivity between a <see cref="StreamDeckClient"/> and registered <see cref="StreamDeckAction"/>.
@@ -13,12 +12,7 @@ namespace SharpDeck.Connectivity
     public class StreamDeckActionProvider
     {
         /// <summary>
-        /// The key used to assigned a SharpDeck UUID to <see cref="SettingsPayload.Settings"/>.
-        /// </summary>
-        private const string SHARP_DECK_UUID_KEY = "__sharpDeckUUID";
-
-        /// <summary>
-        /// The synchronization root
+        /// The synchronization root.
         /// </summary>
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
@@ -28,6 +22,7 @@ namespace SharpDeck.Connectivity
         /// <param name="client">The parent Stream Deck client.</param>
         public StreamDeckActionProvider(StreamDeckClient client)
         {
+            this.Cache = new StreamDeckActionCache(client);
             this.Client = client;
 
             // responsible for caching
@@ -45,14 +40,14 @@ namespace SharpDeck.Connectivity
         }
 
         /// <summary>
-        /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
-        /// </summary>
-        private Dictionary<string, StreamDeckActionCacheEntry> ActionCache { get; } = new Dictionary<string, StreamDeckActionCacheEntry>();
-
-        /// <summary>
         /// Gets the actions factory, used to initialize new instances of actions.
         /// </summary>
         private IDictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>> ActionFactory { get; } = new Dictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>>();
+
+        /// <summary>
+        /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
+        /// </summary>
+        private IStreamDeckActionCache Cache { get; }
 
         /// <summary>
         /// Gets the client.
@@ -86,59 +81,20 @@ namespace SharpDeck.Connectivity
             {
                 await this._syncRoot.WaitAsync();
 
-                if (!this.ActionCache.TryGetValue(e.Context, out var cacheEntry))
+                if (!this.Cache.TryGet(e, out var action, e.Payload))
                 {
-                    // brand new action
-                    cacheEntry = this.Create(valueFactory, e);
-                    this.ActionCache.Add(e.Context, this.Create(valueFactory, e));
-                }
-                else if (!this.IsCacheEntryValid(cacheEntry, e))
-                {
-                    // action exists but does not match, invalidate cache
-                    cacheEntry.Action.Dispose();
-                    this.ActionCache[e.Context] = this.Create(valueFactory, e);
+                    action = valueFactory(e);
+                    await this.Cache.AddAsync(e, action);
+
+                    action.Initialize(e, this.Client);
                 }
 
-                _ = this.ActionCache[e.Context].Action.OnWillAppear(e);
+                _ = action.OnWillAppear(e);
             }
             finally
             {
                 this._syncRoot.Release();
             }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the action associated with the <paramref name="valueFactory"/>, and creates a cache entry.
-        /// </summary>
-        /// <param name="valueFactory">The value factory to create the new action.</param>
-        /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
-        /// <returns>The cache entry; the entry is not cached at this stage.</returns>
-        private StreamDeckActionCacheEntry Create(Func<ActionEventArgs<AppearancePayload>, StreamDeckAction> valueFactory, ActionEventArgs<AppearancePayload> e)
-        {
-            // assign a SharpDeck uuid
-            var uuid = Guid.NewGuid().ToString("n");
-            e.Payload.Settings[SHARP_DECK_UUID_KEY] = uuid;
-            _ = this.Client.SetSettingsAsync(e.Context, e.Payload.Settings);
-
-            // initialize the action
-            var action = valueFactory(e);
-            action.Initialize(e, this.Client);
-
-            return new StreamDeckActionCacheEntry(uuid, action);
-        }
-
-        /// <summary>
-        /// Determines whether the specified cache entry is valid based on the event arguments supplied by the Stream Deck.
-        /// </summary>
-        /// <param name="entry">The cache entry.</param>
-        /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
-        /// <returns><c>true</c> when the cache entry is valid; otherwise <c>false</c>.</returns>
-        private bool IsCacheEntryValid(StreamDeckActionCacheEntry entry, ActionEventArgs<AppearancePayload> e)
-        {
-            return e.Payload.Settings.TryGetString(SHARP_DECK_UUID_KEY, out var uuid)
-                && entry.Action.ActionUUID == e.Action
-                && entry.Action.Device == e.Device
-                && entry.UUID == uuid;
         }
 
         /// <summary>
@@ -153,10 +109,10 @@ namespace SharpDeck.Connectivity
             try
             {
                 this._syncRoot.Wait();
-                if (this.ActionCache.TryGetValue(args.Context, out var cacheEntry))
+                if (this.Cache.TryGet(args, out var action))
                 {
                     // invoke the propagation
-                    getPropagator(cacheEntry.Action)(args).ConfigureAwait(false);
+                    getPropagator(action)(args).ConfigureAwait(false);
                 }
             }
             finally
