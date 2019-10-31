@@ -16,13 +16,10 @@ namespace SharpDeck.Manifest
             this.WriteManifest = app.Option("-m | --manifest", "Flag indicating the manifest should be compiled", CommandOptionType.NoValue);
             this.AssemblyPath = app.Option("-a | --assembly", "The assembly of the plugin", CommandOptionType.SingleValue);
             this.OutputPath = app.Option("-o | --output", "The output path of the manifest file", CommandOptionType.SingleValue);
+            this.NpmPackagePath = app.Option("-n | --npm", "The optional NPM package file", CommandOptionType.SingleValue);
+
             app.HelpOption("-? | -h | --help");
         }
-
-        /// <summary>
-        /// Gets the command option that indicates as to whether the manifest should be written.
-        /// </summary>
-        public CommandOption WriteManifest { get; }
 
         /// <summary>
         /// Gets the assembly path.
@@ -33,5 +30,14 @@ namespace SharpDeck.Manifest
         /// Gets the output path, where the manifest file should be saved.
         /// </summary>
         public CommandOption OutputPath { get; }
+
+        /// <summary>
+        /// Gets the optional NPM package path.
+        public CommandOption NpmPackagePath { get; }
+
+        /// <summary>
+        /// Gets the command option that indicates as to whether the manifest should be written.
+        /// </summary>
+        public CommandOption WriteManifest { get; }
     }
 }

@@ -1,12 +1,12 @@
-﻿namespace SharpDeck.Manifest
+namespace SharpDeck.Manifest
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Manifest.Converters;
     using SharpDeck.Serialization;
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
 
     /// <summary>
     /// Dynamically reads an assembly, constructing a manifest file that can be used when registering an Elgato Stream Deck plugin.
@@ -18,6 +18,16 @@
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         public ManifestBuilder(Assembly assembly)
+            : this(assembly, new StreamDeckPluginAttribute())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManifestBuilder"/> class.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <param name="defaultValues">The default values.</param>
+        public ManifestBuilder(Assembly assembly, StreamDeckPluginAttribute defaultValues)
         {
             this.Assembly = assembly;
             this.Attribute = this.GetManifestInfo();
@@ -28,7 +38,9 @@
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            this.Manifest = JObject.FromObject(this.Attribute, this.Serializer);
+            this.Manifest = JObject.FromObject(defaultValues, this.Serializer);
+            this.Manifest.Merge(JObject.FromObject(this.Attribute, this.Serializer));
+
             this.BuildManifest();
         }
 
