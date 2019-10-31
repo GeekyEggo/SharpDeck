@@ -57,7 +57,7 @@ namespace SharpDeck.Connectivity
                 var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
 
                 key.Payload.Settings[SHARP_DECK_UUID_KEY] = entry.UUID;
-                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
+                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings).ConfigureAwait(false);
 
                 this.Items.Add(key.Context, entry);
             }
@@ -98,15 +98,17 @@ namespace SharpDeck.Connectivity
                 }
 
                 // ensure the cached item is still valid
-                if (!this.IsCacheEntryValid(cacheEntry, key, payload.Settings))
+                if (payload?.Settings != null
+                    && !this.IsCacheEntryValid(cacheEntry, key, payload.Settings))
                 {
                     cacheEntry.Action.Dispose();
                     this.Items.Remove(key.Context);
+
                     return false;
                 }
 
-                action = cacheEntry.Action;
-                return true;
+                action = cacheEntry?.Action;
+                return action != null;
             }
             finally
             {

@@ -14,7 +14,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// The synchronization root.
         /// </summary>
-        private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckActionProvider"/> class.
@@ -79,12 +79,12 @@ namespace SharpDeck.Connectivity
 
             try
             {
-                await this._syncRoot.WaitAsync();
+                await _syncRoot.WaitAsync();
 
                 if (!this.Cache.TryGet(e, out var action, e.Payload))
                 {
                     action = valueFactory(e);
-                    await this.Cache.AddAsync(e, action);
+                    await this.Cache.AddAsync(e, action).ConfigureAwait(false);
 
                     action.Initialize(e, this.Client);
                 }
@@ -117,7 +117,7 @@ namespace SharpDeck.Connectivity
             }
             finally
             {
-                this._syncRoot.Release();
+                _syncRoot.Release();
             }
         }
     }

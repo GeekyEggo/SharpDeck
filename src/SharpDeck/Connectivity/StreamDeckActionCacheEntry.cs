@@ -3,7 +3,7 @@ namespace SharpDeck.Connectivity
     /// <summary>
     /// Provides information about a cached instance for a <see cref="StreamDeckAction"/>.
     /// </summary>
-    public struct StreamDeckActionCacheEntry
+    public class StreamDeckActionCacheEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckActionCacheEntry"/> struct.
