@@ -93,7 +93,7 @@ namespace SharpDeck.Connectivity
             }
             finally
             {
-                this._syncRoot.Release();
+                _syncRoot.Release();
             }
         }
 
@@ -108,7 +108,7 @@ namespace SharpDeck.Connectivity
         {
             try
             {
-                this._syncRoot.Wait();
+                _syncRoot.Wait();
                 if (this.Cache.TryGet(args, out var action))
                 {
                     // invoke the propagation
