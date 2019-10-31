@@ -1,9 +1,9 @@
-﻿namespace SharpDeck.Events.Received
+namespace SharpDeck.Events.Received
 {
     /// <summary>
     /// Provides information about an action-based event received from an Elgato Stream Deck.
     /// </summary>
-    public class ActionEventArgs<TPayload> : StreamDeckEventArgs<TPayload>
+    public class ActionEventArgs<TPayload> : StreamDeckEventArgs<TPayload>, IActionEventArgs
     {
         /// <summary>
         /// Gets or sets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.

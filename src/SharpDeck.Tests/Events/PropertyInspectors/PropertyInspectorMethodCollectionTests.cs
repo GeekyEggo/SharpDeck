@@ -1,12 +1,12 @@
-﻿namespace SharpDeck.Tests.Events.PropertyInspectors
+namespace SharpDeck.Tests.Events.PropertyInspectors
 {
+    using System.Threading.Tasks;
     using Moq;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
     using SharpDeck.Events.Received;
     using SharpDeck.PropertyInspectors;
     using SharpDeck.Tests.Mocks;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides assertions for expected behaviour within <see cref="PropertyInspectorMethodCollection"/>.

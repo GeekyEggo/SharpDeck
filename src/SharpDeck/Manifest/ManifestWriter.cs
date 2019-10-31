@@ -1,6 +1,7 @@
 namespace SharpDeck.Manifest
 {
     using McMaster.Extensions.CommandLineUtils;
+    using Newtonsoft.Json;
     using System;
     using System.IO;
     using System.Reflection;
@@ -32,16 +33,17 @@ namespace SharpDeck.Manifest
         }
 
         /// <summary>
-        /// Gets the manifest full file path.
+        /// Gets the path, based on the assembly location.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
-        /// <param name="outputPath">The output path.</param>
-        /// <returns>The file path of the manifest file.</returns>
-        private static string GetManifestFilePath(Assembly assembly, CommandOption outputPath)
+        /// <param name="option">The parameter containing the relative path.</param>
+        /// <param name="default">The default path, when no value is specified as part of the <paramref name="option"/></param>
+        /// <returns>The path.</returns>
+        private static string GetPath(Assembly assembly, CommandOption option, string @default)
         {
             var assemblyCodeBase = new Uri(assembly.GetName().CodeBase);
             var dir = new FileInfo(assemblyCodeBase.AbsolutePath).Directory.FullName;
-            var path = outputPath.HasValue() ? outputPath.Value() : "manifest.json";
+            var path = option.HasValue() ? option.Value() : @default;
 
             return Path.Combine(dir, path);
         }
@@ -63,9 +65,9 @@ namespace SharpDeck.Manifest
 
             // get the assembly and output path
             var assembly = parameters.AssemblyPath.HasValue() ? Assembly.LoadFile(parameters.AssemblyPath.Value()) : Assembly.GetEntryAssembly();
-            var path = GetManifestFilePath(assembly, parameters.OutputPath);
+            var outputPath = GetPath(assembly, parameters.OutputPath, "manifest.json");
 
-            WriteManifest(assembly, path);
+            WriteManifest(assembly, outputPath, GetDefaultValues(assembly, parameters.NpmPackagePath));
             return 0;
         }
 
@@ -73,12 +75,32 @@ namespace SharpDeck.Manifest
         /// Builds a manifest based on the specified assembly, and write the JSON result to the specified path.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
-        /// <param name="path">The path.</param>
-        private static void WriteManifest(Assembly assembly, string path)
+        /// <param name="outputPath">The output path.</param>
+        /// <param name="defaultValues">The default values.</param>
+        private static void WriteManifest(Assembly assembly, string outputPath, StreamDeckPluginAttribute defaultValues)
         {
-            var builder = new ManifestBuilder(assembly);
-            new FileInfo(path).Directory.Create();
-            File.WriteAllText(path, builder.ToJson(), Encoding.UTF8);
+            var builder = new ManifestBuilder(assembly, defaultValues);
+
+            new FileInfo(outputPath).Directory.Create();
+            File.WriteAllText(outputPath, builder.ToJson(), Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Gets the default values for the manifest; when a package file is supplied, these values are used.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <param name="pkgOption">The package file path option.</param>
+        /// <returns>The default values for the top level manifest information.</returns>
+        private static StreamDeckPluginAttribute GetDefaultValues(Assembly assembly, CommandOption pkgOption)
+        {
+            var path = GetPath(assembly, pkgOption, "package.json");
+            if (File.Exists(path))
+            {
+                var pkgContents = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<StreamDeckPluginAttribute>(pkgContents);
+            }
+
+            return new StreamDeckPluginAttribute();
         }
     }
 }

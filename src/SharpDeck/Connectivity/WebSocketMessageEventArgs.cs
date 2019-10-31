@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Net
+namespace SharpDeck.Connectivity
 {
     using System;
 

@@ -1,17 +1,16 @@
-namespace SharpDeck.Net
+namespace SharpDeck.Connectivity
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
     using System;
     using System.Net.WebSockets;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides a light-weight wrapper for <see cref="ClientWebSocket"/>.
     /// </summary>
-    public class ClientWebSocketWrapper : IDisposable, IWebSocket
+    public class WebSocketConnection : IDisposable
     {
         /// <summary>
         /// The buffer size.
@@ -24,11 +23,11 @@ namespace SharpDeck.Net
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientWebSocketWrapper" /> class.
+        /// Initializes a new instance of the <see cref="WebSocketConnection" /> class.
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <param name="jsonSettings">The JSON settings.</param>
-        public ClientWebSocketWrapper(string uri, JsonSerializerSettings jsonSettings = null)
+        public WebSocketConnection(string uri, JsonSerializerSettings jsonSettings = null)
         {
             this.JsonSettings = jsonSettings;
             this.Uri = new Uri(uri);
@@ -179,10 +178,7 @@ namespace SharpDeck.Net
         public Task SendJsonAsync(object value)
         {
             var json = JsonConvert.SerializeObject(value, this.JsonSettings);
-            var task = this.SendAsync(json);
-            task.ConfigureAwait(false);
-
-            return task;
+            return this.SendAsync(json);
         }
     }
 }
