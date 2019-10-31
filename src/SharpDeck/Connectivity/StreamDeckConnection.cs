@@ -103,8 +103,10 @@ namespace SharpDeck.Connectivity
                 }
 
                 // invoke the handler on the parent client
-                ((Task)@delegate.Invoke(this.Client, new[] { jArgs.ToObject(@delegate.GetParameters()[0].ParameterType) }))
-                    .ConfigureAwait(false);
+                using (SynchronizationContextSwitcher.NoContext())
+                {
+                    @delegate.Invoke(this.Client, new[] { jArgs.ToObject(@delegate.GetParameters()[0].ParameterType) });
+                }
             }
             catch (Exception ex)
             {

@@ -84,7 +84,7 @@ namespace SharpDeck.Connectivity
                 if (!this.Cache.TryGet(e, out var action, e.Payload))
                 {
                     action = valueFactory(e);
-                    await this.Cache.AddAsync(e, action).ConfigureAwait(false);
+                    await this.Cache.AddAsync(e, action);
 
                     action.Initialize(e, this.Client);
                 }
@@ -112,7 +112,10 @@ namespace SharpDeck.Connectivity
                 if (this.Cache.TryGet(args, out var action))
                 {
                     // invoke the propagation
-                    getPropagator(action)(args).ConfigureAwait(false);
+                    using (SynchronizationContextSwitcher.NoContext())
+                    {
+                        getPropagator(action)(args);
+                    }
                 }
             }
             finally

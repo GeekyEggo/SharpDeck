@@ -57,7 +57,7 @@ namespace SharpDeck.Connectivity
                 var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
 
                 key.Payload.Settings[SHARP_DECK_UUID_KEY] = entry.UUID;
-                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings).ConfigureAwait(false);
+                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
 
                 this.Items.Add(key.Context, entry);
             }

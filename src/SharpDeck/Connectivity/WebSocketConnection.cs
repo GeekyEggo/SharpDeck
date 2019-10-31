@@ -160,10 +160,10 @@ namespace SharpDeck.Connectivity
 
             try
             {
-                await this._syncRoot.WaitAsync().ConfigureAwait(false);
+                await this._syncRoot.WaitAsync();
 
                 var buffer = this.Encoding.GetBytes(message);
-                await this.WebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None).ConfigureAwait(false);
+                await this.WebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             }
             finally
             {
@@ -175,10 +175,10 @@ namespace SharpDeck.Connectivity
         /// Serializes the value, and sends the message asynchronously.
         /// </summary>
         /// <param name="value">The value to serialize and send.</param>
-        public async Task SendJsonAsync(object value)
+        public Task SendJsonAsync(object value)
         {
             var json = JsonConvert.SerializeObject(value, this.JsonSettings);
-            await this.SendAsync(json).ConfigureAwait(false);
+            return this.SendAsync(json);
         }
     }
 }
