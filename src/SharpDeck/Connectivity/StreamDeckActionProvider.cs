@@ -4,6 +4,7 @@ namespace SharpDeck.Connectivity
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.Threading;
 
@@ -21,7 +22,7 @@ namespace SharpDeck.Connectivity
         /// Initializes a new instance of the <see cref="StreamDeckActionProvider"/> class.
         /// </summary>
         /// <param name="client">The parent Stream Deck client.</param>
-        public StreamDeckActionProvider(StreamDeckClient client)
+        public StreamDeckActionProvider(IStreamDeckClient client)
         {
             this.Cache = new StreamDeckActionCache(client);
             this.Client = client;
@@ -29,7 +30,7 @@ namespace SharpDeck.Connectivity
             // responsible for caching
             client.WillAppear += this.Action_WillAppear;
 
-            // general propgation
+            // general propagation
             client.DidReceiveSettings += (_, e) => this.TryPropagate(e, a => a.OnDidReceiveSettings);
             client.KeyDown += (_, e) => this.TryPropagate(e, a => a.OnKeyDown);
             client.KeyUp += (_, e) => this.TryPropagate(e, a => a.OnKeyUp);
@@ -53,7 +54,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the client.
         /// </summary>
-        private StreamDeckClient Client { get; }
+        private IStreamDeckClient Client { get; }
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
@@ -66,7 +67,7 @@ namespace SharpDeck.Connectivity
             => this.ActionFactory.Add(action, valueFactory);
 
         /// <summary>
-        /// Handles the <see cref="StreamDeckActionEventReceiver.WillAppear"/> event of the <see cref="Client"/>.
+        /// Handles the <see cref="StreamDeckActionEventPropagator.WillAppear"/> event of the <see cref="Client"/>.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
@@ -104,7 +105,7 @@ namespace SharpDeck.Connectivity
         /// <typeparam name="T">The type of the event arguments parameters.</typeparam>
         /// <param name="args">The arguments.</param>
         /// <param name="getPropagator">The selector to get the propagation event.</param>
-        private void TryPropagate<T>(T args, Func<StreamDeckActionEventReceiver, Func<T, Task>> getPropagator)
+        private void TryPropagate<T>(T args, Func<StreamDeckActionEventPropagator, Func<T, Task>> getPropagator)
             where T : IActionEventArgs
         {
             try

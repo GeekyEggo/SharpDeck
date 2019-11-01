@@ -1,4 +1,4 @@
-namespace SharpDeck
+namespace SharpDeck.Events
 {
     using System;
     using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace SharpDeck
     /// <summary>
     /// Provides a handler for an event received from an Elgato Stream Deck for an instance of an action.
     /// </summary>
-    public class StreamDeckActionEventReceiver : IDisposable
+    public class StreamDeckActionEventPropagator : IDisposable
     {
         /// <summary>
         /// Occurs when <see cref="IStreamDeckSender.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.
@@ -70,14 +70,12 @@ namespace SharpDeck
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            // optional method for disposing of the instance
         }
 
         /// <summary>
         /// Raises the <see cref="DidReceiveSettings"/> event.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("didReceiveSettings")]
         protected internal virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
             => this.InvokeAsync(this.DidReceiveSettings, args);
 
@@ -85,7 +83,6 @@ namespace SharpDeck
         /// Occurs when the user presses a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("keyDown")]
         protected internal virtual Task OnKeyDown(ActionEventArgs<KeyPayload> args)
             => this.InvokeAsync(this.KeyDown, args);
 
@@ -93,7 +90,6 @@ namespace SharpDeck
         /// Occurs when the user releases a key.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("keyUp")]
         protected internal virtual Task OnKeyUp(ActionEventArgs<KeyPayload> args)
             => this.InvokeAsync(this.KeyUp, args);
 
@@ -101,7 +97,6 @@ namespace SharpDeck
         /// Raises the <see cref="PropertyInspectorDidAppear"/> event.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs" /> instance containing the event data.</param>
-        [StreamDeckEvent("propertyInspectorDidAppear")]
         protected internal virtual Task OnPropertyInspectorDidAppear(ActionEventArgs args)
             => this.InvokeAsync(this.PropertyInspectorDidAppear, args);
 
@@ -109,7 +104,6 @@ namespace SharpDeck
         /// Raises the <see cref="PropertyInspectorDidDisappear"/> event.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs" /> instance containing the event data.</param>
-        [StreamDeckEvent("propertyInspectorDidDisappear")]
         protected internal virtual Task OnPropertyInspectorDidDisappear(ActionEventArgs args)
             => this.InvokeAsync(this.PropertyInspectorDidDisappear, args);
 
@@ -117,7 +111,6 @@ namespace SharpDeck
         /// Occurs when the property inspector sends a message to the plugin.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
-        [StreamDeckEvent("sendToPlugin")]
         protected internal virtual Task OnSendToPlugin(ActionEventArgs<JObject> args)
             => this.InvokeAsync(this.SendToPlugin, args);
 
@@ -125,7 +118,6 @@ namespace SharpDeck
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{TitlePayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("titleParametersDidChange")]
         protected internal virtual Task OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
             => this.InvokeAsync(this.TitleParametersDidChange, args);
 
@@ -133,7 +125,6 @@ namespace SharpDeck
         /// Occurs when an instance of an action appears.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("willAppear")]
         protected internal virtual Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
             => this.InvokeAsync(this.WillAppear, args);
 
@@ -141,7 +132,6 @@ namespace SharpDeck
         /// Occurs when an instance of an action disappears.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        [StreamDeckEvent("willDisappear")]
         protected internal virtual Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
             => this.InvokeAsync(this.WillDisappear, args);
 

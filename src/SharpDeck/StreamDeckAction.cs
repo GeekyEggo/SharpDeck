@@ -1,17 +1,18 @@
 namespace SharpDeck
 {
-    using Enums;
-    using Newtonsoft.Json.Linq;
-    using SharpDeck.Events.Received;
-    using SharpDeck.PropertyInspectors;
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
+    using Enums;
+    using Newtonsoft.Json.Linq;
+    using SharpDeck.Events;
+    using SharpDeck.Events.Received;
+    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeckClient"/>.
     /// </summary>
-    public class StreamDeckAction : StreamDeckActionEventReceiver
+    public class StreamDeckAction : StreamDeckActionEventPropagator
     {
         /// <summary>
         /// Gets the property inspector method collection caches.

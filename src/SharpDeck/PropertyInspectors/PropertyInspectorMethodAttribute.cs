@@ -1,9 +1,9 @@
-﻿namespace SharpDeck.PropertyInspectors
+namespace SharpDeck.PropertyInspectors
 {
     using System;
 
     /// <summary>
-    /// Provides a decorator for methods, allowing them to be automatically triggered by <see cref="StreamDeckActionEventReceiver.SendToPlugin"/>.
+    /// Provides a decorator for methods, allowing them to be automatically triggered by <see cref="IStreamDeckSender.SendToPlugin"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class PropertyInspectorMethodAttribute : Attribute

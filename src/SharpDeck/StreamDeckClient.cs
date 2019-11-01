@@ -10,6 +10,7 @@ namespace SharpDeck
     using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
     using SharpDeck.Enums;
+    using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.Events.Sent;
     using SharpDeck.Exceptions;
@@ -17,7 +18,7 @@ namespace SharpDeck
     /// <summary>
     /// Provides events and methods that allow for communication with an Elgato Stream Deck.
     /// </summary>
-    public sealed class StreamDeckClient : StreamDeckActionEventReceiver, IStreamDeckSender, IDisposable
+    public sealed class StreamDeckClient : StreamDeckEventPropagator, IStreamDeckClient
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckClient"/> class.
@@ -36,59 +37,28 @@ namespace SharpDeck
         /// <param name="logger">The optional logger.</param>
         public StreamDeckClient(RegistrationParameters registrationParameters, ILogger logger = null)
         {
-            this.Connection = new StreamDeckConnection(this, registrationParameters);
-            this.EventRouter = new StreamDeckActionProvider(this);
             this.RegistrationParameters = registrationParameters;
+            this.ActionProvider = new StreamDeckActionProvider(this);
+
+            this.Connection = new WebSocketStreamDeckConnection();
+            this.Connection.Error += (s, e) => this.OnError(e);
+            this.PropagateFrom(this.Connection);
         }
 
         /// <summary>
         /// Occurs when the client encounters an error.
         /// </summary>
-        public event EventHandler<StreamDeckClientErrorEventArgs> Error;
-
-        /// <summary>
-        /// Occurs when a monitored application is launched.
-        /// </summary>
-        public event EventHandler<StreamDeckEventArgs<ApplicationPayload>> ApplicationDidLaunch;
-
-        /// <summary>
-        /// Occurs when a monitored application is terminated.
-        /// </summary>
-        public event EventHandler<StreamDeckEventArgs<ApplicationPayload>> ApplicationDidTerminate;
-
-        /// <summary>
-        /// Occurs when a device is plugged to the computer.
-        /// </summary>
-        public event EventHandler<DeviceConnectEventArgs> DeviceDidConnect;
-
-        /// <summary>
-        /// Occurs when a device is unplugged from the computer.
-        /// </summary>
-        public event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
-
-        /// <summary>
-        /// Occurs when <see cref="IStreamDeckSender.GetGlobalSettingsAsync()"/> has been called to retrieve the persistent global data stored for the plugin.
-        /// </summary>
-        public event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
-
-        /// <summary>
-        /// Occurs when the computer is woken up.
-        /// </summary>
-        /// <remarks>
-        /// A plugin may receive multiple <see cref="SystemDidWakeUp"/> events when waking up the computer.
-        /// When the plugin receives the <see cref="SystemDidWakeUp"/> event, there is no garantee that the devices are available.
-        /// </remarks>
-        public event EventHandler<StreamDeckEventArgs> SystemDidWakeUp;
+        public event EventHandler<StreamDeckConnectionErrorEventArgs> Error;
 
         /// <summary>
         /// Gets or sets the connection to the Stream Deck.
         /// </summary>
-        private StreamDeckConnection Connection { get; }
+        private WebSocketStreamDeckConnection Connection { get; }
 
         /// <summary>
         /// Gets the event router.
         /// </summary>
-        private StreamDeckActionProvider EventRouter { get; }
+        private StreamDeckActionProvider ActionProvider { get; }
 
         /// <summary>
         /// Gets the registration parameters.
@@ -112,7 +82,7 @@ namespace SharpDeck
         /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
         public void RegisterAction<T>(string actionUUID, Func<T> valueFactory)
             where T : StreamDeckAction
-            => this.EventRouter.Register(actionUUID, _ => valueFactory());
+            => this.ActionProvider.Register(actionUUID, _ => valueFactory());
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
@@ -122,7 +92,7 @@ namespace SharpDeck
         /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
         public void RegisterAction<T>(string actionUUID, Func<ActionEventArgs<AppearancePayload>, T> valueFactory)
             where T : StreamDeckAction
-            => this.EventRouter.Register(actionUUID, valueFactory);
+            => this.ActionProvider.Register(actionUUID, valueFactory);
 
         /// <summary>
         /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
@@ -146,7 +116,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task StartAsync(CancellationToken cancellationToken)
-            => this.Connection.ConnectAsync(cancellationToken);
+            => this.Connection.ConnectAsync(this.RegistrationParameters, cancellationToken);
 
         /// <summary>
         /// Stops the client.
@@ -269,56 +239,8 @@ namespace SharpDeck
         /// <summary>
         /// Raises the <see cref="E:Error" /> event.
         /// </summary>
-        /// <param name="e">The <see cref="StreamDeckClientErrorEventArgs"/> instance containing the event data.</param>
-        internal void OnError(StreamDeckClientErrorEventArgs e)
+        /// <param name="e">The <see cref="StreamDeckConnectionErrorEventArgs"/> instance containing the event data.</param>
+        internal void OnError(StreamDeckConnectionErrorEventArgs e)
             => this.Error?.Invoke(this, e);
-
-        /// <summary>
-        /// Occurs when a monitored application is launched.
-        /// </summary>
-        /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
-        [StreamDeckEvent("applicationDidLaunch")]
-        internal Task OnApplicationDidLaunch(StreamDeckEventArgs<ApplicationPayload> args)
-            => this.InvokeAsync(this.ApplicationDidLaunch, args);
-
-        /// <summary>
-        /// Occurs when a monitored application is terminated.
-        /// </summary>
-        /// <param name="args">The <see cref="StreamDeckEventArgs{ApplicationPayload}"/> instance containing the event data.</param>
-        [StreamDeckEvent("applicationDidTerminate")]
-        internal Task OnApplicationDidTerminate(StreamDeckEventArgs<ApplicationPayload> args)
-            => this.InvokeAsync(this.ApplicationDidTerminate, args);
-
-        /// <summary>
-        /// Occurs when a device is plugged to the computer.
-        /// </summary>
-        /// <param name="args">The <see cref="DeviceConnectEventArgs"/> instance containing the event data.</param>
-        [StreamDeckEvent("deviceDidConnect")]
-        internal Task OnDeviceDidConnect(DeviceConnectEventArgs args)
-            => this.InvokeAsync(this.DeviceDidConnect, args);
-
-        /// <summary>
-        /// Occurs when a device is unplugged from the computer.
-        /// </summary>
-        /// <param name="args">The <see cref="DeviceEventArgs"/> instance containing the event data.</param>
-        [StreamDeckEvent("deviceDidDisconnect")]
-        internal Task OnDeviceDidDisconnect(DeviceEventArgs args)
-            => this.InvokeAsync(this.DeviceDidDisconnect, args);
-
-        /// <summary>
-        /// Raises the <see cref="DidReceiveGlobalSettings" /> event.
-        /// </summary>
-        /// <param name="args">The <see cref="StreamDeckEventArgs{SettingsPayload}"/> instance containing the event data.</param>
-        [StreamDeckEvent("didReceiveGlobalSettings")]
-        internal Task OnDidReceiveGlobalSettings(StreamDeckEventArgs<SettingsPayload> args)
-            => this.InvokeAsync(this.DidReceiveGlobalSettings, args);
-
-        /// <summary>
-        /// Raises the <see cref="SystemDidWakeUp" /> event.
-        /// </summary>
-        /// <param name="args">The <see cref="StreamDeckEventArgs"/> instance containing the event data.</param>
-        [StreamDeckEvent("systemDidWakeUp")]
-        internal Task OnSystemDidWakeUp(StreamDeckEventArgs args)
-            => this.InvokeAsync(this.SystemDidWakeUp, args);
     }
 }

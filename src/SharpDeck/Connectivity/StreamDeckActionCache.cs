@@ -27,7 +27,7 @@ namespace SharpDeck.Connectivity
         /// Initializes a new instance of the <see cref="StreamDeckActionCache"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public StreamDeckActionCache(IStreamDeckSender client)
+        public StreamDeckActionCache(IStreamDeckClient client)
         {
             this.Client = client;
         }
@@ -35,7 +35,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the Stream Deck client.
         /// </summary>
-        public IStreamDeckSender Client { get; }
+        public IStreamDeckClient Client { get; }
 
         /// <summary>
         /// Gets the cached items.

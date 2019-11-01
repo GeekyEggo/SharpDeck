@@ -4,6 +4,7 @@ namespace SharpDeck.Tests.Events.PropertyInspectors
     using Moq;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
+    using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.PropertyInspectors;
     using SharpDeck.Tests.Mocks;

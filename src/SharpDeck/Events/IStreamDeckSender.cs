@@ -1,7 +1,7 @@
-﻿namespace SharpDeck
+namespace SharpDeck.Events
 {
-    using Enums;
     using System.Threading.Tasks;
+    using Enums;
 
     /// <summary>
     /// Provides method for communication with an Elgato Stream Deck.

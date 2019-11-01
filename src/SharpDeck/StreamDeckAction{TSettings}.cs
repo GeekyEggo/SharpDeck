@@ -1,7 +1,8 @@
 namespace SharpDeck
 {
-    using SharpDeck.Events.Received;
     using System.Threading.Tasks;
+    using SharpDeck.Events;
+    using SharpDeck.Events.Received;
 
     /// <summary>
     /// Provides an implementation of an action, containing settings, that can be registered on a <see cref="StreamDeckClient"/>.
@@ -18,7 +19,7 @@ namespace SharpDeck
             => this.GetSettingsAsync<TSettings>();
 
         /// <summary>
-        /// Raises the <see cref="StreamDeckActionEventReceiver.DidReceiveSettings" /> event.
+        /// Raises the <see cref="StreamDeckActionEventPropagator.DidReceiveSettings" /> event.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of updating the state of the object based on the settings.</returns>
@@ -29,7 +30,7 @@ namespace SharpDeck
         }
 
         /// <summary>
-        /// Handles the <see cref="StreamDeckActionEventReceiver.DidReceiveSettings" /> event.
+        /// Handles the <see cref="StreamDeckActionEventPropagator.DidReceiveSettings" /> event.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{TActionPayload}" /> instance containing the event data.</param>
         /// <param name="settings">The settings.</param>
