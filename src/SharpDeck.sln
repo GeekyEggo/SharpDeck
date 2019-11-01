@@ -17,7 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Tests", "SharpDeck.Tests\SharpDeck.Tests.csproj", "{DA2E73D0-687E-4429-B481-5F5757743C32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDeck.Plugin", "SharpDeck.Plugin\SharpDeck.Plugin.csproj", "{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Plugin", "SharpDeck.Plugin\SharpDeck.Plugin.csproj", "{7FCB2BC5-9B5D-41C9-B2AA-115F4BF9E4A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8B7789F0-1319-473B-9DCA-05B94DCAE8D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{650416DC-EBAB-4C97-BA6A-EA3C32A435E8}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\main.yml = ..\.github\workflows\main.yml
+		..\.github\workflows\release.yml = ..\.github\workflows\release.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +48,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8B7789F0-1319-473B-9DCA-05B94DCAE8D1} = {0F3CE559-40D7-4053-AF79-B3A1B3043A3A}
+		{650416DC-EBAB-4C97-BA6A-EA3C32A435E8} = {8B7789F0-1319-473B-9DCA-05B94DCAE8D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CE7DE09-893D-4603-807D-674413F38D73}
