@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Extensions
+namespace SharpDeck.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,7 @@
     /// <summary>
     /// Provides extension methods for <see cref="Assembly"/>.
     /// </summary>
-    public static class AssemblyExtensions
+    internal static class AssemblyExtensions
     {
         /// <summary>
         /// Gets types from this assembly, which have the specified custom attribute.

@@ -1,9 +1,9 @@
-﻿namespace SharpDeck.Extensions
+namespace SharpDeck.Extensions
 {
     /// <summary>
     /// Provides extension methods for <see cref="string"/>.
     /// </summary>
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         /// <summary>
         /// Gets this instance when it is not <see cref="string.IsNullOrWhiteSpace(string)"/>; otherwise <paramref name="default"/>.

@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Extensions
+namespace SharpDeck.Extensions
 {
     using Newtonsoft.Json.Linq;
     using System;
@@ -6,7 +6,7 @@
     /// <summary>
     /// Provides extension methods for <see cref="JObject"/>.
     /// </summary>
-    public static class JObjectExtensions
+    internal static class JObjectExtensions
     {
         /// <summary>
         /// Tries the get the <see cref="string"/> for the specified <paramref name="propertyName"/>, ignoring case.
