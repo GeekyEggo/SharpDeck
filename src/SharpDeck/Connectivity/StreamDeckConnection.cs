@@ -10,6 +10,7 @@ namespace SharpDeck.Connectivity
     using SharpDeck.Events.Sent;
     using SharpDeck.Exceptions;
     using SharpDeck.Extensions;
+    using SharpDeck.Threading;
 
     /// <summary>
     /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.

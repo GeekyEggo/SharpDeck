@@ -5,6 +5,7 @@ namespace SharpDeck.Connectivity
     using System.Threading;
     using System.Threading.Tasks;
     using SharpDeck.Events.Received;
+    using SharpDeck.Threading;
 
     /// <summary>
     /// Provides connectivity between a <see cref="StreamDeckClient"/> and registered <see cref="StreamDeckAction"/>.

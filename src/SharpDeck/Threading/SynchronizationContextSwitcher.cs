@@ -1,4 +1,4 @@
-namespace SharpDeck
+namespace SharpDeck.Threading
 {
     using System;
     using System.Threading;
