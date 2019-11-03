@@ -115,30 +115,46 @@ namespace SharpDeck.Connectivity
         /// <returns>The task of propagating the event.</returns>
         private Task Propagate(string @event, JObject args)
         {
-            return @event switch
+            switch (@event)
             {
                 // global
-                "applicationDidLaunch"      => this.OnApplicationDidLaunch(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>()),
-                "applicationDidTerminate"   => this.OnApplicationDidTerminate(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>()),
-                "deviceDidConnect"          => this.OnDeviceDidConnect(args.ToObject<DeviceConnectEventArgs>()),
-                "deviceDidDisconnect"       => this.OnDeviceDidDisconnect(args.ToObject<DeviceEventArgs>()),
-                "didReceiveGlobalSettings"  => this.OnDidReceiveGlobalSettings(args.ToObject<StreamDeckEventArgs<SettingsPayload>>()),
-                "systemDidWakeUp"           => this.OnSystemDidWakeUp(args.ToObject<StreamDeckEventArgs>()),
+                case "applicationDidLaunch":
+                    return this.OnApplicationDidLaunch(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
+                case "applicationDidTerminate":
+                    return this.OnApplicationDidTerminate(args.ToObject<StreamDeckEventArgs<ApplicationPayload>>());
+                case "deviceDidConnect":
+                    return this.OnDeviceDidConnect(args.ToObject<DeviceConnectEventArgs>());
+                case "deviceDidDisconnect":
+                    return this.OnDeviceDidDisconnect(args.ToObject<DeviceEventArgs>());
+                case "didReceiveGlobalSettings":
+                    return this.OnDidReceiveGlobalSettings(args.ToObject<StreamDeckEventArgs<SettingsPayload>>());
+                case "systemDidWakeUp":
+                    return this.OnSystemDidWakeUp(args.ToObject<StreamDeckEventArgs>());
 
                 // action specific
-                "didReceiveSettings"            => this.OnDidReceiveSettings(args.ToObject<ActionEventArgs<ActionPayload>>()),
-                "keyDown"                       => this.OnKeyDown(args.ToObject<ActionEventArgs<KeyPayload>>()),
-                "keyUp"                         => this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>()),
-                "propertyInspectorDidAppear"    => this.OnPropertyInspectorDidAppear(args.ToObject<ActionEventArgs>()),
-                "propertyInspectorDidDisappear" => this.OnPropertyInspectorDidDisappear(args.ToObject<ActionEventArgs>()),
-                "sendToPlugin"                  => this.OnSendToPlugin(args.ToObject<ActionEventArgs<JObject>>()),
-                "titleParametersDidChange"      => this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>()),
-                "willAppear"                    => this.OnWillAppear(args.ToObject<ActionEventArgs<AppearancePayload>>()),
-                "willDisappear"                 => this.OnWillDisappear(args.ToObject<ActionEventArgs<AppearancePayload>>()),
+                case "didReceiveSettings":
+                    return this.OnDidReceiveSettings(args.ToObject<ActionEventArgs<ActionPayload>>());
+                case "keyDown":
+                    return this.OnKeyDown(args.ToObject<ActionEventArgs<KeyPayload>>());
+                case "keyUp":
+                    return this.OnKeyUp(args.ToObject<ActionEventArgs<KeyPayload>>());
+                case "propertyInspectorDidAppear":
+                    return this.OnPropertyInspectorDidAppear(args.ToObject<ActionEventArgs>());
+                case "propertyInspectorDidDisappear":
+                    return this.OnPropertyInspectorDidDisappear(args.ToObject<ActionEventArgs>());
+                case "sendToPlugin":
+                    return this.OnSendToPlugin(args.ToObject<ActionEventArgs<JObject>>());
+                case "titleParametersDidChange":
+                    return this.OnTitleParametersDidChange(args.ToObject<ActionEventArgs<TitlePayload>>());
+                case "willAppear":
+                    return this.OnWillAppear(args.ToObject<ActionEventArgs<AppearancePayload>>());
+                case "willDisappear":
+                    return this.OnWillDisappear(args.ToObject<ActionEventArgs<AppearancePayload>>());
 
                 // unrecognised
-                _ => throw new ArgumentException($"Unrecognised event: {@event}", nameof(@event))
-            };
+                default:
+                    throw new ArgumentException($"Unrecognised event: {@event}", nameof(@event));
+            }
         }
     }
 }
