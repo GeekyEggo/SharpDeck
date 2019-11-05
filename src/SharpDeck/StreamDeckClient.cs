@@ -3,17 +3,20 @@
 namespace SharpDeck
 {
     using System;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
+    using SharpDeck.DependencyInjection;
     using SharpDeck.Enums;
     using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.Events.Sent;
     using SharpDeck.Exceptions;
+    using SharpDeck.Threading;
 
     /// <summary>
     /// Provides events and methods that allow for communication with an Elgato Stream Deck.
@@ -38,6 +41,8 @@ namespace SharpDeck
         public StreamDeckClient(RegistrationParameters registrationParameters, ILogger logger = null)
         {
             this.RegistrationParameters = registrationParameters;
+            this.Logger = logger;
+
             this.ActionProvider = new StreamDeckActionProvider(this);
 
             this.Connection = new WebSocketStreamDeckConnection();
@@ -51,19 +56,52 @@ namespace SharpDeck
         public event EventHandler<StreamDeckConnectionErrorEventArgs> Error;
 
         /// <summary>
-        /// Gets or sets the connection to the Stream Deck.
-        /// </summary>
-        private WebSocketStreamDeckConnection Connection { get; }
-
-        /// <summary>
         /// Gets the event router.
         /// </summary>
         private StreamDeckActionProvider ActionProvider { get; }
 
         /// <summary>
+        /// Gets or sets the connection to the Stream Deck.
+        /// </summary>
+        private WebSocketStreamDeckConnection Connection { get; }
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        private ILogger Logger { get; }
+
+        /// <summary>
         /// Gets the registration parameters.
         /// </summary>
         private RegistrationParameters RegistrationParameters { get; }
+
+        /// <summary>
+        /// Starts the <see cref="StreamDeckClient"/>.
+        /// </summary>
+        /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
+        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
+        /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
+        /// <param name="errorHandler">The optional error handler.</param>
+        /// <param name="logger">The optional logger.</param>
+        public static void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, EventHandler<StreamDeckConnectionErrorEventArgs> errorHandler = null, ILogger logger = null)
+        {
+            using (new SynchronizationContextSwitcher(null))
+            {
+                RunAsync(args, assembly, provider, errorHandler, logger).Wait();
+            }
+        }
+
+        /// <summary>
+        /// Starts the <see cref="StreamDeckClient"/> asynchronously.
+        /// </summary>
+        /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
+        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
+        /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
+        /// <param name="errorHandler">The optional error handler.</param>
+        /// <param name="logger">The optional logger.</param>
+        /// <returns>The task of running the client.</returns>
+        public static Task RunAsync(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, EventHandler<StreamDeckConnectionErrorEventArgs> errorHandler = null, ILogger logger = null)
+            => StreamDeckClientRunner.RunAsync(new StreamDeckClientRunnerInfo(args, assembly, provider, errorHandler, logger));
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID. When <typeparamref name="T"/> does not have a default constructor, consider specifying a `valueFactory`.
@@ -241,6 +279,9 @@ namespace SharpDeck
         /// </summary>
         /// <param name="e">The <see cref="StreamDeckConnectionErrorEventArgs"/> instance containing the event data.</param>
         internal void OnError(StreamDeckConnectionErrorEventArgs e)
-            => this.Error?.Invoke(this, e);
+        {
+            this.Logger?.LogError(e.Exception, e.Message);
+            this.Error?.Invoke(this, e);
+        }
     }
 }
