@@ -114,4 +114,4 @@ https://github.com/GeekyEggo/SharpDeck/issues
 
 [The MIT License (MIT)](LICENSE.md)
 
-Stream Deck is a trademark or registered trademark of Elgato Systems.
+Stream Deck is a trademark or registered trademark of Elgato Systems. 
