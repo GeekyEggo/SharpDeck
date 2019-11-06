@@ -4,7 +4,7 @@
 ![](https://github.com/geekyeggo/sharpdeck/workflows/release/badge.svg)
 ![](https://github.com/geekyeggo/sharpdeck/workflows/release/release/badge.svg)
 
-![](https://github.com/geekyeggo/sharpdeck/workflows/.github/workflows/main.yml/badge.svg)
+![](https://github.com/geekyeggo/sharpdeck/workflows/.github/workflows/build.yml/badge.svg)
 ![](https://github.com/geekyeggo/sharpdeck/workflows/build/build/badge.svg)
 ![](https://github.com/geekyeggo/sharpdeck/workflows/build/badge.svg)
 
