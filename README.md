@@ -1,12 +1,12 @@
 [![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/)
 
-![](https://github.com/geekyeggo/sharpdeck/workflows/.github/workflows/release/badge.svg)
-![](https://github.com/geekyeggo/sharpdeck/workflows/release/badge.svg)
-![](https://github.com/geekyeggo/sharpdeck/workflows/release/release/badge.svg)
+![](https://github.com/GeekyEggo/SharpDeck/workflows/.github/workflows/release/badge.svg)
+![](https://github.com/GeekyEggo/SharpDeck/workflows/release/badge.svg)
+![](https://github.com/GeekyEggo/SharpDeck/workflows/release/release/badge.svg)
 
-![](https://github.com/geekyeggo/sharpdeck/workflows/.github/workflows/build/badge.svg)
-![](https://github.com/geekyeggo/sharpdeck/workflows/build/build/badge.svg)
-![](https://github.com/geekyeggo/sharpdeck/workflows/build/badge.svg)
+![](https://github.com/GeekyEggo/SharpDeck/workflows/.github/workflows/build/badge.svg)
+![](https://github.com/GeekyEggo/SharpDeck/workflows/build/build/badge.svg)
+![](https://github.com/GeekyEggo/SharpDeck/workflows/build/badge.svg)
 
 # SharpDeck
 
