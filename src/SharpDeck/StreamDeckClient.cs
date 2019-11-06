@@ -53,7 +53,7 @@ namespace SharpDeck
         /// <summary>
         /// Occurs when the client encounters an error.
         /// </summary>
-        public event EventHandler<StreamDeckConnectionErrorEventArgs> Error;
+        public event StreamDeckClientEventHandler<StreamDeckConnectionErrorEventArgs> Error;
 
         /// <summary>
         /// Gets the event router.
@@ -81,13 +81,13 @@ namespace SharpDeck
         /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
         /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
         /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
-        /// <param name="errorHandler">The optional error handler.</param>
         /// <param name="logger">The optional logger.</param>
-        public static void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, EventHandler<StreamDeckConnectionErrorEventArgs> errorHandler = null, ILogger logger = null)
+        /// <param name="setup">The optional additional setup.</param>
+        public static void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
         {
             using (new SynchronizationContextSwitcher(null))
             {
-                RunAsync(args, assembly, provider, errorHandler, logger).Wait();
+                RunAsync(args, assembly ?? Assembly.GetCallingAssembly(), provider, logger, setup).Wait();
             }
         }
 
@@ -97,11 +97,11 @@ namespace SharpDeck
         /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
         /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
         /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
-        /// <param name="errorHandler">The optional error handler.</param>
         /// <param name="logger">The optional logger.</param>
+        /// <param name="setup">The optional additional setup.</param>
         /// <returns>The task of running the client.</returns>
-        public static Task RunAsync(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, EventHandler<StreamDeckConnectionErrorEventArgs> errorHandler = null, ILogger logger = null)
-            => StreamDeckClientRunner.RunAsync(new StreamDeckClientRunnerInfo(args, assembly, provider, errorHandler, logger));
+        public static Task RunAsync(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
+            => StreamDeckClientRunner.RunAsync(new StreamDeckClientRunnerInfo(assembly ?? Assembly.GetCallingAssembly(), args, provider, logger, setup));
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID. When <typeparamref name="T"/> does not have a default constructor, consider specifying a `valueFactory`.

@@ -37,5 +37,22 @@ namespace SharpDeck
         /// <returns>The task of updating the state of the object based on the settings.</returns>
         protected virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args, TSettings settings)
             => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when this instance is initialized.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}" /> instance containing the event data.</param>
+        protected override void OnInit(ActionEventArgs<AppearancePayload> args)
+        {
+            this.OnInit(args, args.Payload.GetSettings<TSettings>());
+            base.OnInit(args);
+        }
+
+        /// <summary>
+        /// Occurs when this instance is initialized.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
+        /// <param name="settings">The settings.</param>
+        protected virtual void OnInit(ActionEventArgs<AppearancePayload> args, TSettings settings) { }
     }
 }

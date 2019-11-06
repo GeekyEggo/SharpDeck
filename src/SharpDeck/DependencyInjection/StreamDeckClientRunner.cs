@@ -31,7 +31,8 @@ namespace SharpDeck.DependencyInjection
                 using (var client = new StreamDeckClient(info.RegistrationParameters, info.Logger))
                 {
                     RegisterActions(client, info.Assembly, info.Provider);
-                    client.Error += info.ErrorHandler;
+                    info.Setup(client);
+
                     await client.StartAsync(CancellationToken.None);
                 }
             }
@@ -51,7 +52,7 @@ namespace SharpDeck.DependencyInjection
         {
             foreach (var (type, attribute) in assembly.GetTypesWithCustomAttribute<StreamDeckActionAttribute>())
             {
-                if (!type.IsAssignableFrom(typeof(StreamDeckAction)))
+                if (!typeof(StreamDeckAction).IsAssignableFrom(type))
                 {
                     throw new InvalidStreamDeckActionTypeException(type);
                 }

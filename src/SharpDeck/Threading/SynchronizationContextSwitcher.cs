@@ -7,7 +7,7 @@ namespace SharpDeck.Threading
     /// Utility class for temporarily switching <see cref="SynchronizationContext"/> implementations.
     /// </summary>
     /// <remarks>https://github.com/StephenClearyArchive/AsyncEx.Tasks/blob/master/src/Nito.AsyncEx.Tasks/SynchronizationContextSwitcher.cs</remarks>
-    internal sealed class SynchronizationContextSwitcher : IDisposable
+    public sealed class SynchronizationContextSwitcher : IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SynchronizationContextSwitcher"/> class, installing the new <see cref="SynchronizationContext"/>.

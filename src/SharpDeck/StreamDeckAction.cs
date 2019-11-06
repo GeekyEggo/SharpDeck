@@ -129,6 +129,8 @@ namespace SharpDeck
             this.Context = args.Context;
             this.Device = args.Device;
             this.StreamDeck = streamDeck;
+
+            this.OnInit(args);
         }
 
         /// <summary>
@@ -140,6 +142,12 @@ namespace SharpDeck
             this.StreamDeck = null;
             base.Dispose(disposing);
         }
+
+        /// <summary>
+        /// Occurs when this instance is initialized.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
+        protected virtual void OnInit(ActionEventArgs<AppearancePayload> args) { }
 
         /// <summary>
         /// Occurs when the property inspector sends a message to the plugin.
