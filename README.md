@@ -1,6 +1,6 @@
 [![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) [![Build status on Appveyor](https://ci.appveyor.com/api/projects/status/fev4i9a61a7ylhyq/branch/master?svg=true)](https://ci.appveyor.com/project/GeekyEggo/SharpDeck/history)
 
-[![Actions Status](https://github.com/geekyeggo/sharpdeck/workflows/main.yml/badge.svg)](https://github.com/geekyeggo/sharpdeck/action)
+![](https://github.com/geekyeggo/sharpdeck/workflows/Main/badge.svg)
 
 # SharpDeck
 
