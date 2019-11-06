@@ -1,5 +1,7 @@
 [![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) [![Build status on Appveyor](https://ci.appveyor.com/api/projects/status/fev4i9a61a7ylhyq/branch/master?svg=true)](https://ci.appveyor.com/project/GeekyEggo/SharpDeck/history)
 
+[![Actions Status](https://github.com/geekyeggo/sharpdeck/workflows/main/badge.svg)](https://github.com/geekyeggo/sharpdeck/action)
+
 # SharpDeck
 
 A lightweight .NET wrapper for creating Stream Deck plugins, using the official Elgato Stream Deck [SDK](https://developer.elgato.com/documentation/stream-deck/sdk/overview).
