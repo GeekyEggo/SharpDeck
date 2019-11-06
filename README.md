@@ -1,4 +1,4 @@
-[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) ![Build status](https://github.com/geekyeggo/sharpdeck/workflows/.github/workflows/build.yml/badge.svg)
+[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) ![](https://github.com/geekyeggo/sharpdeck/workflows/.github/workflows/build.yml/badge.svg)
 
 # SharpDeck
 
