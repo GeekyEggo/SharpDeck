@@ -1,15 +1,14 @@
-name: Main
+name: build
 
 on:
   push:
     branches:
     - master
-    - events
     tags:
     - '!*'
 
 jobs:
-  main:
+  build:
 
     runs-on: ubuntu-latest
 

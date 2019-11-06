@@ -1,4 +1,4 @@
-[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) [![Build status on Appveyor](https://ci.appveyor.com/api/projects/status/fev4i9a61a7ylhyq/branch/master?svg=true)](https://ci.appveyor.com/project/GeekyEggo/SharpDeck/history)
+[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) [![Build status](https://github.com/GeekyEggo/SharpDeck/workflows/build/badge.svg)](https://github.com/GeekyEggo/SharpDeck/actions?query=workflow%3Abuild)
 
 # SharpDeck
 
