@@ -16,7 +16,6 @@ namespace SharpDeck
     using SharpDeck.Events.Received;
     using SharpDeck.Events.Sent;
     using SharpDeck.Exceptions;
-    using SharpDeck.Threading;
 
     /// <summary>
     /// Provides events and methods that allow for communication with an Elgato Stream Deck.
@@ -83,12 +82,9 @@ namespace SharpDeck
         /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
         /// <param name="logger">The optional logger.</param>
         /// <param name="setup">The optional additional setup.</param>
-        public static void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
+        public static async void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
         {
-            using (new SynchronizationContextSwitcher(null))
-            {
-                RunAsync(args, assembly ?? Assembly.GetCallingAssembly(), provider, logger, setup).Wait();
-            }
+            await RunAsync(args, assembly ?? Assembly.GetCallingAssembly(), provider, logger, setup).ConfigureAwait(false);
         }
 
         /// <summary>

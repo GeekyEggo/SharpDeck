@@ -6,7 +6,6 @@ namespace SharpDeck.Connectivity
     using System.Threading.Tasks;
     using SharpDeck.Events;
     using SharpDeck.Events.Received;
-    using SharpDeck.Threading;
 
     /// <summary>
     /// Provides connectivity between a <see cref="StreamDeckClient"/> and registered <see cref="StreamDeckAction"/>.
@@ -71,7 +70,7 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
-        private async void Action_WillAppear(object sender, ActionEventArgs<AppearancePayload> e)
+        private void Action_WillAppear(object sender, ActionEventArgs<AppearancePayload> e)
         {
             // check if the action type is handled by this instance
             if (!this.ActionFactory.TryGetValue(e.Action, out var valueFactory))
@@ -81,12 +80,12 @@ namespace SharpDeck.Connectivity
 
             try
             {
-                await _syncRoot.WaitAsync();
+                _syncRoot.Wait();
 
                 if (!this.Cache.TryGet(e, out var action, e.Payload))
                 {
                     action = valueFactory(e);
-                    await this.Cache.AddAsync(e, action);
+                    this.Cache.Add(e, action);
 
                     action.Initialize(e, this.Client);
                 }
@@ -114,10 +113,7 @@ namespace SharpDeck.Connectivity
                 if (this.Cache.TryGet(args, out var action))
                 {
                     // invoke the propagation
-                    using (SynchronizationContextSwitcher.NoContext())
-                    {
-                        getPropagator(action)(args);
-                    }
+                    getPropagator(action)(args);
                 }
             }
             finally

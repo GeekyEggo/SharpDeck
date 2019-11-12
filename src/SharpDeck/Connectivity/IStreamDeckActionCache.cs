@@ -1,6 +1,5 @@
 namespace SharpDeck.Connectivity
 {
-    using System.Threading.Tasks;
     using SharpDeck.Events.Received;
 
     /// <summary>
@@ -13,8 +12,7 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="key">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         /// <param name="action">The action to cache.</param>
-        /// <returns>The task of caching the action.</returns>
-        Task AddAsync(ActionEventArgs<AppearancePayload> key, StreamDeckAction action);
+        void Add(ActionEventArgs<AppearancePayload> key, StreamDeckAction action);
 
         /// <summary>
         /// Attempts to get the cached <see cref="StreamDeckAction" /> for the specified <paramref name="key" />

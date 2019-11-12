@@ -47,17 +47,17 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="key">The <see cref="ActionEventArgs{AppearancePayload}" /> instance containing the event data.</param>
         /// <param name="action">The action to cache.</param>
-        public async Task AddAsync(ActionEventArgs<AppearancePayload> key, StreamDeckAction action)
+        public void Add(ActionEventArgs<AppearancePayload> key, StreamDeckAction action)
         {
             try
             {
-                await _syncRoot.WaitAsync();
+                _syncRoot.Wait();
 
                 // construct the entry, apply the uuid to the action settings, and add the new item to the cache
                 var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
 
                 key.Payload.Settings[SHARP_DECK_UUID_KEY] = entry.UUID;
-                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
+                _ = this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
 
                 this.Items.Add(key.Context, entry);
             }
