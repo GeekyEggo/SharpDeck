@@ -29,15 +29,15 @@ namespace SharpDeck.Connectivity
             // responsible for caching
             client.WillAppear += this.Action_WillAppear;
 
-            // general propagation
-            client.DidReceiveSettings += (_, e) => this.TryPropagate(e, a => a.OnDidReceiveSettings);
-            client.KeyDown += (_, e) => this.TryPropagate(e, a => a.OnKeyDown);
-            client.KeyUp += (_, e) => this.TryPropagate(e, a => a.OnKeyUp);
-            client.PropertyInspectorDidAppear += (_, e) => this.TryPropagate(e, a => a.OnPropertyInspectorDidAppear);
-            client.PropertyInspectorDidDisappear += (_, e) => this.TryPropagate(e, a => a.OnPropertyInspectorDidDisappear);
-            client.SendToPlugin += (_, e) => this.TryPropagate(e, a => a.OnSendToPlugin);
-            client.TitleParametersDidChange += (_, e) => this.TryPropagate(e, a => a.OnTitleParametersDidChange);
-            client.WillDisappear += (_, e) => this.TryPropagate(e, a => a.OnWillDisappear);
+            // action propagation
+            client.DidReceiveSettings               += (_, e) => this.PropagateOnAction(e, a => a.OnDidReceiveSettings);
+            client.KeyDown                          += (_, e) => this.PropagateOnAction(e, a => a.OnKeyDown);
+            client.KeyUp                            += (_, e) => this.PropagateOnAction(e, a => a.OnKeyUp);
+            client.PropertyInspectorDidAppear       += (_, e) => this.PropagateOnAction(e, a => a.OnPropertyInspectorDidAppear);
+            client.PropertyInspectorDidDisappear    += (_, e) => this.PropagateOnAction(e, a => a.OnPropertyInspectorDidDisappear);
+            client.SendToPlugin                     += (_, e) => this.PropagateOnAction(e, a => a.OnSendToPlugin);
+            client.TitleParametersDidChange         += (_, e) => this.PropagateOnAction(e, a => a.OnTitleParametersDidChange);
+            client.WillDisappear                    += (_, e) => this.PropagateOnAction(e, a => a.OnWillDisappear);
         }
 
         /// <summary>
@@ -99,12 +99,12 @@ namespace SharpDeck.Connectivity
         }
 
         /// <summary>
-        /// Attempts to propagate the event to an associated action, if it exists within the cache.
+        /// Attempts to propagate the event on an associated action, if it exists within the cache.
         /// </summary>
         /// <typeparam name="T">The type of the event arguments parameters.</typeparam>
         /// <param name="args">The arguments.</param>
         /// <param name="getPropagator">The selector to get the propagation event.</param>
-        private void TryPropagate<T>(T args, Func<StreamDeckActionEventPropagator, Func<T, Task>> getPropagator)
+        private void PropagateOnAction<T>(T args, Func<StreamDeckActionEventPropagator, Func<T, Task>> getPropagator)
             where T : IActionEventArgs
         {
             try
