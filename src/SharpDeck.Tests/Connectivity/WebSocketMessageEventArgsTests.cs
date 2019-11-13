@@ -1,7 +1,7 @@
 namespace SharpDeck.Tests.Connectivity
 {
     using NUnit.Framework;
-    using SharpDeck.Connectivity;
+    using SharpDeck.Connectivity.Net;
 
     /// <summary>
     /// Provides assertions for expected behaviour within <see cref="WebSocketMessageEventArgs"/>.

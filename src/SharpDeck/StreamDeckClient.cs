@@ -3,7 +3,6 @@
 namespace SharpDeck
 {
     using System;
-    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
@@ -11,7 +10,6 @@ namespace SharpDeck
     using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
     using SharpDeck.Connectivity.Net;
-    using SharpDeck.DependencyInjection;
     using SharpDeck.Enums;
     using SharpDeck.Events;
     using SharpDeck.Events.Received;
@@ -28,7 +26,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <param name="logger">The optional logger.</param>
-        public StreamDeckClient(string[] args, ILogger logger = null)
+        public StreamDeckClient(string[] args = null, ILogger logger = null)
             : this(RegistrationParameters.Parse(args), logger)
         {
         }
@@ -38,7 +36,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
         /// <param name="logger">The optional logger.</param>
-        public StreamDeckClient(RegistrationParameters registrationParameters, ILogger logger = null)
+        internal StreamDeckClient(RegistrationParameters registrationParameters, ILogger logger = null)
         {
             this.RegistrationParameters = registrationParameters;
             this.Logger = logger;
@@ -76,38 +74,13 @@ namespace SharpDeck
         private RegistrationParameters RegistrationParameters { get; }
 
         /// <summary>
-        /// Starts the <see cref="StreamDeckClient"/>.
-        /// </summary>
-        /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
-        /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
-        /// <param name="logger">The optional logger.</param>
-        /// <param name="setup">The optional additional setup.</param>
-        public static async void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
-        {
-            await RunAsync(args, assembly ?? Assembly.GetCallingAssembly(), provider, logger, setup).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Starts the <see cref="StreamDeckClient"/> asynchronously.
-        /// </summary>
-        /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
-        /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
-        /// <param name="logger">The optional logger.</param>
-        /// <param name="setup">The optional additional setup.</param>
-        /// <returns>The task of running the client.</returns>
-        public static Task RunAsync(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
-            => StreamDeckClientRunner.RunAsync(new StreamDeckClientRunnerInfo(assembly ?? Assembly.GetCallingAssembly(), args, provider, logger, setup));
-
-        /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID. When <typeparamref name="T"/> does not have a default constructor, consider specifying a `valueFactory`.
         /// </summary>
         /// <typeparam name="T">The type of Stream Deck action.</typeparam>
         /// <param name="actionUUID">The action UUID.</param>
         public void RegisterAction<T>(string actionUUID)
             where T : StreamDeckAction, new()
-            => this.RegisterAction<T>(actionUUID, _ => new T());
+            => this.RegisterAction<T>(actionUUID, () => new T());
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
@@ -118,22 +91,6 @@ namespace SharpDeck
         public void RegisterAction<T>(string actionUUID, Func<T> valueFactory)
             where T : StreamDeckAction
             => this.ActionProvider.Register(actionUUID, _ => valueFactory());
-
-        /// <summary>
-        /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
-        /// </summary>
-        /// <typeparam name="T">The type of Stream Deck action.</typeparam>
-        /// <param name="actionUUID">The action UUID.</param>
-        /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
-        public void RegisterAction<T>(string actionUUID, Func<ActionEventArgs<AppearancePayload>, T> valueFactory)
-            where T : StreamDeckAction
-            => this.ActionProvider.Register(actionUUID, valueFactory);
-
-        /// <summary>
-        /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
-        /// </summary>
-        public void Start()
-            => this.Start(CancellationToken.None);
 
         /// <summary>
         /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.

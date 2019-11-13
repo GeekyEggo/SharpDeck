@@ -1,11 +1,13 @@
-﻿namespace SharpDeck.Plugin
+namespace SharpDeck.Plugin
 {
-    using SharpDeck.Events.Received;
     using System.Threading.Tasks;
+    using SharpDeck.Events.Received;
+    using SharpDeck.Manifest;
 
     /// <summary>
     /// A simple counter action.
     /// </summary>
+    [StreamDeckAction("Counter", "com.sharpdeck.testplugin.counter")]
     public class CounterAction : StreamDeckAction
     {
         /// <summary>
@@ -28,7 +30,7 @@
         /// <param name="args">The <see cref="T:SharpDeck.Events.Received.ActionEventArgs`1" /> instance containing the event data.</param>
         protected override async Task OnKeyDown(ActionEventArgs<KeyPayload> args)
         {
-            this.Count = this.Count + 1;
+            this.Count++;
             if (this.Count == 3)
             {
                 await this.ShowOkAsync();

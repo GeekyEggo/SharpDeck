@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Plugin
+namespace SharpDeck.Plugin
 {
     using System.Diagnostics;
 
@@ -17,12 +17,7 @@
             Debugger.Launch();
 #endif
 
-            using (var client = new StreamDeckClient(args))
-            {
-                // register our custom action, and start the client
-                client.RegisterAction("com.sharpdeck.testplugin.counter", () => new CounterAction(500));
-                client.Start();
-            }
+            StreamDeckPlugin.Run();
         }
     }
 }

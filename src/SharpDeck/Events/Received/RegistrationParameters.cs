@@ -1,7 +1,8 @@
-﻿namespace SharpDeck.Events.Received
+namespace SharpDeck.Events.Received
 {
-    using Newtonsoft.Json;
     using System;
+    using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides information about registration parameters supplied by an Elgato Stream Deck when initialising a client.
@@ -29,12 +30,13 @@
         public RegistrationInfo Info { get; set; }
 
         /// <summary>
-        /// Attempts to parse the specified arguments to <see cref="RegistrationParameters"/>.
+        /// Attempts to parse the specified arguments to <see cref="RegistrationParameters"/>; when <paramref name="args"/> is null, <see cref="Environment.GetCommandLineArgs"/> is used.
         /// </summary>
         /// <param name="args">The args.</param>
         /// <returns>The result of parsing.</returns>
-        public static RegistrationParameters Parse(string[] args)
+        public static RegistrationParameters Parse(string[] args = null)
         {
+            args = args ?? Environment.GetCommandLineArgs().Skip(1).Take(8).ToArray();
             if (args.Length != 8)
             {
                 throw new ArgumentException($"Invalid number of parameters: Expected 8, but was {args.Length}.");

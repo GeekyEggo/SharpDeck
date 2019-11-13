@@ -1,7 +1,6 @@
 namespace SharpDeck.DependencyInjection
 {
     using System;
-    using System.Linq;
     using System.Reflection;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -10,22 +9,22 @@ namespace SharpDeck.DependencyInjection
     /// <summary>
     /// Provides information to be used when starting a <see cref="StreamDeckClient"/> with auto registration.
     /// </summary>
-    internal class StreamDeckClientRunnerInfo
+    internal class StreamDeckPluginInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckClientRunnerInfo"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckPluginInfo"/> class.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <param name="args">The arguments.</param>
         /// <param name="provider">The provider.</param>
         /// <param name="setup">The optional additional setup.</param>
         /// <param name="logger">The logger.</param>
-        public StreamDeckClientRunnerInfo(Assembly assembly = null, string[] args = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
+        public StreamDeckPluginInfo(Assembly assembly = null, string[] args = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
         {
             this.Assembly = assembly;
             this.Logger = logger;
             this.Provider = provider ?? new ServiceCollection().BuildServiceProvider();
-            this.RegistrationParameters = RegistrationParameters.Parse(args ?? Environment.GetCommandLineArgs().Skip(1).Take(8).ToArray());
+            this.RegistrationParameters = RegistrationParameters.Parse(args);
             this.Setup = setup ?? (_ => { });
         }
 
