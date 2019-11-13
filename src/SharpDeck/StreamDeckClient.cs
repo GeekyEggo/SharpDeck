@@ -42,10 +42,10 @@ namespace SharpDeck
             this.RegistrationParameters = registrationParameters;
             this.Logger = logger;
 
-            this.ActionProvider = new StreamDeckActionProvider(this);
-
             this.Connection = new WebSocketStreamDeckConnection();
             this.Connection.Error += (s, e) => this.OnError(e);
+
+            this.ActionProvider = new StreamDeckActionProvider(this.Connection, this);
             this.PropagateFrom(this.Connection);
         }
 

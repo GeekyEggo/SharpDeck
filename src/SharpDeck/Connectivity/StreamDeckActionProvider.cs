@@ -18,26 +18,27 @@ namespace SharpDeck.Connectivity
         private static readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckActionProvider"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckActionProvider" /> class.
         /// </summary>
-        /// <param name="client">The parent Stream Deck client.</param>
-        public StreamDeckActionProvider(IStreamDeckClient client)
+        /// <param name="connection">The connection responsible for invoking actions received by the Stream Deck.</param>
+        /// <param name="client">The Stream Deck client.</param>
+        public StreamDeckActionProvider(IStreamDeckActionEventPropogator connection, IStreamDeckClient client)
         {
             this.Cache = new StreamDeckActionCache(client);
             this.Client = client;
 
             // responsible for caching
-            client.WillAppear += this.Action_WillAppear;
+            connection.WillAppear += this.Action_WillAppear;
 
             // action propagation
-            client.DidReceiveSettings               += (_, e) => this.PropagateOnAction(e, a => a.OnDidReceiveSettings);
-            client.KeyDown                          += (_, e) => this.PropagateOnAction(e, a => a.OnKeyDown);
-            client.KeyUp                            += (_, e) => this.PropagateOnAction(e, a => a.OnKeyUp);
-            client.PropertyInspectorDidAppear       += (_, e) => this.PropagateOnAction(e, a => a.OnPropertyInspectorDidAppear);
-            client.PropertyInspectorDidDisappear    += (_, e) => this.PropagateOnAction(e, a => a.OnPropertyInspectorDidDisappear);
-            client.SendToPlugin                     += (_, e) => this.PropagateOnAction(e, a => a.OnSendToPlugin);
-            client.TitleParametersDidChange         += (_, e) => this.PropagateOnAction(e, a => a.OnTitleParametersDidChange);
-            client.WillDisappear                    += (_, e) => this.PropagateOnAction(e, a => a.OnWillDisappear);
+            connection.DidReceiveSettings               += (_, e) => this.PropagateOnAction(e, a => a.OnDidReceiveSettings);
+            connection.KeyDown                          += (_, e) => this.PropagateOnAction(e, a => a.OnKeyDown);
+            connection.KeyUp                            += (_, e) => this.PropagateOnAction(e, a => a.OnKeyUp);
+            connection.PropertyInspectorDidAppear       += (_, e) => this.PropagateOnAction(e, a => a.OnPropertyInspectorDidAppear);
+            connection.PropertyInspectorDidDisappear    += (_, e) => this.PropagateOnAction(e, a => a.OnPropertyInspectorDidDisappear);
+            connection.SendToPlugin                     += (_, e) => this.PropagateOnAction(e, a => a.OnSendToPlugin);
+            connection.TitleParametersDidChange         += (_, e) => this.PropagateOnAction(e, a => a.OnTitleParametersDidChange);
+            connection.WillDisappear                    += (_, e) => this.PropagateOnAction(e, a => a.OnWillDisappear);
         }
 
         /// <summary>
