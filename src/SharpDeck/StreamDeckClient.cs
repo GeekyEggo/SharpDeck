@@ -10,6 +10,7 @@ namespace SharpDeck
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
+    using SharpDeck.Connectivity.Net;
     using SharpDeck.DependencyInjection;
     using SharpDeck.Enums;
     using SharpDeck.Events;
@@ -62,7 +63,7 @@ namespace SharpDeck
         /// <summary>
         /// Gets or sets the connection to the Stream Deck.
         /// </summary>
-        private WebSocketStreamDeckConnection Connection { get; }
+        private IStreamDeckConnection Connection { get; }
 
         /// <summary>
         /// Gets the logger.

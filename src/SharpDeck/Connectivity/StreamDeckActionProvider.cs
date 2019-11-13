@@ -25,7 +25,7 @@ namespace SharpDeck.Connectivity
         /// <param name="client">The Stream Deck client.</param>
         public StreamDeckActionProvider(IStreamDeckActionEventPropagator connection, IStreamDeckClient client)
         {
-            this.Cache = new StreamDeckActionCache(client);
+            this.Cache = new StreamDeckActionCacheCollection(client);
             this.Client = client;
 
             // responsible for caching
@@ -50,7 +50,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
         /// </summary>
-        private IStreamDeckActionCache Cache { get; }
+        private IStreamDeckActionCacheCollection Cache { get; }
 
         /// <summary>
         /// Gets the client.

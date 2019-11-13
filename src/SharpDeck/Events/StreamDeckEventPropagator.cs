@@ -89,7 +89,7 @@ namespace SharpDeck.Events
         /// Registers this instance to listen to events from <paramref name="source"/>, and propagate them.
         /// </summary>
         /// <param name="source">The source to listen to.</param>
-        protected void PropagateFrom(StreamDeckEventPropagator source)
+        protected void PropagateFrom(IStreamDeckEventPropagator source)
         {
             // global
             source.ApplicationDidLaunch     += (_, e) => this.OnApplicationDidLaunch(e);

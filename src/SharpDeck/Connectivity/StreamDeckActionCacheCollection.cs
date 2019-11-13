@@ -9,7 +9,7 @@ namespace SharpDeck.Connectivity
     /// <summary>
     /// Provides cache and validity management of <see cref="StreamDeckAction"/>.
     /// </summary>
-    public sealed class StreamDeckActionCache : IStreamDeckActionCache
+    public sealed class StreamDeckActionCacheCollection : IStreamDeckActionCacheCollection
     {
         /// <summary>
         /// The key used to assigned a SharpDeck UUID to <see cref="SettingsPayload.Settings"/>.
@@ -22,10 +22,10 @@ namespace SharpDeck.Connectivity
         private static readonly object _syncRoot = new object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckActionCache"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckActionCacheCollection"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public StreamDeckActionCache(IStreamDeckClient client)
+        public StreamDeckActionCacheCollection(IStreamDeckClient client)
         {
             this.Client = client;
         }

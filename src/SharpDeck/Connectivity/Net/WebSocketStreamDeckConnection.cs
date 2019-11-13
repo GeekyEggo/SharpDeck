@@ -1,4 +1,4 @@
-namespace SharpDeck.Connectivity
+namespace SharpDeck.Connectivity.Net
 {
     using System;
     using System.Threading;
