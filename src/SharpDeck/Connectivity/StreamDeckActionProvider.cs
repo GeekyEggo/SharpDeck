@@ -1,6 +1,7 @@
 namespace SharpDeck.Connectivity
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace SharpDeck.Connectivity
     /// <summary>
     /// Provides connectivity between a <see cref="StreamDeckClient"/> and registered <see cref="StreamDeckAction"/>.
     /// </summary>
-    public class StreamDeckActionProvider
+    public sealed class StreamDeckActionProvider : IDisposable
     {
         /// <summary>
         /// The synchronization root.
@@ -22,7 +23,7 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="connection">The connection responsible for invoking actions received by the Stream Deck.</param>
         /// <param name="client">The Stream Deck client.</param>
-        public StreamDeckActionProvider(IStreamDeckActionEventPropogator connection, IStreamDeckClient client)
+        public StreamDeckActionProvider(IStreamDeckActionEventPropagator connection, IStreamDeckClient client)
         {
             this.Cache = new StreamDeckActionCache(client);
             this.Client = client;
@@ -44,7 +45,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the actions factory, used to initialize new instances of actions.
         /// </summary>
-        private IDictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>> ActionFactory { get; } = new Dictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>>();
+        private IDictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>> ActionFactory { get; } = new ConcurrentDictionary<string, Func<ActionEventArgs<AppearancePayload>, StreamDeckAction>>();
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -57,6 +58,17 @@ namespace SharpDeck.Connectivity
         private IStreamDeckClient Client { get; }
 
         /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.ActionFactory?.Clear();
+            this.Cache?.Dispose();
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
         /// </summary>
         /// <typeparam name="T">The type of Stream Deck action.</typeparam>
@@ -67,7 +79,7 @@ namespace SharpDeck.Connectivity
             => this.ActionFactory.Add(action, valueFactory);
 
         /// <summary>
-        /// Handles the <see cref="StreamDeckActionEventPropagator.WillAppear"/> event of the <see cref="Client"/>.
+        /// Handles the <see cref="IStreamDeckActionEventPropagator.WillAppear"/> event of the <see cref="Client"/>.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
@@ -92,6 +104,11 @@ namespace SharpDeck.Connectivity
                 }
 
                 _ = action.OnWillAppear(e);
+            }
+            catch (Exception ex)
+            {
+                _ = this.Client.ShowAlertAsync(e.Context);
+                _ = this.Client.LogMessageAsync(ex.Message);
             }
             finally
             {

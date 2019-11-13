@@ -92,10 +92,10 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public async void Dispose()
+        public void Dispose()
         {
-            await this.DisconnectAsync();
-            this.WebSocket = null;
+            _ = this.DisconnectAsync();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

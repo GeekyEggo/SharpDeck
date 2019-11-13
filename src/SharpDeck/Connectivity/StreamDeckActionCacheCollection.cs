@@ -2,8 +2,6 @@ namespace SharpDeck.Connectivity
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
@@ -11,7 +9,7 @@ namespace SharpDeck.Connectivity
     /// <summary>
     /// Provides cache and validity management of <see cref="StreamDeckAction"/>.
     /// </summary>
-    public class StreamDeckActionCache : IStreamDeckActionCache
+    public sealed class StreamDeckActionCache : IStreamDeckActionCache
     {
         /// <summary>
         /// The key used to assigned a SharpDeck UUID to <see cref="SettingsPayload.Settings"/>.
@@ -21,7 +19,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// The synchronization root.
         /// </summary>
-        private static readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
+        private static readonly object _syncRoot = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckActionCache"/> class.
@@ -40,7 +38,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the cached items.
         /// </summary>
-        private Dictionary<string, StreamDeckActionCacheEntry> Items { get; } = new Dictionary<string, StreamDeckActionCacheEntry>();
+        private IDictionary<string, StreamDeckActionCacheEntry> Items { get; } = new Dictionary<string, StreamDeckActionCacheEntry>();
 
         /// <summary>
         /// Adds the specified <paramref name="action" /> against the <paramref name="key" />.
@@ -49,10 +47,8 @@ namespace SharpDeck.Connectivity
         /// <param name="action">The action to cache.</param>
         public void Add(ActionEventArgs<AppearancePayload> key, StreamDeckAction action)
         {
-            try
+            lock (_syncRoot)
             {
-                _syncRoot.Wait();
-
                 // construct the entry, apply the uuid to the action settings, and add the new item to the cache
                 var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
 
@@ -61,10 +57,24 @@ namespace SharpDeck.Connectivity
 
                 this.Items.Add(key.Context, entry);
             }
-            finally
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            lock (_syncRoot)
             {
-                _syncRoot.Release();
+                foreach (var item in this.Items)
+                {
+                    item.Value.Action.Dispose();
+                }
+
+                this.Items.Clear();
             }
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -86,9 +96,8 @@ namespace SharpDeck.Connectivity
         public bool TryGet<T>(IActionEventArgs key, out StreamDeckAction action, T payload)
             where T : SettingsPayload
         {
-            try
+            lock(_syncRoot)
             {
-                _syncRoot.Wait();
                 action = null;
 
                 // check if the item exists
@@ -109,10 +118,6 @@ namespace SharpDeck.Connectivity
 
                 action = cacheEntry?.Action;
                 return action != null;
-            }
-            finally
-            {
-                _syncRoot.Release();
             }
         }
 

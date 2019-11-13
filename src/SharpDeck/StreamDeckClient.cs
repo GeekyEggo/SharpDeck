@@ -267,6 +267,8 @@ namespace SharpDeck
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+
+            this.ActionProvider?.Dispose();
             this.Connection?.Dispose();
         }
 

@@ -6,7 +6,7 @@ namespace SharpDeck
     /// <summary>
     /// Provides methods, events and properties for controlling and communicating with an Elgato Stream Deck.
     /// </summary>
-    public interface IStreamDeckClient : IStreamDeckSender, IStreamDeckActionEventPropogator, IStreamDeckEventPropagator
+    public interface IStreamDeckClient : IStreamDeckSender, IStreamDeckActionEventPropagator, IStreamDeckEventPropagator
     {
         /// <summary>
         /// Occurs when the client encounters an error.

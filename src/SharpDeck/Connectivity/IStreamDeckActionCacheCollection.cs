@@ -1,11 +1,12 @@
 namespace SharpDeck.Connectivity
 {
+    using System;
     using SharpDeck.Events.Received;
 
     /// <summary>
     /// Provides cache and validity management of <see cref="StreamDeckAction"/>.
     /// </summary>
-    public interface IStreamDeckActionCache
+    public interface IStreamDeckActionCache : IDisposable
     {
         /// <summary>
         /// Adds the specified <paramref name="action"/> against the <paramref name="key"/>.

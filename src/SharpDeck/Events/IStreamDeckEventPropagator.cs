@@ -6,7 +6,7 @@ namespace SharpDeck.Events
     /// <summary>
     /// Provides an interface that defines events that can be propogated from a Stream Deck.
     /// </summary>
-    public interface IStreamDeckEventPropagator : IStreamDeckActionEventPropogator
+    public interface IStreamDeckEventPropagator : IStreamDeckActionEventPropagator
     {
         /// <summary>
         /// Occurs when a monitored application is launched.

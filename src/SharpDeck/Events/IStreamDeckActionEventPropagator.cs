@@ -7,7 +7,7 @@ namespace SharpDeck.Events
     /// <summary>
     /// Provides an interface that defines events that can be propogated from a Stream Deck, in relation to an action.
     /// </summary>
-    public interface IStreamDeckActionEventPropogator
+    public interface IStreamDeckActionEventPropagator
     {
         /// <summary>
         /// Occurs when <see cref="IStreamDeckSender.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.
