@@ -38,14 +38,17 @@ namespace SharpDeck.Connectivity.Net
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task ConnectAsync(RegistrationParameters registrationParameters, CancellationToken cancellationToken)
+        public Task ConnectAsync(RegistrationParameters registrationParameters, CancellationToken cancellationToken)
         {
             this.WebSocket = new WebSocketConnection($"ws://localhost:{registrationParameters.Port}/", Constants.DEFAULT_JSON_SETTINGS);
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
 
-            await this.WebSocket.ConnectAsync();
-            await this.WebSocket.SendJsonAsync(new RegistrationMessage(registrationParameters.Event, registrationParameters.PluginUUID));
-            await this.WebSocket.ReceiveAsync(cancellationToken);
+            return Task.Run(async () =>
+            {
+                await this.WebSocket.ConnectAsync();
+                await this.WebSocket.SendJsonAsync(new RegistrationMessage(registrationParameters.Event, registrationParameters.PluginUUID));
+                await this.WebSocket.ReceiveAsync(cancellationToken);
+            });
         }
 
         /// <summary>

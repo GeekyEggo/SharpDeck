@@ -2,6 +2,8 @@ namespace SharpDeck.Connectivity
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
@@ -19,7 +21,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// The synchronization root.
         /// </summary>
-        private static readonly object _syncRoot = new object();
+        private static readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckActionCacheCollection"/> class.
@@ -45,17 +47,23 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="key">The <see cref="ActionEventArgs{AppearancePayload}" /> instance containing the event data.</param>
         /// <param name="action">The action to cache.</param>
-        public void Add(ActionEventArgs<AppearancePayload> key, StreamDeckAction action)
+        public async Task AddAsync(ActionEventArgs<AppearancePayload> key, StreamDeckAction action)
         {
-            lock (_syncRoot)
+            try
             {
+                await _syncRoot.WaitAsync();
+
                 // construct the entry, apply the uuid to the action settings, and add the new item to the cache
                 var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
 
                 key.Payload.Settings[SHARP_DECK_UUID_KEY] = entry.UUID;
-                _ = this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
+                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
 
                 this.Items.Add(key.Context, entry);
+            }
+            finally
+            {
+                _syncRoot.Release();
             }
         }
 
@@ -64,14 +72,20 @@ namespace SharpDeck.Connectivity
         /// </summary>
         public void Dispose()
         {
-            lock (_syncRoot)
+            try
             {
+                _syncRoot.Wait();
+
                 foreach (var item in this.Items)
                 {
                     item.Value.Action.Dispose();
                 }
 
                 this.Items.Clear();
+            }
+            finally
+            {
+                _syncRoot.Release();
             }
 
             GC.SuppressFinalize(this);
@@ -96,8 +110,9 @@ namespace SharpDeck.Connectivity
         public bool TryGet<T>(IActionEventArgs key, out StreamDeckAction action, T payload)
             where T : SettingsPayload
         {
-            lock(_syncRoot)
+            try
             {
+                _syncRoot.Wait();
                 action = null;
 
                 // check if the item exists
@@ -118,6 +133,10 @@ namespace SharpDeck.Connectivity
 
                 action = cacheEntry?.Action;
                 return action != null;
+            }
+            finally
+            {
+                _syncRoot.Release();
             }
         }
 

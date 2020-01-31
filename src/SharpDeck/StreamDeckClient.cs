@@ -96,11 +96,10 @@ namespace SharpDeck
         /// Starts Stream Deck client, and continuously listens for events received by the Elgato Stream Deck.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public void Start(CancellationToken cancellationToken)
+        public async void Start(CancellationToken cancellationToken)
         {
-            var task = this.StartAsync(cancellationToken);
-            task.ConfigureAwait(false);
-            task.Wait(cancellationToken);
+            await this.StartAsync(cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
