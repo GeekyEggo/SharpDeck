@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.0.0
+        dotnet-version: 3.1.100
 
     - name: Build
       run: dotnet build ./src/SharpDeck.sln --configuration Release
@@ -31,17 +31,15 @@ jobs:
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
-    - name: Setup node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
+    - name: Clean
+      run: del dist /s /q
 
     - name: Pack
-      run: npm run nuget:pack
+      run: dotnet pack ./src/SharpDeck -c Release
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
     - name: Push to NuGet
-      run: npm run nuget:push
+      run: dotnet nuget push **/dist/*.nupkg -k %NUGET_API_KEY% -s https://api.nuget.org/v3/index.json --no-symbols true --skip-duplicate
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

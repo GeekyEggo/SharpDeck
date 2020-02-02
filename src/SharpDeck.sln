@@ -11,7 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-4
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
 		..\LICENSE.md = ..\LICENSE.md
-		..\package.json = ..\package.json
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
@@ -23,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8B77
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{650416DC-EBAB-4C97-BA6A-EA3C32A435E8}"
 	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\main.yml = ..\.github\workflows\main.yml
+		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 		..\.github\workflows\release.yml = ..\.github\workflows\release.yml
 	EndProjectSection
 EndProject
