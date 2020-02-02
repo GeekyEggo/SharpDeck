@@ -8,7 +8,7 @@ namespace SharpDeck.Events
     /// <summary>
     /// Provides a handler for an event received from an Elgato Stream Deck for an instance of an action.
     /// </summary>
-    public class StreamDeckActionEventPropagator : IDisposable
+    public class StreamDeckActionEventPropagator : IStreamDeckActionEventPropagator, IDisposable
     {
         /// <summary>
         /// Occurs when <see cref="IStreamDeckSender.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.

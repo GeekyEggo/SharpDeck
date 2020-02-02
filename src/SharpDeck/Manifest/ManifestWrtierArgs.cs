@@ -33,6 +33,7 @@ namespace SharpDeck.Manifest
 
         /// <summary>
         /// Gets the optional NPM package path.
+        /// </summary>
         public CommandOption NpmPackagePath { get; }
 
         /// <summary>
