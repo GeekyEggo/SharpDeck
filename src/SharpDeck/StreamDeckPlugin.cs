@@ -5,84 +5,139 @@ namespace SharpDeck
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using SharpDeck.DependencyInjection;
+    using SharpDeck.Connectivity;
+    using SharpDeck.Connectivity.Net;
+    using SharpDeck.Events.Received;
     using SharpDeck.Exceptions;
     using SharpDeck.Extensions;
     using SharpDeck.Manifest;
 
     /// <summary>
-    /// Provides a wrapper for running a <see cref="StreamDeckClient"/>, after auto-registering all actions that implement <see cref="StreamDeckAction"/> and have the attribute <see cref="StreamDeckActionAttribute"/>.
+    /// Provides a wrapper for connecting and communication with a Stream Deck.
     /// </summary>
-    public static class StreamDeckPlugin
+    public class StreamDeckPlugin
     {
         /// <summary>
-        /// The maximum retry count.
+        /// Initializes a new instance of the <see cref="StreamDeckPlugin"/> class.
         /// </summary>
-        private const int MAX_RETRY_COUNT = 3;
-
-        /// <summary>
-        /// Starts the <see cref="StreamDeckClient"/>.
-        /// </summary>
-        /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
-        /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
-        /// <param name="logger">The optional logger.</param>
-        /// <param name="setup">The optional additional setup.</param>
-        public static async void Run(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
-            => await RunAsync(args, assembly ?? Assembly.GetCallingAssembly(), provider, logger, setup).ConfigureAwait(false);
-
-        /// <summary>
-        /// Starts the <see cref="StreamDeckClient"/> asynchronously.
-        /// </summary>
-        /// <param name="args">The optional command line arguments supplied when running the plug-in; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/>; when null, <see cref="Assembly.GetEntryAssembly"/> is used.</param>
-        /// <param name="provider">The optional service provider to resolve new instances of the registered <see cref="StreamDeckAction"/>.</param>
-        /// <param name="logger">The optional logger.</param>
-        /// <param name="setup">The optional additional setup.</param>
-        /// <returns>The task of running the client.</returns>
-        public static Task RunAsync(string[] args = null, Assembly assembly = null, IServiceProvider provider = null, ILogger logger = null, Action<IStreamDeckClient> setup = null)
-            => RunAsync(new StreamDeckPluginInfo(assembly ?? Assembly.GetCallingAssembly(), args, provider, logger, setup));
-
-        /// <summary>
-        /// Runs the <see cref="StreamDeckClient" /> asynchronously.
-        /// </summary>
-        /// <param name="info">The information used to determine how the client should be setup and started.</param>
-        /// <param name="retryCount">The retry count used when attempting to restart a failed client.</param>
-        private static async Task RunAsync(StreamDeckPluginInfo info, int retryCount = 0)
+        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
+        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/> to be registered.</param>
+        private StreamDeckPlugin(string[] args, Assembly assembly = null)
         {
-            try
-            {
-                using (var client = new StreamDeckClient(info.RegistrationParameters, info.Logger))
-                {
-                    RegisterActions(client, info.Assembly, info.Provider);
-                    info.Setup(client);
+            this.RegistrationParameters = new RegistrationParameters(args);
+            this.Connection = new StreamDeckWebSocketConnection();
+            this.Actions = new StreamDeckActionProvider(this.Connection);
 
-                    await client.StartAsync(CancellationToken.None);
-                }
-            }
-            catch (Exception ex) when (!(ex is InvalidStreamDeckActionTypeException) && retryCount < MAX_RETRY_COUNT)
-            {
-                await RunAsync(info, retryCount + 1);
-            }
+            // configurable settings
+            this.Assembly = assembly;
+            this.Setup = _ => { };
+            this.ServiceProvider = new ServiceCollection().BuildServiceProvider();
+        }
+
+        /// <summary>
+        /// Gets or sets the assembly containing the <see cref="StreamDeckAction"/> to register.
+        /// </summary>
+        private Assembly Assembly { get; set; }
+
+        /// <summary>
+        /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
+        /// </summary>
+        private StreamDeckWebSocketConnection Connection { get; }
+
+        /// <summary>
+        /// Gets the Stream Deck actions provider.
+        /// </summary>
+        private StreamDeckActionProvider Actions { get; }
+
+        /// <summary>
+        /// Gets the delegate that provides additional setup.
+        /// </summary>
+        private Action<IStreamDeckConnection> Setup { get; set; }
+
+        /// <summary>
+        /// Gets the registration parameters.
+        /// </summary>
+        private RegistrationParameters RegistrationParameters { get; }
+
+        /// <summary>
+        /// Gets the provider used to resolve new instances of the <see cref="StreamDeckAction"/>.
+        /// </summary>
+        private IServiceProvider ServiceProvider { get; set; }
+
+        /// <summary>
+        /// Creates a new instance of a <see cref="StreamDeckPlugin"/>.
+        /// </summary>
+        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
+        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/> to be registered; when null, <see cref="Assembly.GetCallingAssembly"/> is used.</param>
+        /// <returns>The Stream Deck plugin.</returns>
+        public static StreamDeckPlugin Create(string[] args = null, Assembly assembly = null)
+            => new StreamDeckPlugin(args, assembly ?? Assembly.GetCallingAssembly());
+
+        /// <summary>
+        /// Runs the plugin.
+        /// </summary>
+        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
+        /// <returns>The task of running the plugin.</returns>
+        public static async void Run(string[] args = null)
+            => await RunAsync(CancellationToken.None, args).ConfigureAwait(false);
+
+        /// <summary>
+        /// Runs the plugin asynchronously.
+        /// </summary>
+        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task of running the plugin.</returns>
+        public static Task RunAsync(CancellationToken cancellationToken, string[] args = null)
+            => new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).RunAsync(cancellationToken);
+
+        /// <summary>
+        /// Sets the delegate to applied immediately before a connection is established with the Stream Deck.
+        /// </summary>
+        /// <param name="setup">The delegate.</param>
+        /// <returns>This instance.</returns>
+        public StreamDeckPlugin OnSetup(Action<IStreamDeckConnection> setup)
+        {
+            this.Setup = setup;
+            return this;
+        }
+
+        /// <summary>
+        /// Runs the Stream Deck plugin asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The task of connecting and maintaining the connection with the Stream Deck.</returns>
+        public Task RunAsync(CancellationToken cancellationToken)
+        {
+            this.RegisterActions();
+            this.Setup(this.Connection);
+
+            return this.Connection.ConnectAsync(this.RegistrationParameters, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sets the <see cref="IServiceProvider"/> to be used when resolving instances of <see cref="StreamDeckAction"/>.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <returns>This instance.</returns>
+        public StreamDeckPlugin WithServiceProvider(IServiceProvider serviceProvider)
+        {
+            this.ServiceProvider = serviceProvider;
+            return this;
         }
 
         /// <summary>
         /// Registers all <see cref="StreamDeckAction"/> implementations within <see cref="Assembly"/> that have the <see cref="StreamDeckActionAttribute"/>.
         /// </summary>
-        /// <param name="client">The Stream Deck client.</param>
-        /// <param name="assembly">The assembly containing the actions.</param>
-        /// <param name="provider">The service provider used to resolve new instances of <see cref="StreamDeckAction"/>.</param>
-        private static void RegisterActions(StreamDeckClient client, Assembly assembly, IServiceProvider provider)
+        private void RegisterActions()
         {
-            foreach (var (type, attribute) in assembly.GetTypesWithCustomAttribute<StreamDeckActionAttribute>())
+            foreach (var (type, attribute) in this.Assembly.GetTypesWithCustomAttribute<StreamDeckActionAttribute>())
             {
                 if (!typeof(StreamDeckAction).IsAssignableFrom(type))
                 {
                     throw new InvalidStreamDeckActionTypeException(type);
                 }
 
-                client.RegisterAction(attribute.UUID, () => (StreamDeckAction)ActivatorUtilities.CreateInstance(provider, type));
+                this.Actions.Register(attribute.UUID, () => (StreamDeckAction)ActivatorUtilities.CreateInstance(this.ServiceProvider, type));
             }
         }
     }

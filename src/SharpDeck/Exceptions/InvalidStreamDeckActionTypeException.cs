@@ -3,7 +3,7 @@ namespace SharpDeck.Exceptions
     using System;
 
     /// <summary>
-    /// An exception thrown during automatical initialization of the <see cref="StreamDeckClient"/>.
+    /// An exception thrown during automatical initialization of the <see cref="StreamDeckPlugin"/>.
     /// </summary>
     public class InvalidStreamDeckActionTypeException : Exception
     {

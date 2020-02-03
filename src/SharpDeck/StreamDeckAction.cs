@@ -5,19 +5,23 @@ namespace SharpDeck
     using System.Threading.Tasks;
     using Enums;
     using Newtonsoft.Json.Linq;
-    using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.PropertyInspectors;
 
     /// <summary>
-    /// Provides a base implementation of an action that can be registered on a <see cref="StreamDeckClient"/>.
+    /// Provides a base implementation for a Stream Deck action.
     /// </summary>
-    public class StreamDeckAction : StreamDeckActionEventPropagator
+    public class StreamDeckAction
     {
         /// <summary>
         /// Gets the property inspector method collection caches.
         /// </summary>
         private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.
+        /// </summary>
+        private event EventHandler<ActionEventArgs<ActionPayload>> DidReceiveSettings;
 
         /// <summary>
         /// Gets the actions unique identifier. If your plugin supports multiple actions, you should use this value to see which action was triggered.
@@ -40,9 +44,9 @@ namespace SharpDeck
         protected bool EnablePropertyInspectorMethods { get; set; } = true;
 
         /// <summary>
-        /// Gets the Elgato Stream Deck client.
+        /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
         /// </summary>
-        protected IStreamDeckSender StreamDeck { get; private set; }
+        protected IStreamDeckConnection StreamDeck { get; private set; }
 
         /// <summary>
         /// Gets this action's instances settings asynchronously.
@@ -121,27 +125,33 @@ namespace SharpDeck
         /// Sets the context and initializes the action.
         /// </summary>
         /// <param name="args">The arguments containing the context.</param>
-        /// <param name="streamDeck">The Stream Deck client.</param>
+        /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages..</param>
         /// <returns>The task of setting the context and initialization.</returns>
-        internal virtual void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckSender streamDeck)
+        internal virtual void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckConnection connection)
         {
             this.ActionUUID = args.Action;
             this.Context = args.Context;
             this.Device = args.Device;
-            this.StreamDeck = streamDeck;
+            this.StreamDeck = connection;
 
             this.OnInit(args);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
-        {
-            this.StreamDeck = null;
-            base.Dispose(disposing);
-        }
+        protected virtual void Dispose(bool disposing)
+            => this.StreamDeck = null;
 
         /// <summary>
         /// Occurs when this instance is initialized.
@@ -150,13 +160,55 @@ namespace SharpDeck
         protected virtual void OnInit(ActionEventArgs<AppearancePayload> args) { }
 
         /// <summary>
-        /// Occurs when the property inspector sends a message to the plugin.
+        /// Occurs when <see cref="IStreamDeckConnection.DidReceiveSettings"/> is received for this instance.
         /// </summary>
-        /// <param name="args">The <see cref="ActionEventArgs{JObject}" /> instance containing the event data.</param>
-        protected internal override Task OnSendToPlugin(ActionEventArgs<JObject> args)
+        /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
         {
-            base.OnSendToPlugin(args);
+            this.DidReceiveSettings?.Invoke(this, args);
+            return Task.CompletedTask;
+        }
 
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.KeyDown"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnKeyDown(ActionEventArgs<KeyPayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.KeyUp"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnKeyUp(ActionEventArgs<KeyPayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.PropertyInspectorDidAppear"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnPropertyInspectorDidAppear(ActionEventArgs args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.PropertyInspectorDidDisappear"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnPropertyInspectorDidDisappear(ActionEventArgs args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.SendToPlugin"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnSendToPlugin(ActionEventArgs<JObject> args)
+        {
             if (this.EnablePropertyInspectorMethods)
             {
                 var factory = PropertyInspectorMethodCollections.GetOrAdd(this.GetType(), t => new PropertyInspectorMethodCollection(t));
@@ -165,5 +217,29 @@ namespace SharpDeck
 
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.TitleParametersDidChange"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{TitlePayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.WillAppear"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.WillDisappear"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
+            => Task.CompletedTask;
     }
 }

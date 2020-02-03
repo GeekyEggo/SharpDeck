@@ -1,7 +1,7 @@
-﻿namespace SharpDeck.Events.Received
+namespace SharpDeck.Events.Received
 {
     /// <summary>
-    /// Provides information about registration; this is used when initialising a <see cref="StreamDeckClient"/>, and is typically supplied as an argument.
+    /// Provides information about registration; this is used when initialising a connection with the Stream.
     /// </summary>
     public class RegistrationInfo
     {

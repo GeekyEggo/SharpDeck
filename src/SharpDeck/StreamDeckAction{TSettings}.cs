@@ -1,11 +1,10 @@
 namespace SharpDeck
 {
     using System.Threading.Tasks;
-    using SharpDeck.Events;
     using SharpDeck.Events.Received;
 
     /// <summary>
-    /// Provides an implementation of an action, containing settings, that can be registered on a <see cref="StreamDeckClient"/>.
+    /// Provides a base implementation for a Stream Deck action that contains custom settings.
     /// </summary>
     /// <typeparam name="TSettings">The type of the settings.</typeparam>
     public class StreamDeckAction<TSettings> : StreamDeckAction
@@ -19,22 +18,22 @@ namespace SharpDeck
             => this.GetSettingsAsync<TSettings>();
 
         /// <summary>
-        /// Raises the <see cref="StreamDeckActionEventPropagator.DidReceiveSettings" /> event.
+        /// Occurs when <see cref="IStreamDeckConnection.DidReceiveSettings"/> is received for this instance.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
-        /// <returns>The task of updating the state of the object based on the settings.</returns>
+        /// <returns>The task of handling the event.</returns>
         protected internal override async Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
         {
-            await this.OnDidReceiveSettings(args, args.Payload.GetSettings<TSettings>());
             await base.OnDidReceiveSettings(args);
+            await this.OnDidReceiveSettings(args, args.Payload.GetSettings<TSettings>());
         }
 
         /// <summary>
-        /// Handles the <see cref="StreamDeckActionEventPropagator.DidReceiveSettings" /> event.
+        /// Occurs when <see cref="IStreamDeckConnection.DidReceiveSettings"/> is received for this instance.
         /// </summary>
-        /// <param name="args">The <see cref="ActionEventArgs{TActionPayload}" /> instance containing the event data.</param>
+        /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <param name="settings">The settings.</param>
-        /// <returns>The task of updating the state of the object based on the settings.</returns>
+        /// <returns>The task of handling the event.</returns>
         protected virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args, TSettings settings)
             => Task.CompletedTask;
 

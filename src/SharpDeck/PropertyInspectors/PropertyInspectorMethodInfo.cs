@@ -4,12 +4,11 @@ namespace SharpDeck.PropertyInspectors
     using System.Reflection;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
-    using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
 
     /// <summary>
-    /// Provides information about method that should be invoked when receiving a specific message from <see cref="StreamDeckActionEventPropagator.SendToPlugin"/>.
+    /// Provides information about method that should be invoked when receiving a specific message from <see cref="IStreamDeckConnection.SendToPlugin"/>.
     /// </summary>
     public class PropertyInspectorMethodInfo
     {

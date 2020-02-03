@@ -26,16 +26,16 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckActionCacheCollection"/> class.
         /// </summary>
-        /// <param name="client">The client.</param>
-        public StreamDeckActionCacheCollection(IStreamDeckClient client)
+        /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
+        public StreamDeckActionCacheCollection(IStreamDeckConnection connection)
         {
-            this.Client = client;
+            this.Connection = connection;
         }
 
         /// <summary>
-        /// Gets the Stream Deck client.
+        /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
         /// </summary>
-        public IStreamDeckClient Client { get; }
+        public IStreamDeckConnection Connection { get; }
 
         /// <summary>
         /// Gets the cached items.
@@ -57,7 +57,7 @@ namespace SharpDeck.Connectivity
                 var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
 
                 key.Payload.Settings[SHARP_DECK_UUID_KEY] = entry.UUID;
-                await this.Client.SetSettingsAsync(key.Context, key.Payload.Settings);
+                await this.Connection.SetSettingsAsync(key.Context, key.Payload.Settings);
 
                 this.Items.Add(key.Context, entry);
             }

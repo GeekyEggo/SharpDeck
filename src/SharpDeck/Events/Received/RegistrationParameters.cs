@@ -10,14 +10,40 @@ namespace SharpDeck.Events.Received
     public class RegistrationParameters
     {
         /// <summary>
-        /// Gets or sets the port.
+        /// Initializes a new instance of the <see cref="RegistrationParameters"/> class.
         /// </summary>
-        public int Port { get; set; }
+        /// <param name="args">The arguments.</param>
+        /// <exception cref="ArgumentException">Invalid number of parameters: Expected 8, but was {args.Length}.</exception>
+        public RegistrationParameters(string[] args = null)
+        {
+            args = args ?? Environment.GetCommandLineArgs().Skip(1).Take(8).ToArray();
+            if (args.Length != 8)
+            {
+                throw new ArgumentException($"Invalid number of parameters: Expected 8, but was {args.Length}.");
+            }
 
-        /// <summary>
-        /// Gets or sets a unique identifier string that should be used to register the plugin once the WebSocket is opened.
-        /// </summary>
-        public string PluginUUID { get; set; }
+            for (var i = 0; i < 4; i++)
+            {
+                var param = args[(i * 2)];
+                var value = args[(i * 2) + 1];
+
+                switch (param)
+                {
+                    case "-port":
+                        this.Port = int.Parse(value);
+                        break;
+                    case "-pluginUUID":
+                        this.PluginUUID = value;
+                        break;
+                    case "-registerEvent":
+                        this.Event = value;
+                        break;
+                    case "-info":
+                        this.Info = JsonConvert.DeserializeObject<RegistrationInfo>(value);
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the event type that should be used to register the plugin once the WebSocket is opened.
@@ -30,42 +56,13 @@ namespace SharpDeck.Events.Received
         public RegistrationInfo Info { get; set; }
 
         /// <summary>
-        /// Attempts to parse the specified arguments to <see cref="RegistrationParameters"/>; when <paramref name="args"/> is null, <see cref="Environment.GetCommandLineArgs"/> is used.
+        /// Gets or sets the port.
         /// </summary>
-        /// <param name="args">The args.</param>
-        /// <returns>The result of parsing.</returns>
-        public static RegistrationParameters Parse(string[] args = null)
-        {
-            args = args ?? Environment.GetCommandLineArgs().Skip(1).Take(8).ToArray();
-            if (args.Length != 8)
-            {
-                throw new ArgumentException($"Invalid number of parameters: Expected 8, but was {args.Length}.");
-            }
+        public int Port { get; set; }
 
-            var parameters = new RegistrationParameters();
-            for (var i = 0; i < 4; i++)
-            {
-                var param = args[(i * 2)];
-                var value = args[(i * 2) + 1];
-
-                switch (param)
-                {
-                    case "-port":
-                        parameters.Port = int.Parse(value);
-                        break;
-                    case "-pluginUUID":
-                        parameters.PluginUUID = value;
-                        break;
-                    case "-registerEvent":
-                        parameters.Event = value;
-                        break;
-                    case "-info":
-                        parameters.Info = JsonConvert.DeserializeObject<RegistrationInfo>(value);
-                        break;
-                }
-            }
-
-            return parameters;
-        }
+        /// <summary>
+        /// Gets or sets a unique identifier string that should be used to register the plugin once the WebSocket is opened.
+        /// </summary>
+        public string PluginUUID { get; set; }
     }
 }

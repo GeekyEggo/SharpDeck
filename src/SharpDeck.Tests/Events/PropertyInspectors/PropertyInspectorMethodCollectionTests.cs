@@ -4,7 +4,6 @@ namespace SharpDeck.Tests.Events.PropertyInspectors
     using Moq;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
-    using SharpDeck.Events;
     using SharpDeck.Events.Received;
     using SharpDeck.PropertyInspectors;
     using SharpDeck.Tests.Mocks;
@@ -56,7 +55,7 @@ namespace SharpDeck.Tests.Events.PropertyInspectors
         {
             // given
             var action = new FooStreamDeckAction();
-            action.Initialize(CONTEXT, new Mock<IStreamDeckSender>().Object);
+            action.Initialize(CONTEXT, new Mock<IStreamDeckConnection>().Object);
             var args = this.GetArgs(@event);
 
             // when, then
@@ -82,7 +81,7 @@ namespace SharpDeck.Tests.Events.PropertyInspectors
             int callCount = 0;
 
             // given
-            var streamDeckSender = new Mock<IStreamDeckSender>();
+            var streamDeckSender = new Mock<IStreamDeckConnection>();
             streamDeckSender.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
                 .Callback<string, string, object>((contextUUID, actionUUID, payload) => {
                     if (actionUUID == CONTEXT.Action && contextUUID == CONTEXT.Context && ((FooPropertyInspectorPayload)payload).Event == sendToPropertyInspectorEvent)
