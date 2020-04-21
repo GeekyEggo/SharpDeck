@@ -18,18 +18,21 @@ namespace SharpDeck.Manifest
         /// <param name="args">The arguments, typically passed in from a CLI.</param>
         /// <param name="result">The result of executing the generation.</param>
         /// <returns><c>true</c> when the arguments allowed for the attempted generation of the manifest file, this will be <c>true</c> if generation also fails; otherwise <c>false</c>.</returns>
+        [Obsolete("The manifest writer will soon be deprecated in favour of CLI tools")]
         public static bool TryWrite(string[] args, out int result)
         {
             // read the parameters
-            var app = new CommandLineApplication(throwOnUnexpectedArg: false);
-            var parameters = new ManifestWriterParameters(app);
+            using (var app = new CommandLineApplication(throwOnUnexpectedArg: false))
+            {
+                var parameters = new ManifestWriterParameters(app);
 
-            // execute the parameters; bailing out swiftly if the args dont permit it
-            var didRun = false;
-            app.OnExecute(() => TryExecute(parameters, out didRun));
-            result = app.Execute(args);
+                // execute the parameters; bailing out swiftly if the args dont permit it
+                var didRun = false;
+                app.OnExecute(() => TryExecute(parameters, out didRun));
+                result = app.Execute(args);
 
-            return didRun;
+                return didRun;
+            }
         }
 
         /// <summary>
