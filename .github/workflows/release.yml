@@ -31,9 +31,6 @@ jobs:
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
-    - name: Clean
-      run: del dist /s /q
-
     - name: Pack
       run: dotnet pack ./src/SharpDeck -c Release
       env:
