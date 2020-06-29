@@ -78,8 +78,8 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
         /// <returns>The task of running the plugin.</returns>
-        public static async void Run(string[] args = null)
-            => await RunAsync(CancellationToken.None, args).ConfigureAwait(false);
+        public static void Run(string[] args = null)
+            => Task.WaitAll(new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).RunAsync(CancellationToken.None));
 
         /// <summary>
         /// Runs the plugin asynchronously.
