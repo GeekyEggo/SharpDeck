@@ -1,8 +1,8 @@
-﻿namespace SharpDeck.Enums
+namespace SharpDeck.Enums
 {
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
-    using System.Runtime.Serialization;
 
     /// <summary>
     /// Provides an enumeration of devices.
@@ -32,6 +32,12 @@
         /// Defines a Stream Deck Mobile: kESDSDKDeviceType_StreamDeckMobile.
         /// </summary>
         [EnumMember(Value = "kESDSDKDeviceType_StreamDeckMobile")]
-        StreamDeckMobile = 3
+        StreamDeckMobile = 3,
+
+        /// <summary>
+        /// Defines a Corsair G-Key compatible keyboard: kESDSDKDeviceType_CorsairGKeys.
+        /// </summary>
+        [EnumMember(Value = "kESDSDKDeviceType_CorsairGKeys")]
+        CorsairGKeys = 4
     }
 }

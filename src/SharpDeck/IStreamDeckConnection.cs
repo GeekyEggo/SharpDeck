@@ -139,13 +139,14 @@ namespace SharpDeck
         Task SetGlobalSettingsAsync(object settings);
 
         /// <summary>
-        /// Dynamically change the image displayed by an instance of an action.
+        /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
-        /// <param name="base64Image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). If no image is passed, the image is reset to the default image from the manifest.</param>
+        /// <param name="image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). svg is also supported. If no image is passed, the image is reset to the default image from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
         /// <returns>The task of setting the image.</returns>
-        Task SetImageAsync(string context, string base64Image, TargetType target = TargetType.Both);
+        Task SetImageAsync(string context, string image, TargetType target = TargetType.Both, int? state = null);
 
         /// <summary>
         /// Save persistent data for the actions instance.

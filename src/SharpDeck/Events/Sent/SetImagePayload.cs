@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Events.Sent
+namespace SharpDeck.Events.Sent
 {
     using Enums;
 
@@ -12,8 +12,9 @@
         /// </summary>
         /// <param name="base64Image">The base64 image.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        public SetImagePayload(string base64Image, TargetType target)
-            : base(target)
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
+        public SetImagePayload(string base64Image, TargetType target = TargetType.Both, int? state = null)
+            : base(target, state)
         {
             this.Image = base64Image;
         }
