@@ -23,6 +23,30 @@
 
 ## 5.0.0
 
+#### 🚨 Breaking
+
+* Removed `StreamDeckClient`; replaced with `IStreamDeckConnection`.
+* Updated `StreamDeckAction.StreamDeck` to be `IStreamDeckConnection`.
+
+#### ⭐ Added
+
+* Greatly simplfied starting a plug-in.
+  * `StreamDeckPlugin.Run()`
+  * `StreamDeckPlugin.RunAsync()`
+* Added basic unit tests.
+* Added GitHub workflows.
+* Added `StreamDeckAction.OnInit` virtual.
+
+#### ♻ Changed
+
+* Actions with `StreamDeckAttribute` are automatically registered.
+* Complete re-write of action caching.
+* Complete re-write of event routing.
+
+#### 🐞 Fixed
+
+* Fixed an issue with incorrect actions being invoked.
+
 ## 4.0.1/2
 
 #### ♻ Changed
