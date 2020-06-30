@@ -45,7 +45,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
   </Target>
 
