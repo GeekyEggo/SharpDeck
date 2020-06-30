@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Events.Sent
+namespace SharpDeck.Events.Sent
 {
     using Enums;
 
@@ -12,8 +12,9 @@
         /// </summary>
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        public SetTitlePayload(string title = "", TargetType target = TargetType.Both)
-            : base(target)
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
+        public SetTitlePayload(string title = "", TargetType target = TargetType.Both, int? state = null)
+            : base(target, state)
         {
             this.Title = title;
         }

@@ -12,7 +12,7 @@ namespace SharpDeck.Events.Sent
         /// Initializes a new instance of the <see cref="TargetPayload"/> class.
         /// </summary>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the target is set to all states.</param>
         public TargetPayload(TargetType target = TargetType.Both, int? state = null)
         {
             this.State = state;

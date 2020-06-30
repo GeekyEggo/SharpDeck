@@ -11,6 +11,15 @@ namespace SharpDeck.Manifest
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckActionAttribute"/> class.
         /// </summary>
+        /// <param name="uuid">The unique identifier of the action.</param>
+        public StreamDeckActionAttribute(string uuid)
+            : this(string.Empty, uuid)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamDeckActionAttribute"/> class.
+        /// </summary>
         /// <param name="name">The name of the action.</param>
         /// <param name="uuid">The unique identifier of the action.</param>
         /// <param name="icon">The relative path to a PNG image without the .png extension; <see cref="Icon"/> is required unless <see cref="VisibleInActionsList"/> is set to <c>false</c>..</param>

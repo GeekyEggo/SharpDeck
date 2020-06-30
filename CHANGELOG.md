@@ -4,6 +4,7 @@
 
 #### ⭐ Added
 
+* `StreamDeckActionAttribute` now has a simplified constructor that accepts `UUID`.
 * Support for SDK 4.8
   * Added `state` parameter to `setImage`.
   * Added `state` parameter to `setTitle`.

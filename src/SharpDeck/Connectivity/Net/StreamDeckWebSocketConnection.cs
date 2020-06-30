@@ -243,9 +243,10 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="context">An opaque value identifying the instance's action you want to modify.</param>
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
         /// <returns>The task of setting the title.</returns>
-        public Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both)
-            => this.SendAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target)));
+        public Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both, int? state = null)
+            => this.SendAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target, state)));
 
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.

@@ -84,7 +84,8 @@ namespace SharpDeck
         /// </summary>
         /// <param name="base64Image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). If no image is passed, the image is reset to the default image from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        public Task SetImageAsync(string base64Image, TargetType target = TargetType.Both)
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
+        public Task SetImageAsync(string base64Image, TargetType target = TargetType.Both, int? state = null)
             => this.StreamDeck.SetImageAsync(this.Context, base64Image, target);
 
         /// <summary>
@@ -92,8 +93,9 @@ namespace SharpDeck
         /// </summary>
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
-        public Task SetTitleAsync(string title = "", TargetType target = TargetType.Both)
-            => this.StreamDeck.SetTitleAsync(this.Context, title, target);
+        /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
+        public Task SetTitleAsync(string title = "", TargetType target = TargetType.Both, int? state = null)
+            => this.StreamDeck.SetTitleAsync(this.Context, title, target, state);
 
         /// <summary>
         /// Save persistent data for the actions instance.
