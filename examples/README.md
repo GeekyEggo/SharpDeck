@@ -1,7 +1,7 @@
 # Examples
 
-* [Counter](/Counter)
-* [Shared Counter](/SharedCounter)
+* [Counter](/examples/Counter) - Single action counter plug-in.
+* [Shared Counter](/examples/SharedCounter) - Multiple action plug-in with a shared counter and reset.
 
 ## How it works
 
