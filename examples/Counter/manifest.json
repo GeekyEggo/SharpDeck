@@ -1,0 +1,34 @@
+{
+    "$schema": "https://raw.githubusercontent.com/GeekyEggo/SharpDeck/master/src/SharpDeck.PropertyInspector/manifest-schema.json",
+    "Name": "Counter",
+    "Version": "1.0.0",
+    "Author": "Richard Herman",
+    "Actions": [
+        {
+            "Name": "Counter",
+            "UUID": "com.geekyeggo.counter.counter",
+            "Icon": "Images/Counter/Icon",
+            "Tooltip": "A counter action",
+            "States": [
+                {
+                    "Image": "Images/Counter/Image"
+                }
+            ]
+        }
+    ],
+    "Category": "Counter",
+    "CategoryIcon": "Images/Plugin/CategoryIcon",
+    "CodePath": "Counter.exe",
+    "Description": "A counter plug-in example",
+    "Icon": "Images/Plugin/Icon",
+    "SDKVersion": 2,
+    "Software": {
+        "MinimumVersion": "4.1"
+    },
+    "OS": [
+        {
+            "MinimumVersion": "10",
+            "Platform": "windows"
+        }
+    ]
+}
