@@ -1,8 +1,5 @@
 namespace Counter
 {
-    using System.Diagnostics;
-    using SharpDeck;
-
     /// <summary>
     /// The plugin.
     /// </summary>
@@ -14,11 +11,11 @@ namespace Counter
         /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
-#if DEBUG
-            Debugger.Launch();
-#endif
+            #if DEBUG
+                System.Diagnostics.Debugger.Launch();
+            #endif
 
-            StreamDeckPlugin.Run();
+            SharpDeck.StreamDeckPlugin.Run();
         }
     }
 }

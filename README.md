@@ -31,6 +31,11 @@ We recommend taking a look at the official [Stream Deck SDK documentation](https
    ```csharp
    public static void Main(string[] args)
    {
+       // optional, but recommended
+       #if DEBUG
+           System.Diagnostics.Debugger.Launch(); 
+       #endif
+       
        // register actions and connect to the Stream Deck
        SharpDeck.StreamDeckClient.Run();
    }
@@ -46,25 +51,26 @@ We recommend taking a look at the official [Stream Deck SDK documentation](https
 1. Copy your files from your `bin\Debug` folder to your plugin folder.
 1. Restart Stream Deck, and your plugin should be there! :thumbsup:
 
-## :hammer_and_wrench: Making testing easier
+## :hammer_and_wrench: Make testing quicker and easier (optional)
 
 Copying your plugin each time can be a bit tedious, but don't worry, there's a few steps to make it easier!
 
+1. Ensure your `Program.cs` calls `System.Diagnostics.Debugger.Launch();`.
 1. Add a pre-build task to terminate `StreamDeck.exe` process:
    * `taskkill -f -t -im StreamDeck.exe -fi "status eq running"`
 1. Build to your plugin folder directly:
    * e.g. `<OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.geekyeggo.counter.sdPlugin\</OutputPath>`
 1. Create a debug profile in `Properties/launchSettings.json` ([example](/examples/Counter/Properties/launchSettings.json)).
    ```json
-    {
-      "profiles": {
-        "DebugWin": {
-          "commandName": "Executable",
-          "executablePath": "c:\\windows\\system32\\cmd.exe",
-          "commandLineArgs": "/S /C \"start \"title\" /B \"%ProgramW6432%\\Elgato\\StreamDeck\\StreamDeck exe\" \""
-        }
+   {
+     "profiles": {
+       "DebugWin": {
+         "commandName": "Executable",
+         "executablePath": "c:\\windows\\system32\\cmd.exe",
+         "commandLineArgs": "/S /C \"start \"title\" /B \"%ProgramW6432%\\Elgato\\StreamDeck\\StreamDeck exe\" \""
+       }
       }
-    }
+   }
    ```
 1. Voila, `F5` should now terminate Stream Deck, rebuild your plugin, and then re-launch Stream Deck!
 
