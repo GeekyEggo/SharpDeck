@@ -4,114 +4,83 @@
 
 A lightweight .NET wrapper for creating Stream Deck plugins, using the official Elgato Stream Deck [SDK](https://developer.elgato.com/documentation/stream-deck/sdk/overview).
 
-## Example
+## ⚡ What does it do?
 
-```csharp
-static void Main(string[] args)
-{
-    using (var client = new StreamDeckClient(args))
+SharpDeck takes the hassle out of communicating with the Stream Deck SDK, and handles caching and calling your actions! At a glance, SharpDeck handles...
+
+* Connecting to the Stream Deck.
+* Registering your custom actions.
+* Calling your custom actions when something happens (i.e. button press).
+
+## :package: Examples
+
+* [Counter](/examples/Counter)
+* [Shared Counter](/examples/SharedCounter)
+
+## :page_facing_up: Getting started
+
+We recommend taking a look at the official [Stream Deck SDK documentation](https://developer.elgato.com/documentation/stream-deck/sdk/overview/). Each plugin has a `manifest.json` file ([example](/examples/SharedCounter/manifest.json)) which tells Stream Deck everything about your plugin, and it's actions.
+
+## :pencil2: Writing your plugin
+
+1. Create a .NET console app (Framework or Core supported).
+1. Add your `manifest.json` file.
+   * Set the `Copy to Output Directory` property to `Copy Always`.
+1. Add SharpDeck `dotnet add package SharpDeck`.
+1. Update `Program.cs` to initiate your plugin.
+   ```csharp
+   public static void Main(string[] args)
+   {
+       // register actions and connect to the Stream Deck
+       SharpDeck.StreamDeckClient.Run();
+   }
+   ```
+1. Create your action as a class. Each action must,
+   * Have the attribute `[StreamDeckAction(UUID)]`, with a unique UUID.
+   * Inherit from either `StreamDeckAction`, or `StreamDeckAction{TSettings}`.
+
+## :construction: Testing your plugin
+
+1. Navigate to `%APPDATA%\Elgato\StreamDeck\Plugins`, this is where all Stream Deck plugins live.
+1. Create a folder for your plugin, typically `com.{author}.{plugin}.sdPlugin`.
+1. Copy your files from your `bin\Debug` folder to your plugin folder.
+1. Restart Stream Deck, and your plugin should be there! :thumbsup:
+
+## :hammer_and_wrench: Making testing easier
+
+Copying your plugin each time can be a bit tedious, but don't worry, there's a few steps to make it easier!
+
+1. Add a pre-build task to terminate `StreamDeck.exe` process:
+   * `taskkill -f -t -im StreamDeck.exe -fi "status eq running"`
+1. Build to your plugin folder directly:
+   * e.g. `<OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.geekyeggo.counter.sdPlugin\</OutputPath>`
+1. Create a debug profile in `Properties/launchSettings.json` ([example](/examples/Counter/Properties/launchSettings.json)).
+   ```json
     {
-        client.KeyDown += (_, e) => client.SetTitleAsync(e.Context, "Hello world");
-        client.Start(); // continuously listens until the connection closes
+      "profiles": {
+        "DebugWin": {
+          "commandName": "Executable",
+          "executablePath": "c:\\windows\\system32\\cmd.exe",
+          "commandLineArgs": "/S /C \"start \"title\" /B \"%ProgramW6432%\\Elgato\\StreamDeck\\StreamDeck exe\" \""
+        }
+      }
     }
-}
-```
+   ```
+1. Voila, `F5` should now terminate Stream Deck, rebuild your plugin, and then re-launch Stream Deck!
 
-## Registering Actions (Optional)
 
-Optionally, it is possible to register `StreamDeckAction` and have the client handle the context automatically.
-```csharp
-client.RegisterAction<CounterAction>("com.sharpdeck.testplugin.counter");
-```
-```csharp
-class CounterAction : StreamDeckAction
-{
-    protected override async void OnKeyDown(ActionEventArgs<KeyPayload> args)
-        => this.SetTitleAsync("Hello world");
-}
-```
+## :rotating_light: Need help?
 
-## Interacting with the Property Inspector
+1. If you can't see your plugin at all:
+   * Check your plugin folder contains your plugin's executable. 
+   * Check the `manifest.json` file exists, and the `codePath` points to your executable.
+1. If you can see your plugin but it isn't working:
+   * Check `%APPDATA%\Elgato\StreamDeck\logs` if there are any logs for your plugin.
+   * Update your `Program.cs` to call `Debugger.Launch()` ([example](/examples/SharedCounter/Program.cs)) which will allow you to debug your plugin.
 
-It is possible to interact with the Property Inspector by _exposing_ methods from your action, using the  `PropertyInspectorMethodAttribute` attribute, similiar to MVC .NET decorators. The attribute supports tasks, and also allows for results.
+*Still can't get it working? No problems, raise an [issue](https://github.com/GeekyEggo/SharpDeck/issues) and we'll try to help!*
 
-### Example
-```csharp
-// Action.cs
-[PropertyInspectorMethod("load")]
-protected void OnPropertyInspectorLoad()
-  => // ... execute code
-```
-```js
-// Property Inspector js file
-websocket.send(JSON.stringify({
-    "action": actionUUID,
-    "event": "sendToPlugin",
-    "context": uuid,
-    "payload": {
-        "event": "load"
-    }
-}));
-```
-
-### Example 2 (parameters and results)
-```csharp
-// Action.cs
-[PropertyInspectorMethod("load")]
-protected Task<ActionResponse> OnPropertyInspectorLoad(ActionPayload args)
-{
-    // ... execute code, with access to args
-    return this.GetSessionKeyAsync(args.UserId);
-}
-
-// ActionPayload.cs
-public class ActionPayload : SharpDeck.PropertyInspectors.PropertyInspectorPayload
-{
-    public string UserId { get; set; }
-}
-
-// ActionResponse.cs
-public class ActionResponse : SharpDeck.PropertyInspectors.PropertyInspectorPayload
-{
-    public string SessionKey { get; set; }
-}
-```
-```js
-// Property Inspector js file
-websocket.send(JSON.stringify({
-    "action": actionUUID,
-    "event": "sendToPlugin",
-    "context": uuid,
-    "payload": {
-        "event": "load",
-        "userId": "1337"
-    }
-}));
-
-/*
-upon Action.OnPropertyInspectorLoad completing, websocket will receive a message with the payload data:
-{
-    "action": actionUUID,
-    "event": "sendToPropertyInspector",
-    "context": context,
-    "payload": {
-        "event": "load",
-        "sessionKey": <<sessionKey>>
-    }
-}
-*/
-```
-
-## Contributing
-
-Having a problem, or got an idea? Let me know!
-
-[![Twitter Logo](https://github.com/GeekyEggo/SharpDeck/raw/master/docs/icons/Twitter.png)@GeekyEggo](https://twitter.com/GeekyEggo)
-
-https://github.com/GeekyEggo/SharpDeck/issues
-
-## License
+## :page_with_curl: License
 
 [The MIT License (MIT)](LICENSE.md)
-
 Stream Deck is a trademark or registered trademark of Elgato Systems.
