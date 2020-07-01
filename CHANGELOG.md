@@ -10,9 +10,6 @@
   * Added `state` parameter to `setTitle`.
 * Support for SDK 4.7
   * Added `kESDSDKDeviceType_CorsairGKeys` device type.
-
-#### ⭐ Changed
-
 * All new sample plugins.
 
 ## 5.0.1
