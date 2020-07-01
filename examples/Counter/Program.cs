@@ -4,7 +4,7 @@ namespace Counter
     using SharpDeck;
 
     /// <summary>
-    /// The plug-in.
+    /// The plugin.
     /// </summary>
     public class Program
     {

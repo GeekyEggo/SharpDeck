@@ -21,8 +21,8 @@ This example contains a single action, "Counter". The counter action increments 
 
 | File | Description |
 | --- | --- |
-| `manifest.json` | Contains information about your plug-in, and tells Stream Deck how to run it. ([read more](https://developer.elgato.com/documentation/stream-deck/sdk/manifest/)). |
-| `Program.cs` | Main entry point, this is the first file that runs when your plug-in starts. |
-| `CounterAction.cs` | The Counter action; when pressed the count increments. |
-| `CounterSettings.cs` | The settings for the Counter action. |
-| `Images/**` | Images relating to the plug-in and its actions; these are set in the `manifest.json`. |
+| `Actions/CounterAction.cs` | The Counter action; when pressed the count increments. |
+| `Actions/CounterSettings.cs` | The settings for the Counter action. |
+| `Images/**` | Images relating to the plugin and its actions; these are set in the `manifest.json`. |
+| `manifest.json` | Contains information about your plugin, and tells Stream Deck how to run it. ([read more](https://developer.elgato.com/documentation/stream-deck/sdk/manifest/)). |
+| `Program.cs` | Main entry point, this is the first file that runs when your plugin starts. |

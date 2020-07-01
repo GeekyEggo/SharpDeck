@@ -19,7 +19,7 @@
     "Category": "Counter",
     "CategoryIcon": "Images/Plugin/CategoryIcon",
     "CodePath": "Counter.exe",
-    "Description": "A counter plug-in example",
+    "Description": "A counter plugin example",
     "Icon": "Images/Plugin/Icon",
     "SDKVersion": 2,
     "Software": {

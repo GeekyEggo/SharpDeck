@@ -30,7 +30,7 @@
     "Category": "Shared Counter",
     "CategoryIcon": "Images/Plugin/CategoryIcon",
     "CodePath": "SharedCounter.exe",
-    "Description": "A shared counter plug-in example",
+    "Description": "A shared counter plugin example",
     "Icon": "Images/Plugin/Icon",
     "SDKVersion": 2,
     "Software": {

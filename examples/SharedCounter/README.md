@@ -25,9 +25,9 @@ This example contains a two action, "Counter" and "Reset". The counter action in
 
 | File | Description |
 | --- | --- |
+| `Actions/CounterAction.cs` | The Counter action; increments the shared count. |
+| `Actions/ResetAction.cs` | The Reset action; resets the shared count to 0. |
+| `Images/**` | Images relating to the plugin and its actions; these are set in the `manifest.json`. |
 | `Count.cs` | The singleton that manages the shared count. |
-| `manifest.json` | Contains information about your plug-in, and tells Stream Deck how to run it. ([read more](https://developer.elgato.com/documentation/stream-deck/sdk/manifest/)). |
-| `Program.cs` | Main entry point, this is the first file that runs when your plug-in starts. |
-| `CounterAction.cs` | The Counter action; increments the shared count. |
-| `ResetAction.cs` | The Reset action; resets the shared count to 0. |
-| `Images/**` | Images relating to the plug-in and its actions; these are set in the `manifest.json`. |
+| `manifest.json` | Contains information about your plugin, and tells Stream Deck how to run it. ([read more](https://developer.elgato.com/documentation/stream-deck/sdk/manifest/)). |
+| `Program.cs` | Main entry point, this is the first file that runs when your plugin starts. |

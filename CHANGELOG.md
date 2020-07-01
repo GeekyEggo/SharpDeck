@@ -30,7 +30,7 @@
 
 #### ⭐ Added
 
-* Greatly simplfied starting a plug-in.
+* Greatly simplfied starting a plugin.
   * `StreamDeckPlugin.Run()`
   * `StreamDeckPlugin.RunAsync()`
 * Added basic unit tests.
