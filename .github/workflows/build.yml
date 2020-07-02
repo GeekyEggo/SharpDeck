@@ -18,8 +18,26 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+
+    - name: Build
+      run: dotnet build ./src/SharpDeck/ --configuration Release
+
+    - name: Test
+      run: dotnet test ./src/SharpDeck.Tests/ --configuration Release --no-build
+
+  examples:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
@@ -30,8 +48,11 @@ jobs:
       with:
         dotnet-version: 3.1.100
 
-    - name: Build
-      run: dotnet build ./src/SharpDeck.sln --configuration Release
+    - name: 'Build Counter (.NET 4.8)'
+      run: dotnet build ./examples/Counter/net48/ --configuration Release
 
-    - name: Test
-      run: dotnet test ./src/SharpDeck.Tests/ --configuration Release --no-build
+    - name: 'Build Counter (.NET Core 3.1)'
+      run: dotnet build ./examples/Counter/netcoreapp3.1/ --configuration Release
+
+    - name: Build Shared Counter
+      run: dotnet build ./examples/SharedCounter/ --configuration Release
