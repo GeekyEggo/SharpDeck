@@ -8,6 +8,7 @@ on:
     - '!*'
     paths-ignore:
     - '**/*.md'
+    - 'examples/**'
 
 defaults:
   run:
@@ -35,24 +36,3 @@ jobs:
 
     - name: Test
       run: dotnet test ./src/SharpDeck.Tests/ --configuration Release --no-build
-
-  examples:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.100
-
-    - name: 'Build Counter (.NET 4.8)'
-      run: dotnet build ./examples/Counter/net48/ --configuration Release
-
-    - name: 'Build Counter (.NET Core 3.1)'
-      run: dotnet build ./examples/Counter/netcoreapp3.1/ --configuration Release
-
-    - name: Build Shared Counter
-      run: dotnet build ./examples/SharedCounter/ --configuration Release

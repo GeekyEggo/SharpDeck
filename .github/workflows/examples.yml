@@ -1,0 +1,41 @@
+name: examples
+
+on:
+  push:
+    branches:
+    - master
+    tags:
+    - '!*'
+    paths:
+    - 'examples/**'
+    paths-ignore:
+    - '**/*.md'
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+
+    - name: 'Build Counter (.NET 4.8)'
+      run: dotnet build ./examples/Counter/net48/ --configuration Release
+
+    - name: 'Build Counter (.NET Core 3.1)'
+      run: dotnet build ./examples/Counter/netcoreapp3.1/ --configuration Release
+
+    - name: Build Shared Counter
+      run: dotnet build ./examples/SharedCounter/ --configuration Release
