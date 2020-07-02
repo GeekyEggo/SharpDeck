@@ -31,10 +31,10 @@ We recommend taking a look at the official [Stream Deck SDK documentation](https
    ```csharp
    public static void Main(string[] args)
    {
+   #if DEBUG
        // optional, but recommended
-       #if DEBUG
-           System.Diagnostics.Debugger.Launch(); 
-       #endif
+       System.Diagnostics.Debugger.Launch(); 
+   #endif
        
        // register actions and connect to the Stream Deck
        SharpDeck.StreamDeckClient.Run();
