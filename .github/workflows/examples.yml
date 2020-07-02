@@ -7,9 +7,8 @@ on:
     tags:
     - '!*'
     paths:
+    - '!**/*.md'
     - 'examples/**'
-    paths-ignore:
-    - '**/*.md'
 
 defaults:
   run:

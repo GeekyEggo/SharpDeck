@@ -6,9 +6,9 @@ on:
     - master
     tags:
     - '!*'
-    paths-ignore:
-    - '**/*.md'
-    - 'examples/**'
+    paths:
+    - '!**/*.md'
+    - '!examples/**'
 
 defaults:
   run:
