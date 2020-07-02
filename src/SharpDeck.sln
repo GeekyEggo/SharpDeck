@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "SharpDeck\Shar
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{0F3CE559-40D7-4053-AF79-B3A1B3043A3A}"
 	ProjectSection(SolutionItems) = preProject
-		..\.editorconfig = ..\.editorconfig
+		.editorconfig = .editorconfig
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
 		..\CHANGELOG.md = ..\CHANGELOG.md
@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{91
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter", "..\examples\Counter\Counter.csproj", "{6ABD6F43-8603-463F-B89F-C3898F1661AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedCounter", "..\examples\SharedCounter\SharedCounter.csproj", "{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCounter", "..\examples\SharedCounter\SharedCounter.csproj", "{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
