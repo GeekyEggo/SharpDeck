@@ -38,7 +38,5 @@ namespace Counter.Actions
             this.SetSettingsAsync(settings);
             return this.SetTitleAsync(settings.Count.ToString());
         }
-
-
     }
 }
