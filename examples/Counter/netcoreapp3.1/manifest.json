@@ -11,16 +11,16 @@
             "Tooltip": "A counter action",
             "States": [
                 {
-                    "FontSize": 18,
-                    "TitleAlignment": "middle",
-                    "Image": "Images/Counter/Image"
+                    "FontSize": "18",
+                    "Image": "Images/Counter/Image",
+                    "TitleAlignment": "middle"
                 }
             ]
         }
     ],
     "Category": "Counter (.NET Core)",
     "CategoryIcon": "Images/Plugin/CategoryIcon",
-    "CodePath": "Counter.exe",
+    "CodePath": "Counter_netcoreapp31.exe",
     "Description": "A counter plugin example",
     "Icon": "Images/Plugin/Icon",
     "SDKVersion": 2,
