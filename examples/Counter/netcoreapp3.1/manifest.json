@@ -6,17 +6,19 @@
     "Actions": [
         {
             "Name": "Counter",
-            "UUID": "com.geekyeggo.counter.counter",
+            "UUID": "com.geekyeggo.counternetcoreapp31.counter",
             "Icon": "Images/Counter/Icon",
             "Tooltip": "A counter action",
             "States": [
                 {
+                    "FontSize": 18,
+                    "TitleAlignment": "middle",
                     "Image": "Images/Counter/Image"
                 }
             ]
         }
     ],
-    "Category": "Counter",
+    "Category": "Counter (.NET Core)",
     "CategoryIcon": "Images/Plugin/CategoryIcon",
     "CodePath": "Counter.exe",
     "Description": "A counter plugin example",

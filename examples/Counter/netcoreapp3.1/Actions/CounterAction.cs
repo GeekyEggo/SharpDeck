@@ -8,7 +8,7 @@ namespace Counter.Actions
     /// <summary>
     /// The counter action; displays the count which is increment on each press.
     /// </summary>
-    [StreamDeckAction("Counter", "com.geekyeggo.Counter.counter")]
+    [StreamDeckAction("Counter", "com.geekyeggo.counternetcoreapp31.counter")]
     public class CounterAction : StreamDeckAction<CounterSettings>
     {
         /// <summary>
