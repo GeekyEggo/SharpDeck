@@ -14,8 +14,8 @@ SharpDeck takes the hassle out of communicating with the Stream Deck SDK, and ha
 
 ## :package: Examples
 
-* [Counter](/examples/Counter)
-* [Shared Counter](/examples/SharedCounter)
+* [Counter](/examples/Counter) - Single action counter plugin.
+* [Shared Counter](/examples/SharedCounter) - Multiple action plugin with a shared counter and reset.
 
 ## :page_facing_up: Getting started
 
