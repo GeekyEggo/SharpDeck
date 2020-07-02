@@ -4,6 +4,8 @@
 
 #### ⭐ Added
 
+* New `IStreamDeckConnection.GetGlobalSettingsAsync<T>()` now returns the global settings!
+* New `StreamDeckPlugin.OnRegistered(Func<IStreamDeckConnection>)` delegate; called after the plugin is registered.
 * `StreamDeckActionAttribute` now has a simplified constructor that accepts `UUID`.
 * Support for SDK 4.8
   * Added `state` parameter to `setImage`.
