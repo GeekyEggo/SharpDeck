@@ -1,4 +1,4 @@
-namespace SharpDeck.Tests.Events.PropertyInspectors
+namespace SharpDeck.Tests.PropertyInspectors
 {
     using System.Threading.Tasks;
     using Moq;
