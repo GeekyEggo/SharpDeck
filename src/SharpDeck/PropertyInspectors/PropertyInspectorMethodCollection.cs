@@ -1,12 +1,12 @@
 ﻿namespace SharpDeck.PropertyInspectors
 {
-    using Newtonsoft.Json.Linq;
-    using SharpDeck.Events.Received;
-    using SharpDeck.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Threading.Tasks;
+    using Newtonsoft.Json.Linq;
+    using SharpDeck.Events.Received;
+    using SharpDeck.Extensions;
 
     /// <summary>
     /// Provides a collection that maintains information about <see cref="PropertyInspectorMethodInfo"/> associated with an action.

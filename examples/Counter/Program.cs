@@ -11,9 +11,9 @@ namespace Counter
         /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
-            #if DEBUG
-                System.Diagnostics.Debugger.Launch();
-            #endif
+#if DEBUG
+            System.Diagnostics.Debugger.Launch();
+#endif
 
             SharpDeck.StreamDeckPlugin.Run();
         }

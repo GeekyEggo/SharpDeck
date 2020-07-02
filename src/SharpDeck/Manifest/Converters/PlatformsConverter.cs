@@ -1,8 +1,8 @@
 ﻿namespace SharpDeck.Manifest.Converters
 {
-    using SharpDeck.Enums;
     using System.Linq;
     using System.Reflection;
+    using SharpDeck.Enums;
 
     /// <summary>
     /// Provides conversion for platforms defined within the attribute supplied to the <see cref="IConverter.GetValue(Assembly, StreamDeckPluginAttribute)"/>.

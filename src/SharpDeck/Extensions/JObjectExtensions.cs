@@ -1,7 +1,7 @@
 namespace SharpDeck.Extensions
 {
-    using Newtonsoft.Json.Linq;
     using System;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Provides extension methods for <see cref="JObject"/>.

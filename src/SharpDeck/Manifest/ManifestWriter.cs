@@ -1,11 +1,11 @@
 namespace SharpDeck.Manifest
 {
-    using McMaster.Extensions.CommandLineUtils;
-    using Newtonsoft.Json;
     using System;
     using System.IO;
     using System.Reflection;
     using System.Text;
+    using McMaster.Extensions.CommandLineUtils;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides a helper class for writing a manifest file based on the definition of an assembly.

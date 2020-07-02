@@ -83,7 +83,8 @@ namespace SharpDeck.Tests.PropertyInspectors
             // given
             var streamDeckSender = new Mock<IStreamDeckConnection>();
             streamDeckSender.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                .Callback<string, string, object>((contextUUID, actionUUID, payload) => {
+                .Callback<string, string, object>((contextUUID, actionUUID, payload) =>
+                {
                     if (actionUUID == CONTEXT.Action && contextUUID == CONTEXT.Context && ((FooPropertyInspectorPayload)payload).Event == sendToPropertyInspectorEvent)
                     {
                         callCount++;

@@ -14,7 +14,7 @@
         public Message(string @event, TPayload payload)
             : base(@event)
         {
-            this.Payload = payload; 
+            this.Payload = payload;
         }
 
         /// <summary>

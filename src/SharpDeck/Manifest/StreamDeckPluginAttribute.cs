@@ -1,7 +1,7 @@
 ﻿namespace SharpDeck.Manifest
 {
-    using Newtonsoft.Json;
     using System;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides base information for an Elgato Stream Deck Plugin.

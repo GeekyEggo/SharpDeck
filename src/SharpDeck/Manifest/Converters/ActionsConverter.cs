@@ -1,11 +1,11 @@
 ﻿namespace SharpDeck.Manifest.Converters
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using SharpDeck.Extensions;
     using System;
     using System.Linq;
     using System.Reflection;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using SharpDeck.Extensions;
 
     /// <summary>
     /// Provides conversion for actions defined within the assembly supplied to the <see cref="IConverter.GetValue(Assembly, StreamDeckPluginAttribute)"/>.

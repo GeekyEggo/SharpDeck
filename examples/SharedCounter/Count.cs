@@ -15,7 +15,7 @@ namespace SharedCounter
         /// <summary>
         /// Private member field for <see cref="Instance"/>.
         /// </summary>
-        private readonly static Lazy<Count> _instance = new Lazy<Count>(() => new Count(), true);
+        private static readonly Lazy<Count> _instance = new Lazy<Count>(() => new Count(), true);
 
         /// <summary>
         /// Prevents a default instance of the <see cref="Count"/> class from being created.

@@ -1,9 +1,9 @@
 ﻿namespace SharpDeck.Serialization
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
     using System;
     using System.Reflection;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
 
     /// <summary>
     /// Defines a contract resolver whereby a <see cref="MemberInfo"/> must fulfil a predicate to determine whether it should be included when serialized.

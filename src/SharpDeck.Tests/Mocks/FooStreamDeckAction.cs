@@ -1,11 +1,11 @@
 ﻿namespace SharpDeck.Tests.Mocks
 {
-    using SharpDeck.PropertyInspectors;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
+    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a mock implementation of <see cref="StreamDeckAction"/>.
@@ -48,7 +48,7 @@
         public int OverallMethodCallCount
         {
             get { return this.MethodCallCount.Values.Sum(); }
-        } 
+        }
 
         /// <summary>
         /// A synchronous method without a result; the <see cref="MethodCallCount"/> is increment.

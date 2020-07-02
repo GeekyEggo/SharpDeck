@@ -1,8 +1,8 @@
 ﻿namespace SharpDeck.Events.Received
 {
-    using Enums;
     using System;
     using System.Globalization;
+    using Enums;
 
     /// <summary>
     /// Provides information about an application.

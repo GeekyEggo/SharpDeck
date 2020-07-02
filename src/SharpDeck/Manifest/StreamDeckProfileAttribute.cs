@@ -1,7 +1,7 @@
 ﻿namespace SharpDeck.Manifest
 {
-    using SharpDeck.Enums;
     using System;
+    using SharpDeck.Enums;
 
     /// <summary>
     /// Provides information about the location of a Stream Deck profile.

@@ -1,8 +1,8 @@
 ﻿namespace SharpDeck.Enums
 {
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
-    using System.Runtime.Serialization;
 
     /// <summary>
     /// An enumeration of fonts available to the Elgato Stream Deck.
