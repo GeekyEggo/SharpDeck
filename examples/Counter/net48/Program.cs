@@ -1,4 +1,4 @@
-﻿namespace Counter
+﻿namespace Counter_net48
 {
     /// <summary>
     /// The plugin.

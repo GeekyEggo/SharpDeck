@@ -1,4 +1,4 @@
-namespace Counter.Actions
+namespace Counter_net48.Actions
 {
     /// <summary>
     /// The <see cref="CounterAction"/> settings.

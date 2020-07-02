@@ -1,4 +1,4 @@
-namespace Counter.Actions
+namespace Counter_netcoreapp31.Actions
 {
     /// <summary>
     /// The <see cref="CounterAction"/> settings.

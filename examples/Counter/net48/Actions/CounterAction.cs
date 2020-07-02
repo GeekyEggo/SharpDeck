@@ -1,4 +1,4 @@
-namespace Counter.Actions
+namespace Counter_net48.Actions
 {
     using System.Threading.Tasks;
     using SharpDeck;

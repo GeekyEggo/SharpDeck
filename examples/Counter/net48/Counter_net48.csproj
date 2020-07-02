@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CD620C06-FD35-4A9E-936D-6B00C928ACB1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Counter</RootNamespace>
-    <AssemblyName>Counter</AssemblyName>
+    <RootNamespace>Counter_net48</RootNamespace>
+    <AssemblyName>Counter_net48</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

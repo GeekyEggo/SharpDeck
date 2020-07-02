@@ -1,4 +1,4 @@
-namespace Counter
+namespace Counter_netcoreapp31
 {
     /// <summary>
     /// The plugin.
