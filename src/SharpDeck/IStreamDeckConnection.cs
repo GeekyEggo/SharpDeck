@@ -12,6 +12,11 @@ namespace SharpDeck
     public interface IStreamDeckConnection : IDisposable
     {
         /// <summary>
+        /// Occurs when the plugin registers itself.
+        /// </summary>
+        event EventHandler Registered;
+
+        /// <summary>
         /// Occurs when a monitored application is launched.
         /// </summary>
         event EventHandler<StreamDeckEventArgs<ApplicationPayload>> ApplicationDidLaunch;
@@ -100,6 +105,13 @@ namespace SharpDeck
         /// </summary>
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
         Task GetGlobalSettingsAsync();
+
+        /// <summary>
+        /// Requests the persistent global data stored for the plugin.
+        /// </summary>
+        /// <typeparam name="T">The type of the settings.</typeparam>
+        /// <returns>The task containing the global settings.</returns>
+        Task<T> GetGlobalSettingsAsync<T>() where T : class;
 
         /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.

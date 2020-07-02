@@ -17,6 +17,11 @@ namespace SharpDeck.Connectivity.Net
     internal sealed class StreamDeckWebSocketConnection : IStreamDeckConnection
     {
         /// <summary>
+        /// Occurs when the plugin registers itself.
+        /// </summary>
+        public event EventHandler Registered;
+
+        /// <summary>
         /// Occurs when a monitored application is launched.
         /// </summary>
         public event EventHandler<StreamDeckEventArgs<ApplicationPayload>> ApplicationDidLaunch;
@@ -138,6 +143,8 @@ namespace SharpDeck.Connectivity.Net
             {
                 await this.WebSocket.ConnectAsync();
                 await this.WebSocket.SendJsonAsync(new RegistrationMessage(registrationParameters.Event, registrationParameters.PluginUUID));
+                this.Registered.Invoke(this, EventArgs.Empty);
+
                 await this.WebSocket.ReceiveAsync(cancellationToken);
             });
         }
@@ -165,6 +172,30 @@ namespace SharpDeck.Connectivity.Net
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
         public Task GetGlobalSettingsAsync()
             => this.SendAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID));
+
+        /// <summary>
+        /// Requests the persistent global data stored for the plugin.
+        /// </summary>
+        /// <typeparam name="T">The type of the settings.</typeparam>
+        /// <returns>The task containing the global settings.</returns>
+        public Task<T> GetGlobalSettingsAsync<T>()
+            where T : class
+        {
+            var taskSource = new TaskCompletionSource<T>();
+
+            // declare the local function handler that sets the task result
+            void handler(object sender, StreamDeckEventArgs<SettingsPayload> e)
+            {
+                this.DidReceiveGlobalSettings -= handler;
+                taskSource.TrySetResult(e.Payload.GetSettings<T>());
+            }
+
+            // listen for receiving events, and trigger a request
+            this.DidReceiveGlobalSettings += handler;
+            this.GetGlobalSettingsAsync();
+
+            return taskSource.Task;
+        }
 
         /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.

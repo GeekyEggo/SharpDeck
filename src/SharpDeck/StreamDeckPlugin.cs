@@ -22,14 +22,16 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
         /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/> to be registered.</param>
-        private StreamDeckPlugin(string[] args, Assembly assembly = null)
+        private StreamDeckPlugin(string[] args = null, Assembly assembly = null)
         {
             this.RegistrationParameters = new RegistrationParameters(args);
             this.Connection = new StreamDeckWebSocketConnection();
+            this.Connection.Registered += (_, __) => this.Registered(this.Connection);
             this.Actions = new StreamDeckActionProvider(this.Connection);
 
             // configurable settings
             this.Assembly = assembly;
+            this.Registered = _ => { };
             this.Setup = _ => { };
             this.ServiceProvider = new ServiceCollection().BuildServiceProvider();
         }
@@ -50,7 +52,12 @@ namespace SharpDeck
         private StreamDeckActionProvider Actions { get; }
 
         /// <summary>
-        /// Gets the delegate that provides additional setup.
+        /// Gets or sets the delegate that is invoked when <see cref="IStreamDeckConnection.Registered"/> occurs.
+        /// </summary>
+        private Action<IStreamDeckConnection> Registered { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delegate that provides additional setup.
         /// </summary>
         private Action<IStreamDeckConnection> Setup { get; set; }
 
@@ -77,9 +84,8 @@ namespace SharpDeck
         /// Runs the plugin.
         /// </summary>
         /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <returns>The task of running the plugin.</returns>
         public static void Run(string[] args = null)
-            => Task.WaitAll(new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).RunAsync(CancellationToken.None));
+            => new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).Run();
 
         /// <summary>
         /// Runs the plugin asynchronously.
@@ -91,15 +97,32 @@ namespace SharpDeck
             => new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).RunAsync(cancellationToken);
 
         /// <summary>
-        /// Sets the delegate to applied immediately before a connection is established with the Stream Deck.
+        /// Sets the delegate to applied when the plugin is registered with the Stream Deck.
         /// </summary>
-        /// <param name="setup">The delegate.</param>
+        /// <param name="action">The delegate.</param>
         /// <returns>This instance.</returns>
-        public StreamDeckPlugin OnSetup(Action<IStreamDeckConnection> setup)
+        public StreamDeckPlugin OnRegistered(Action<IStreamDeckConnection> action)
         {
-            this.Setup = setup;
+            this.Registered = action;
             return this;
         }
+
+        /// <summary>
+        /// Sets the delegate to applied immediately before a connection is established with the Stream Deck.
+        /// </summary>
+        /// <param name="action">The delegate.</param>
+        /// <returns>This instance.</returns>
+        public StreamDeckPlugin OnSetup(Action<IStreamDeckConnection> action)
+        {
+            this.Setup = action;
+            return this;
+        }
+
+        /// <summary>
+        /// Runs the plugin.
+        /// </summary>
+        public void Run()
+            => Task.WaitAll(this.RunAsync(CancellationToken.None));
 
         /// <summary>
         /// Runs the Stream Deck plugin asynchronously.
