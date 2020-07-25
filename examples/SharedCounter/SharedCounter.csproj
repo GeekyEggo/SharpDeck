@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpDeck" Version="5.0.1" />
+    <ProjectReference Include="..\..\src\SharpDeck\SharpDeck.csproj" />
   </ItemGroup>
 
   <ItemGroup>
