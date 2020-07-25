@@ -29,13 +29,13 @@ jobs:
         dotnet-version: 3.1.100
 
     - name: Build
-      run: dotnet build ./src/SharpDeck.sln --configuration Release
+      run: dotnet build ./src/SharpDeck/ --configuration Release
 
     - name: Test
       run: dotnet test ./src/SharpDeck.Tests/ --configuration Release --no-build
 
     - name: Pack
-      run: dotnet pack ./src/SharpDeck -c Release
+      run: dotnet pack ./src/SharpDeck/ -c Release
 
     - name: Push to NuGet
       env:

@@ -22,6 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{650416DC-EBAB-4C97-BA6A-EA3C32A435E8}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
+		..\.github\workflows\examples.yml = ..\.github\workflows\examples.yml
 		..\.github\workflows\release.yml = ..\.github\workflows\release.yml
 	EndProjectSection
 EndProject
@@ -36,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCounter", "..\example
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Counter", "Counter", "{33FA25F3-1583-458E-B86C-80EE90C6EE38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Counter_net48", "..\examples\Counter\net48\Counter_net48.csproj", "{CD620C06-FD35-4A9E-936D-6B00C928ACB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter_net48", "..\examples\Counter\net48\Counter_net48.csproj", "{CD620C06-FD35-4A9E-936D-6B00C928ACB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
