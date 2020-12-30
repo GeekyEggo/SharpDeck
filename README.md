@@ -37,7 +37,7 @@ We recommend taking a look at the official [Stream Deck SDK documentation](https
    #endif
        
        // register actions and connect to the Stream Deck
-       SharpDeck.StreamDeckClient.Run();
+       SharpDeck.StreamDeckPlugin.Run();
    }
    ```
 1. Create your action as a class. Each action must,
