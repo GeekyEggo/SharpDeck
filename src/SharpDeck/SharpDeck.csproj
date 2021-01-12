@@ -9,12 +9,12 @@
     <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>Git</RepositoryType>
-    <Copyright>Copyright (c) 2020 Richard Herman</Copyright>
+    <Copyright>Copyright (c) 2021 Richard Herman</Copyright>
     <Description>A lightweight .NET wrapper for the official Elgato Stream Deck SDK, designed to assist with creating plugins that can be distributed on the Stream Deck store.</Description>
     <PackageTags>Elgato Stream Deck ESDSDK</PackageTags>
-    <Version>5.0.2</Version>
-    <AssemblyVersion>5.0.2.0</AssemblyVersion>
-    <FileVersion>5.0.2.0</FileVersion>
+    <Version>5.0.3</Version>
+    <AssemblyVersion>5.0.3.0</AssemblyVersion>
+    <FileVersion>5.0.3.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
