@@ -10,7 +10,6 @@ namespace SharpDeck
     using SharpDeck.Events.Received;
     using SharpDeck.Exceptions;
     using SharpDeck.Extensions;
-    using SharpDeck.Manifest;
 
     /// <summary>
     /// Provides a singleton wrapper for connecting and communication with a Stream Deck.
