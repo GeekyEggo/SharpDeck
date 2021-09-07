@@ -14,7 +14,7 @@ namespace SharpDeck.Connectivity.Net
     /// <summary>
     /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.
     /// </summary>
-    internal sealed class StreamDeckWebSocketConnection : IStreamDeckConnection
+    internal sealed class StreamDeckWebSocketConnection : IStreamDeckConnectionController
     {
         /// <summary>
         /// Occurs when the plugin registers itself.
@@ -131,8 +131,8 @@ namespace SharpDeck.Connectivity.Net
         /// Initiates a connection to the Stream Deck asynchronously.
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public Task ConnectAsync(RegistrationParameters registrationParameters, CancellationToken cancellationToken)
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        public Task ConnectAsync(RegistrationParameters registrationParameters, CancellationToken cancellationToken = default)
         {
             this.RegistrationParameters = registrationParameters;
 
@@ -155,7 +155,6 @@ namespace SharpDeck.Connectivity.Net
         /// <returns>The task of disconnecting</returns>
         public Task DisconnectAsync()
             => this.WebSocket.DisconnectAsync();
-
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

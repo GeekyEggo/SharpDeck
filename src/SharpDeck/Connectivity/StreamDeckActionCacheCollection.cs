@@ -40,7 +40,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the cached items.
         /// </summary>
-        private IDictionary<string, StreamDeckActionCacheEntry> Items { get; } = new Dictionary<string, StreamDeckActionCacheEntry>();
+        private IDictionary<string, StreamDeckAction> Items { get; } = new Dictionary<string, StreamDeckAction>();
 
         /// <summary>
         /// Adds the specified <paramref name="action" /> against the <paramref name="key" />.
@@ -54,12 +54,12 @@ namespace SharpDeck.Connectivity
                 await _syncRoot.WaitAsync();
 
                 // construct the entry, apply the uuid to the action settings, and add the new item to the cache
-                var entry = new StreamDeckActionCacheEntry(Guid.NewGuid().ToString("n"), action);
+                action.SharpDeckUUID = Guid.NewGuid().ToString("n");
 
-                key.Payload.Settings[SHARP_DECK_UUID_KEY] = entry.UUID;
+                key.Payload.Settings[SHARP_DECK_UUID_KEY] = action.SharpDeckUUID;
                 await this.Connection.SetSettingsAsync(key.Context, key.Payload.Settings);
 
-                this.Items.Add(key.Context, entry);
+                this.Items.Add(key.Context, action);
             }
             finally
             {
@@ -78,7 +78,7 @@ namespace SharpDeck.Connectivity
 
                 foreach (var item in this.Items)
                 {
-                    item.Value.Action.Dispose();
+                    item.Value.Dispose();
                 }
 
                 this.Items.Clear();
@@ -113,25 +113,23 @@ namespace SharpDeck.Connectivity
             try
             {
                 _syncRoot.Wait();
-                action = null;
 
                 // check if the item exists
-                if (!this.Items.TryGetValue(key.Context, out var cacheEntry))
+                if (!this.Items.TryGetValue(key.Context, out action))
                 {
                     return false;
                 }
 
                 // ensure the cached item is still valid
                 if (payload?.Settings != null
-                    && !this.IsCacheEntryValid(cacheEntry, key, payload.Settings))
+                    && !this.IsCacheEntryValid(action, key, payload.Settings))
                 {
-                    cacheEntry.Action.Dispose();
+                    action.Dispose();
                     this.Items.Remove(key.Context);
 
                     return false;
                 }
 
-                action = cacheEntry?.Action;
                 return action != null;
             }
             finally
@@ -143,16 +141,16 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Determines whether the specified cache entry is valid based on the event arguments supplied by the Stream Deck.
         /// </summary>
-        /// <param name="entry">The cache entry.</param>
+        /// <param name="action">The cache entry.</param>
         /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         /// <param name="settings">The settings associated with the action</param>
         /// <returns><c>true</c> when the cache entry is valid; otherwise <c>false</c>.</returns>
-        private bool IsCacheEntryValid(StreamDeckActionCacheEntry entry, IActionEventArgs args, JObject settings)
+        private bool IsCacheEntryValid(StreamDeckAction action, IActionEventArgs args, JObject settings)
         {
             return settings.TryGetString(SHARP_DECK_UUID_KEY, out var uuid)
-                && entry.Action.ActionUUID == args.Action
-                && entry.Action.Device == args.Device
-                && entry.UUID == uuid;
+                && action.ActionUUID == args.Action
+                && action.Device == args.Device
+                && action.SharpDeckUUID == uuid;
         }
     }
 }

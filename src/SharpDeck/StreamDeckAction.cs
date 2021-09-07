@@ -39,6 +39,11 @@ namespace SharpDeck
         public string Device { get; private set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier assigned by SharpDeck.
+        /// </summary>
+        internal string SharpDeckUUID { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to enable property inspector methods.
         /// </summary>
         protected bool EnablePropertyInspectorMethods { get; set; } = true;

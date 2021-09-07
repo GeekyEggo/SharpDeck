@@ -13,38 +13,105 @@ namespace SharpDeck
     using SharpDeck.Manifest;
 
     /// <summary>
-    /// Provides a wrapper for connecting and communication with a Stream Deck.
+    /// Provides a singleton wrapper for connecting and communication with a Stream Deck.
     /// </summary>
-    public class StreamDeckPlugin
+    public class StreamDeckPlugin : IStreamDeckPlugin
     {
+        /// <summary>
+        /// The synchronization root.
+        /// </summary>
+        private static readonly object _syncRoot = new object();
+
+        /// <summary>
+        /// Private static field for <see cref="Current"/>.
+        /// </summary>
+        private static StreamDeckPlugin _current;
+
+        /// <summary>
+        /// Private member field for <see cref="Assembly"/>.
+        /// </summary>
+        private Assembly _assembly = Assembly.GetEntryAssembly();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckPlugin"/> class.
         /// </summary>
-        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/> to be registered.</param>
-        private StreamDeckPlugin(string[] args = null, Assembly assembly = null)
+        /// <param name="connectionController">The Stream Deck connection controller.</param>
+        /// <param name="serviceProvider">The service provider.</param>
+        internal StreamDeckPlugin(IStreamDeckConnectionController connectionController, IServiceProvider serviceProvider)
+            : this(connectionController)
         {
-            this.RegistrationParameters = new RegistrationParameters(args);
-            this.Connection = new StreamDeckWebSocketConnection();
-            this.Connection.Registered += (_, __) => this.Registered(this.Connection);
-            this.Actions = new StreamDeckActionProvider(this.Connection);
-
-            // configurable settings
-            this.Assembly = assembly;
-            this.Registered = _ => { };
-            this.Setup = _ => { };
-            this.ServiceProvider = new ServiceCollection().BuildServiceProvider();
+            this.ServiceProvider = serviceProvider;
         }
 
         /// <summary>
-        /// Gets or sets the assembly containing the <see cref="StreamDeckAction"/> to register.
+        /// Initializes a new instance of the <see cref="StreamDeckPlugin"/> class.
         /// </summary>
-        private Assembly Assembly { get; set; }
+        /// <param name="connectionController">The Stream Deck connection controller.</param>
+        private StreamDeckPlugin(IStreamDeckConnectionController connectionController)
+        {
+            this.ConnectionController = connectionController;
+            this.Connection.Registered += (_, __) => this.IsRegisted = true;
+            this.Actions = new StreamDeckActionProvider(this.Connection);
+        }
+
+        /// <summary>
+        /// Gets the singleton instance of the Stream Deck plugin.
+        /// </summary>
+        public static StreamDeckPlugin Current
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    if (_current == null)
+                    {
+                        Initialize(new StreamDeckPlugin(new StreamDeckWebSocketConnection()));
+                    }
+
+                    return _current;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to initialize the singleton instance of the <see cref="StreamDeckPlugin"/> with the specified <paramref name="instance"/>.
+        /// </summary>
+        /// <param name="instance">The instance.</param>
+        /// <exception cref="InvalidOperationException">Unable to set the Sound Deck Plugin singleton after it has been accessed.</exception>
+        internal static void Initialize(StreamDeckPlugin instance)
+        {
+            lock (_syncRoot)
+            {
+                if (_current != null)
+                {
+                    throw new InvalidOperationException("Unable to set the Sound Deck Plugin singleton after it has been accessed.");
+                }
+
+                _current = instance;
+            }
+        }
 
         /// <summary>
         /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
         /// </summary>
-        private StreamDeckWebSocketConnection Connection { get; }
+        public IStreamDeckConnection Connection => this.ConnectionController;
+
+        /// <summary>
+        /// Gets or sets the assembly containing the <see cref="StreamDeckAction"/> to register.
+        /// </summary>
+        public Assembly Assembly
+        {
+            get => this._assembly;
+            set
+            {
+                if (this.IsRegisted)
+                {
+                    throw new InvalidOperationException("The assembly containing the actions cannot be changed after the plugin has been registered with the Stream Deck.");
+                }
+
+                this._assembly = value;
+            }
+        }
 
         /// <summary>
         /// Gets the Stream Deck actions provider.
@@ -52,100 +119,35 @@ namespace SharpDeck
         private StreamDeckActionProvider Actions { get; }
 
         /// <summary>
-        /// Gets or sets the delegate that is invoked when <see cref="IStreamDeckConnection.Registered"/> occurs.
+        /// Gets the Stream Deck connection controller.
         /// </summary>
-        private Action<IStreamDeckConnection> Registered { get; set; }
+        private IStreamDeckConnectionController ConnectionController { get; }
 
         /// <summary>
-        /// Gets or sets the delegate that provides additional setup.
+        /// Gets or sets a value indicating whether this instance is registed with the Stream Deck.
         /// </summary>
-        private Action<IStreamDeckConnection> Setup { get; set; }
+        private bool IsRegisted { get; set; } = false;
 
         /// <summary>
-        /// Gets the registration parameters.
+        /// Gets the service provider used to resolve new instances of the <see cref="StreamDeckAction"/>.
         /// </summary>
-        private RegistrationParameters RegistrationParameters { get; }
-
-        /// <summary>
-        /// Gets the provider used to resolve new instances of the <see cref="StreamDeckAction"/>.
-        /// </summary>
-        private IServiceProvider ServiceProvider { get; set; }
-
-        /// <summary>
-        /// Creates a new instance of a <see cref="StreamDeckPlugin"/>.
-        /// </summary>
-        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="assembly">The optional assembly containing the <see cref="StreamDeckAction"/> to be registered; when null, <see cref="Assembly.GetCallingAssembly"/> is used.</param>
-        /// <returns>The Stream Deck plugin.</returns>
-        public static StreamDeckPlugin Create(string[] args = null, Assembly assembly = null)
-            => new StreamDeckPlugin(args, assembly ?? Assembly.GetCallingAssembly());
-
-        /// <summary>
-        /// Runs the plugin.
-        /// </summary>
-        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        public static void Run(string[] args = null)
-            => new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).Run();
-
-        /// <summary>
-        /// Runs the plugin asynchronously.
-        /// </summary>
-        /// <param name="args">The optional arguments as supplied by the Elgato Stream Deck; when null, <see cref="Environment.GetCommandLineArgs"/> is used.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task of running the plugin.</returns>
-        public static Task RunAsync(CancellationToken cancellationToken, string[] args = null)
-            => new StreamDeckPlugin(args, Assembly.GetCallingAssembly()).RunAsync(cancellationToken);
-
-        /// <summary>
-        /// Sets the delegate to applied when the plugin is registered with the Stream Deck.
-        /// </summary>
-        /// <param name="action">The delegate.</param>
-        /// <returns>This instance.</returns>
-        public StreamDeckPlugin OnRegistered(Action<IStreamDeckConnection> action)
-        {
-            this.Registered = action;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the delegate to applied immediately before a connection is established with the Stream Deck.
-        /// </summary>
-        /// <param name="action">The delegate.</param>
-        /// <returns>This instance.</returns>
-        public StreamDeckPlugin OnSetup(Action<IStreamDeckConnection> action)
-        {
-            this.Setup = action;
-            return this;
-        }
+        private IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Runs the plugin.
         /// </summary>
         public void Run()
-            => Task.WaitAll(this.RunAsync(CancellationToken.None));
+            => Task.WaitAll(this.RunAsync());
 
         /// <summary>
         /// Runs the Stream Deck plugin asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of connecting and maintaining the connection with the Stream Deck.</returns>
-        public Task RunAsync(CancellationToken cancellationToken)
+        public Task RunAsync(CancellationToken cancellationToken = default)
         {
             this.RegisterActions();
-            this.Setup(this.Connection);
-
-            return this.Connection.ConnectAsync(this.RegistrationParameters, cancellationToken);
-        }
-
-        /// <summary>
-        /// Sets the <see cref="IServiceProvider"/> to be used when resolving instances of <see cref="StreamDeckAction"/>.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
-        /// <returns>This instance.</returns>
-        public StreamDeckPlugin WithServiceProvider(IServiceProvider serviceProvider)
-        {
-            this.ServiceProvider = serviceProvider;
-            return this;
+            return this.ConnectionController.ConnectAsync(new RegistrationParameters(Environment.GetCommandLineArgs()), cancellationToken);
         }
 
         /// <summary>

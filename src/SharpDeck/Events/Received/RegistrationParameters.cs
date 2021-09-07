@@ -14,9 +14,9 @@ namespace SharpDeck.Events.Received
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <exception cref="ArgumentException">Invalid number of parameters: Expected 8, but was {args.Length}.</exception>
-        public RegistrationParameters(string[] args = null)
+        public RegistrationParameters(string[] args)
         {
-            args = args ?? Environment.GetCommandLineArgs().Skip(1).Take(8).ToArray();
+            args = args.Skip(1).Take(8).ToArray();
             if (args.Length != 8)
             {
                 throw new ArgumentException($"Invalid number of parameters: Expected 8, but was {args.Length}.");

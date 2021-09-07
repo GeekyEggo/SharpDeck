@@ -1,5 +1,29 @@
 # Change Log 
 
+## 6.0.0
+
+#### ⭐ Added
+
+* Added `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method (namespace `SharpDeck.Extensions`).
+  * Includes registration of `IStreamDeckPlugin` and `IStreamDeckConnection`.
+  * The `IServiceCollection` is used when resolving instances of `StreamDeckAction`.
+
+#### ♻ Changed
+
+* The underlying connection to the Stream Deck can now be accessed via the `StreamDeckPlugin.Current.Connection` property.
+* The Stream Deck action assembly is now publicly accessible via`StreamDeckPlugin.Current.Assembly`.
+
+#### 🚨 Breaking
+
+* `StreamDeckPlugin` is now a singleton.
+* Removed `StreamDeckPlugin.Create(string[], Assembly)`.
+  * `string[]` args will now always use the `Environment.GetCommandLineArgs()`.
+* Removed `StreamDeckPlugin.OnSetup` and `StreamDeckPluginOnRegistered`, please use either;
+  * `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` when using dependency injection.
+  * `StreamDeckPlugin.Current.Connection` directly.
+* Removed static `Run()` and `RunAsync(CancellationToken)` methods in favour of `StreamDeckPlugin.Current.Run()` and `StreamDeck.Current.RunAsync(CancellationToken)`.
+* Removed `StreamDeckPlugin.WithServiceProvider(IServiceProvider)` in favour of new `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method.
+
 ## 5.0.2
 
 #### ⭐ Added
