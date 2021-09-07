@@ -12,6 +12,9 @@
 
 * The underlying connection to the Stream Deck can now be accessed via the `StreamDeckPlugin.Current.Connection` property.
 * The Stream Deck action assembly is now publicly accessible via`StreamDeckPlugin.Current.Assembly`.
+* Updated `Microsoft.Extensions.DependencyInjection`, `Microsoft.Extensions.Logging`, and `Newtonsoft.Json` dependencies.
+* Removed manifest generation.
+* Removed `McMaster.Extensions.CommandLineUtils` dependency.
 
 #### 🚨 Breaking
 
