@@ -7,6 +7,7 @@
 * Added `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method (namespace `SharpDeck.Extensions`).
   * Includes registration of `IStreamDeckPlugin` and `IStreamDeckConnection`.
   * The `IServiceCollection` is used when resolving instances of `StreamDeckAction`.
+* Added logging support, via `ILogger<StreamDeckPlugin>`, to `StreamDeckPlugin`.
 
 #### ♻ Changed
 
