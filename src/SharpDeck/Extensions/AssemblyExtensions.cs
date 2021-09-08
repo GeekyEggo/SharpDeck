@@ -16,7 +16,7 @@ namespace SharpDeck.Extensions
         /// <typeparam name="T">The type of attribute.</typeparam>
         /// <param name="assembly">The assembly.</param>
         /// <returns>The types.</returns>
-        public static IEnumerable<(Type type, T attribute)> GetTypesWithCustomAttribute<T>(this Assembly assembly) where T : Attribute
+        internal static IEnumerable<(Type type, T attribute)> GetTypesWithCustomAttribute<T>(this Assembly assembly) where T : Attribute
         {
             foreach (var type in assembly.GetSafeTypes())
             {
@@ -33,7 +33,7 @@ namespace SharpDeck.Extensions
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <returns>The defined and loaded types.</returns>
-        public static IEnumerable<Type> GetSafeTypes(this Assembly assembly)
+        internal static IEnumerable<Type> GetSafeTypes(this Assembly assembly)
         {
             try
             {

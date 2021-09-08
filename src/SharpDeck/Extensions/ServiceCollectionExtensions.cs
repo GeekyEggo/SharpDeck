@@ -2,6 +2,7 @@
 {
     using System;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity.Net;
 
     /// <summary>
@@ -24,7 +25,7 @@
                 .AddSingleton<IStreamDeckPlugin>(serviceProvider =>
                 {
                     // Construct the plugin, and configure it.
-                    var plugin = new StreamDeckPlugin(connectionController, serviceProvider);
+                    var plugin = new StreamDeckPlugin(connectionController, serviceProvider, serviceProvider.GetService<ILogger<StreamDeckPlugin>>());
                     configure?.Invoke(plugin);
 
                     // Initialize the singleton instance.

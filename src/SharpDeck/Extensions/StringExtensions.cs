@@ -11,7 +11,7 @@ namespace SharpDeck.Extensions
         /// <param name="str">The string.</param>
         /// <param name="default">The default value.</param>
         /// <returns><paramref name="str"/> when it is not <see cref="string.IsNullOrWhiteSpace(string)"/>; otherwise <paramref name="default"/>.</returns>
-        public static string OrDefault(this string str, string @default)
+        internal static string OrDefault(this string str, string @default)
             => string.IsNullOrWhiteSpace(str) ? @default : str;
     }
 }

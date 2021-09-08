@@ -5,6 +5,7 @@ namespace SharpDeck
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
     using SharpDeck.Connectivity.Net;
     using SharpDeck.Events.Received;
@@ -32,13 +33,15 @@ namespace SharpDeck
         private Assembly _assembly = Assembly.GetEntryAssembly();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckPlugin"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckPlugin" /> class.
         /// </summary>
         /// <param name="connectionController">The Stream Deck connection controller.</param>
         /// <param name="serviceProvider">The service provider.</param>
-        internal StreamDeckPlugin(IStreamDeckConnectionController connectionController, IServiceProvider serviceProvider)
+        /// <param name="logger">The logger.</param>
+        internal StreamDeckPlugin(IStreamDeckConnectionController connectionController, IServiceProvider serviceProvider, ILogger<StreamDeckPlugin> logger)
             : this(connectionController)
         {
+            this.Logger = logger;
             this.ServiceProvider = serviceProvider;
         }
 
@@ -123,6 +126,11 @@ namespace SharpDeck
         private IStreamDeckConnectionController ConnectionController { get; }
 
         /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        private ILogger Logger { get; } = null;
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is registed with the Stream Deck.
         /// </summary>
         private bool IsRegisted { get; set; } = false;
@@ -161,7 +169,18 @@ namespace SharpDeck
                     throw new InvalidStreamDeckActionTypeException(type);
                 }
 
-                this.Actions.Register(attribute.UUID, () => (StreamDeckAction)ActivatorUtilities.CreateInstance(this.ServiceProvider, type));
+                this.Actions.Register(attribute.UUID, () =>
+                {
+                    try
+                    {
+                        return (StreamDeckAction)ActivatorUtilities.CreateInstance(this.ServiceProvider, type);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Logger?.LogError(ex, $"Failed to create instance of action \"{attribute.UUID}\".");
+                        throw;
+                    }
+                });
             }
         }
     }

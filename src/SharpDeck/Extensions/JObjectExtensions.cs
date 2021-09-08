@@ -15,7 +15,7 @@ namespace SharpDeck.Extensions
         /// <param name="propertyName">Name of the property; otherwise null.</param>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> when the value was found; otherwise <c>false</c>.</returns>
-        public static bool TryGetString(this JObject obj, string propertyName, out string value)
+        internal static bool TryGetString(this JObject obj, string propertyName, out string value)
         {
             if (obj.TryGetValue(propertyName, StringComparison.OrdinalIgnoreCase, out var token))
             {
