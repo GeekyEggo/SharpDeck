@@ -41,9 +41,9 @@ namespace SharpDeck.Connectivity
         }
 
         /// <summary>
-        /// Gets the actions factory, used to initialize new instances of actions.
+        /// Gets the registered actions, used to initialize new instances of actions.
         /// </summary>
-        private IDictionary<string, Func<StreamDeckAction>> ActionFactory { get; } = new ConcurrentDictionary<string, Func<StreamDeckAction>>();
+        private IDictionary<string, Func<StreamDeckAction>> RegisteredActions { get; } = new ConcurrentDictionary<string, Func<StreamDeckAction>>();
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -60,7 +60,7 @@ namespace SharpDeck.Connectivity
         /// </summary>
         public void Dispose()
         {
-            this.ActionFactory?.Clear();
+            this.RegisteredActions?.Clear();
             this.Cache?.Dispose();
 
             GC.SuppressFinalize(this);
@@ -70,11 +70,20 @@ namespace SharpDeck.Connectivity
         /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
         /// </summary>
         /// <typeparam name="T">The type of Stream Deck action.</typeparam>
-        /// <param name="action">The action UUID associated with the Stream Deck.</param>
+        /// <param name="actionUUID">The action UUID associated with the Stream Deck.</param>
         /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
-        public void Register<T>(string action, Func<T> valueFactory)
+        public void Register<T>(string actionUUID, Func<T> valueFactory)
             where T : StreamDeckAction
-            => this.ActionFactory.Add(action, valueFactory);
+            => this.RegisteredActions.Add(actionUUID, valueFactory);
+
+        /// <summary>
+        /// Attempts to get the action instance for the specified <paramref name="args"/>.
+        /// </summary>
+        /// <param name="args">The <see cref="IActionEventArgs"/> instance containing the event data.</param>
+        /// <param name="value">The <see cref="StreamDeckAction"/> instanced associated with the <paramref name="args"/>.</param>
+        /// <returns><c>true</c> when an instance exists for the given <paramref name="args"/>; otherwise <c>false</c>.</returns>
+        public bool TryGet(IActionEventArgs args, out StreamDeckAction value)
+            => this.Cache.TryGet(args, out value);
 
         /// <summary>
         /// Handles the <see cref="IStreamDeckConnection.WillAppear"/> event of the <see cref="Connection"/>.
@@ -83,8 +92,8 @@ namespace SharpDeck.Connectivity
         /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         private void Action_WillAppear(object sender, ActionEventArgs<AppearancePayload> args)
         {
-            // check if the action type is handled by this instance
-            if (this.ActionFactory.TryGetValue(args.Action, out var valueFactory))
+            // Check if the action type is handled by this instance.
+            if (this.RegisteredActions.TryGetValue(args.Action, out var valueFactory))
             {
                 _ = this.Action_WillAppearAsync(args, valueFactory);
             }
@@ -131,7 +140,7 @@ namespace SharpDeck.Connectivity
         private void InvokeOnAction<T>(T args, Func<StreamDeckAction, Func<T, Task>> getPropagator)
             where T : IActionEventArgs
         {
-            // invokes the event on the action
+            // Invokes the event on the action.
             if (this.Cache.TryGet(args, out var action))
             {
                 _ = this.InvokeOnActionAsync(action, args, getPropagator);
@@ -153,7 +162,7 @@ namespace SharpDeck.Connectivity
             {
                 try
                 {
-                    // we dont want the main thread to await the invocation, but we do want to maintain a context to enable error capturing
+                    // We dont want the main thread to await the invocation, but we do want to maintain a context to enable error capturing.
                     await getPropagator(action)(args);
                 }
                 catch (Exception ex)

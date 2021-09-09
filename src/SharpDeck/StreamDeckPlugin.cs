@@ -1,16 +1,19 @@
 namespace SharpDeck
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
     using SharpDeck.Connectivity.Net;
     using SharpDeck.Events.Received;
     using SharpDeck.Exceptions;
     using SharpDeck.Extensions;
+    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a singleton wrapper for connecting and communication with a Stream Deck.
@@ -53,6 +56,8 @@ namespace SharpDeck
         {
             this.ConnectionController = connectionController;
             this.Connection.Registered += (_, __) => this.IsRegisted = true;
+            this.Connection.SendToPlugin += this.HandleSendToPlugin;
+
             this.Actions = new StreamDeckActionProvider(this.Connection);
         }
 
@@ -136,6 +141,11 @@ namespace SharpDeck
         private bool IsRegisted { get; set; } = false;
 
         /// <summary>
+        /// Gets the property inspector method collection caches.
+        /// </summary>
+        private ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
+
+        /// <summary>
         /// Gets the service provider used to resolve new instances of the <see cref="StreamDeckAction"/>.
         /// </summary>
         private IServiceProvider ServiceProvider { get; }
@@ -155,6 +165,28 @@ namespace SharpDeck
         {
             this.RegisterActions();
             return this.ConnectionController.ConnectAsync(new RegistrationParameters(Environment.GetCommandLineArgs()), cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles the <see cref="IStreamDeckConnection.SendToPlugin"/> event; messages are intercepted to determine if a property inspector method should be invoked.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
+        private void HandleSendToPlugin(object sender, ActionEventArgs<JObject> e)
+        {
+            try
+            {
+                if (this.Actions.TryGet(e, out var action))
+                {
+                    _ = PropertyInspectorMethodCollections.GetOrAdd(action.GetType(), t => new PropertyInspectorMethodCollection(t, this.Logger))
+                        .InvokeAsync(action, e);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Logger?.LogError(ex, $"Failed to handle event \"{e.Event}\" for \"{e.Action}\" ({e.Context}).");
+                _ = this.Connection.ShowAlertAsync(e.Context);
+            }
         }
 
         /// <summary>

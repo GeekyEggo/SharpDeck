@@ -14,11 +14,6 @@ namespace SharpDeck
     public class StreamDeckAction
     {
         /// <summary>
-        /// Gets the property inspector method collection caches.
-        /// </summary>
-        private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
-
-        /// <summary>
         /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.
         /// </summary>
         private event EventHandler<ActionEventArgs<ActionPayload>> DidReceiveSettings;
@@ -42,11 +37,6 @@ namespace SharpDeck
         /// Gets or sets the unique identifier assigned by SharpDeck.
         /// </summary>
         internal string SharpDeckUUID { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to enable property inspector methods.
-        /// </summary>
-        protected bool EnablePropertyInspectorMethods { get; set; } = true;
 
         /// <summary>
         /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
@@ -253,15 +243,7 @@ namespace SharpDeck
         /// <param name="args">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
         protected internal virtual Task OnSendToPlugin(ActionEventArgs<JObject> args)
-        {
-            if (this.EnablePropertyInspectorMethods)
-            {
-                var factory = PropertyInspectorMethodCollections.GetOrAdd(this.GetType(), t => new PropertyInspectorMethodCollection(t));
-                return factory.InvokeAsync(this, args);
-            }
-
-            return Task.CompletedTask;
-        }
+            => Task.CompletedTask;
 
         /// <summary>
         /// Occurs when <see cref="IStreamDeckConnection.TitleParametersDidChange"/> is received for this instance.

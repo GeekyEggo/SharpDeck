@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Reflection;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
@@ -17,9 +18,11 @@
         /// Initializes a new instance of the <see cref="PropertyInspectorMethodCollection"/> class.
         /// </summary>
         /// <param name="type">The <see cref="StreamDeckAction"/> type.</param>
-        public PropertyInspectorMethodCollection(Type type)
+        /// <param name="logger">The optional logger.</param>
+        public PropertyInspectorMethodCollection(Type type, ILogger logger = null)
         {
-            // add all methods that are decorated with the attribute
+            // Add all methods that are decorated with the attribute.
+            this.Logger = logger;
             foreach (var methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 var attr = methodInfo.GetCustomAttribute<PropertyInspectorMethodAttribute>();
@@ -30,6 +33,11 @@
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        private ILogger Logger { get; }
 
         /// <summary>
         /// Gets the property inspector methods.
@@ -43,23 +51,31 @@
         /// <param name="args">The <see cref="ActionEventArgs{JObject}" /> instance containing the event data.</param>
         public async Task InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
         {
-            // attempt to get the method information
-            args.Payload.TryGetString(nameof(PropertyInspectorPayload.Event), out var @event);
-            if (string.IsNullOrWhiteSpace(@event) || !this.Methods.TryGetValue(@event, out var piMethodInfo))
+            try
             {
-                return;
+                // Attempt to get the method information.
+                args.Payload.TryGetString(nameof(PropertyInspectorPayload.Event), out var @event);
+                if (string.IsNullOrWhiteSpace(@event) || !this.Methods.TryGetValue(@event, out var piMethodInfo))
+                {
+                    return;
+                }
+
+                // Invoke and await the method.
+                var task = piMethodInfo.InvokeAsync(action, args);
+                await task;
+
+                // When the method has a result, send it to the property inspector.
+                if (piMethodInfo.HasResult)
+                {
+                    args.Payload.TryGetString(nameof(PropertyInspectorPayload.RequestId), out var requestId);
+                    var result = this.TryGetResultWithContext(task.Result, piMethodInfo, requestId);
+                    await action.SendToPropertyInspectorAsync(result);
+                }
             }
-
-            // invoke and await the method
-            var task = piMethodInfo.InvokeAsync(action, args);
-            await task;
-
-            // when the method has a result, send it to the property inspector
-            if (piMethodInfo.HasResult)
+            catch (Exception ex)
             {
-                args.Payload.TryGetString(nameof(PropertyInspectorPayload.RequestId), out var requestId);
-                var result = this.TryGetResultWithContext(task.Result, piMethodInfo, requestId);
-                await action.SendToPropertyInspectorAsync(result);
+                this.Logger?.LogError(ex, $"Failed to invoke property inspector method for \"{action.ActionUUID}\" ({action.Context}).");
+                await action.ShowAlertAsync();
             }
         }
 
@@ -72,7 +88,7 @@
         /// <returns>The result to be sent to the property inspector.</returns>
         private object TryGetResultWithContext(object result, PropertyInspectorMethodInfo methodInfo, string requestId)
         {
-            // attempt to update the event name when the result is a payload
+            // Attempt to update the event name when the result is a payload.
             if (result is PropertyInspectorPayload payload)
             {
                 payload.Event = methodInfo.SendToPropertyInspectorEvent;

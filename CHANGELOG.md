@@ -7,7 +7,9 @@
 * Added `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method (namespace `SharpDeck.Extensions`).
   * Includes registration of `IStreamDeckPlugin` and `IStreamDeckConnection`.
   * The `IServiceCollection` is used when resolving instances of `StreamDeckAction`.
-* Added logging support, via `ILogger<StreamDeckPlugin>`, to `StreamDeckPlugin`.
+* Added logging support to `StreamDeckPlugin`.
+* Added logging support to all property inspector method invocations.
+* Added Stream Deck alert for actions when an exception is thrown whilst invoking a property inspector method.
 
 #### ♻ Changed
 
@@ -27,6 +29,7 @@
   * `StreamDeckPlugin.Current.Connection` directly.
 * Removed static `Run()` and `RunAsync(CancellationToken)` methods in favour of `StreamDeckPlugin.Current.Run()` and `StreamDeck.Current.RunAsync(CancellationToken)`.
 * Removed `StreamDeckPlugin.WithServiceProvider(IServiceProvider)` in favour of new `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method.
+* Removed `StreamDeckAction.EnablePropertyInspectorMethods`; always considered `true`.
 
 ## 5.0.2
 
