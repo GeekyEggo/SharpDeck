@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides payload information about a title.
     /// </summary>
-    public class TitlePayload
+    public class TitlePayload : ActionPayload
     {
         /// <summary>
         /// Gets or sets the new title.

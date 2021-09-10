@@ -2,9 +2,29 @@
 
 ## 6.0.0
 
+#### 🚨 Breaking
+
+* `StreamDeckPlugin` is now a singleton.
+* Removed `StreamDeckPlugin.Create(string[], Assembly)`.
+  * `string[]` args will now always use the `Environment.GetCommandLineArgs()`.
+* Removed `StreamDeckPlugin.OnSetup`.
+* Removed `StreamDeckPlugin.OnRegistered`, please use either:
+  * `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)`.
+  * `StreamDeckPlugin.Current.Connection`.
+* Removed static `Run()` and `RunAsync(CancellationToken)` methods.
+* Removed `StreamDeckPlugin.WithServiceProvider(IServiceProvider)`, please use `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>`.
+* Removed `StreamDeckAction.EnablePropertyInspectorMethods`; always considered `true`.
+
 #### ⭐ Added
 
-* Added `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method (namespace `SharpDeck.Extensions`).
+* Added support for long key presses.
+  * Configurable via `StreamDeckAction.LongKeyPressInterval`
+    * Default 500ms.
+    * Disabled when `TimeSpan.Zero`.
+  * `StreamDeckAction.OnKeyPress(ActionEventArgs<KeyPayload>)` invoked on short-press, or when key disappears (if not long-press).
+  * `StreamDeckAction.OnKeyLongPress(ActionEventArgs<KeyPayload>)` invoked on long-press.
+* Added `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method.
+  * `SharpDeck.Extensions` namespace.
   * Includes registration of `IStreamDeckPlugin` and `IStreamDeckConnection`.
   * The `IServiceCollection` is used when resolving instances of `StreamDeckAction`.
 * Added logging support to `StreamDeckPlugin`.
@@ -13,23 +33,15 @@
 
 #### ♻ Changed
 
-* The underlying connection to the Stream Deck can now be accessed via the `StreamDeckPlugin.Current.Connection` property.
-* The Stream Deck action assembly is now publicly accessible via`StreamDeckPlugin.Current.Assembly`.
-* Updated `Microsoft.Extensions.DependencyInjection`, `Microsoft.Extensions.Logging`, and `Newtonsoft.Json` dependencies.
+* The underlying connection with the Stream Deck can now be accessed via the `StreamDeckPlugin.Current.Connection`.
+* The assembly containing the Stream Deck actions is now accessible via`StreamDeckPlugin.Current.Assembly`.
 * Removed manifest generation.
 * Removed `McMaster.Extensions.CommandLineUtils` dependency.
+* Updated third-party library dependencies.
 
-#### 🚨 Breaking
+#### 🐞 Fixed 
 
-* `StreamDeckPlugin` is now a singleton.
-* Removed `StreamDeckPlugin.Create(string[], Assembly)`.
-  * `string[]` args will now always use the `Environment.GetCommandLineArgs()`.
-* Removed `StreamDeckPlugin.OnSetup` and `StreamDeckPluginOnRegistered`, please use either;
-  * `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` when using dependency injection.
-  * `StreamDeckPlugin.Current.Connection` directly.
-* Removed static `Run()` and `RunAsync(CancellationToken)` methods in favour of `StreamDeckPlugin.Current.Run()` and `StreamDeck.Current.RunAsync(CancellationToken)`.
-* Removed `StreamDeckPlugin.WithServiceProvider(IServiceProvider)` in favour of new `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method.
-* Removed `StreamDeckAction.EnablePropertyInspectorMethods`; always considered `true`.
+* Fixed missing payload information for `titleParametersDidChange`.
 
 ## 5.0.2
 

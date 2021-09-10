@@ -6,7 +6,6 @@ namespace SharpDeck
     using Enums;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Events.Received;
-    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a base implementation for a Stream Deck action.
@@ -39,6 +38,11 @@ namespace SharpDeck
         internal string SharpDeckUUID { get; set; }
 
         /// <summary>
+        /// Gets or sets the interval before a long press is invoked; occurs after <see cref="OnKeyDown(ActionEventArgs{KeyPayload})"/>. Setting this to <see cref="TimeSpan.Zero"/> will disable long-press interaction.
+        /// </summary>
+        protected TimeSpan LongKeyPressInterval { get; set; } = TimeSpan.FromMilliseconds(500);
+
+        /// <summary>
         /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
         /// </summary>
         protected IStreamDeckConnection StreamDeck { get; private set; }
@@ -47,6 +51,11 @@ namespace SharpDeck
         /// Gets or sets a value indicating whether this instance is disposed.
         /// </summary>
         private bool IsDisposed { get; set; } = false;
+
+        /// <summary>
+        /// Gets the stack responsible for monitoring physical key interactions; this is used to determine if the press was a long-press.
+        /// </summary>
+        private ConcurrentStack<ActionEventArgs<KeyPayload>> KeyPressStack { get; } = new ConcurrentStack<ActionEventArgs<KeyPayload>>();
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -184,8 +193,10 @@ namespace SharpDeck
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            this.IsDisposed = true;
+            this.KeyPressStack.Clear();
             this.StreamDeck = null;
+
+            this.IsDisposed = true;
         }
 
         /// <summary>
@@ -211,6 +222,34 @@ namespace SharpDeck
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
         protected internal virtual Task OnKeyDown(ActionEventArgs<KeyPayload> args)
+        {
+            this.KeyPressStack.Push(args);
+            if (this.LongKeyPressInterval > TimeSpan.Zero)
+            {
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(this.LongKeyPressInterval);
+                    this.TryHandleKeyPress(this.OnKeyLongPress);
+                });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.KeyDown"/> is held down for <see cref="LongKeyPressInterval"/>.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected virtual Task OnKeyLongPress(ActionEventArgs<KeyPayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.KeyDown"/> is released before <see cref="LongKeyPressInterval"/>.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected virtual Task OnKeyPress(ActionEventArgs<KeyPayload> args)
             => Task.CompletedTask;
 
         /// <summary>
@@ -219,7 +258,10 @@ namespace SharpDeck
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
         protected internal virtual Task OnKeyUp(ActionEventArgs<KeyPayload> args)
-            => Task.CompletedTask;
+        {
+            this.TryHandleKeyPress(this.OnKeyPress);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Occurs when <see cref="IStreamDeckConnection.PropertyInspectorDidAppear"/> is received for this instance.
@@ -267,7 +309,10 @@ namespace SharpDeck
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
         protected internal virtual Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
-            => Task.CompletedTask;
+        {
+            this.TryHandleKeyPress(this.OnKeyPress);
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Throws the <see cref="ObjectDisposedException"/> if this instance has been disposed.
@@ -277,6 +322,18 @@ namespace SharpDeck
             if (this.IsDisposed)
             {
                 throw new ObjectDisposedException($"{this.ActionUUID}:{this.Context}");
+            }
+        }
+
+        /// <summary>
+        /// Attempts to pop from the <see cref="KeyPressStack"/>; if successful the <paramref name="handler"/> is invoked with the arguments.
+        /// </summary>
+        /// <param name="handler">The handler.</param>
+        private void TryHandleKeyPress(Func<ActionEventArgs<KeyPayload>, Task> handler)
+        {
+            if (this.KeyPressStack.TryPop(out var args))
+            {
+                handler(args);
             }
         }
     }
