@@ -5,6 +5,7 @@
 #### 🚨 Breaking
 
 * `StreamDeckPlugin` is now a singleton.
+* Moved `SharpDeck.IStreamDeckConnection` to `SharpDeck.Connectivity.IStreamDeckConnection`.
 * Removed `StreamDeckPlugin.Create(string[], Assembly)`.
   * `string[]` args will now always use the `Environment.GetCommandLineArgs()`.
 * Removed `StreamDeckPlugin.OnSetup`.

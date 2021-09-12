@@ -1,19 +1,13 @@
 namespace SharpDeck
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
-    using SharpDeck.Connectivity.Net;
-    using SharpDeck.Events.Received;
     using SharpDeck.Exceptions;
     using SharpDeck.Extensions;
-    using SharpDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a singleton wrapper for connecting and communication with a Stream Deck.
@@ -39,26 +33,12 @@ namespace SharpDeck
         /// Initializes a new instance of the <see cref="StreamDeckPlugin" /> class.
         /// </summary>
         /// <param name="connectionController">The Stream Deck connection controller.</param>
-        /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="logger">The logger.</param>
-        internal StreamDeckPlugin(IStreamDeckConnectionController connectionController, IServiceProvider serviceProvider, ILogger<StreamDeckPlugin> logger)
-            : this(connectionController)
+        /// <param name="actionManager">The action manager.</param>
+        internal StreamDeckPlugin(IStreamDeckConnectionController connectionController, IStreamDeckActionManager actionManager)
         {
-            this.Logger = logger;
-            this.ServiceProvider = serviceProvider;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckPlugin"/> class.
-        /// </summary>
-        /// <param name="connectionController">The Stream Deck connection controller.</param>
-        private StreamDeckPlugin(IStreamDeckConnectionController connectionController)
-        {
+            this.ActionManager = actionManager;
             this.ConnectionController = connectionController;
             this.Connection.Registered += (_, __) => this.IsRegisted = true;
-            this.Connection.SendToPlugin += this.HandleSendToPlugin;
-
-            this.Actions = new StreamDeckActionProvider(this.Connection);
         }
 
         /// <summary>
@@ -72,7 +52,11 @@ namespace SharpDeck
                 {
                     if (_current == null)
                     {
-                        Initialize(new StreamDeckPlugin(new StreamDeckWebSocketConnection()));
+                        var serviceProvider = new ServiceCollection()
+                            .AddStreamDeckPlugin()
+                            .BuildServiceProvider();
+
+                        _current = ActivatorUtilities.CreateInstance<StreamDeckPlugin>(serviceProvider);
                     }
 
                     return _current;
@@ -121,9 +105,9 @@ namespace SharpDeck
         }
 
         /// <summary>
-        /// Gets the Stream Deck actions provider.
+        /// Gets the Stream Deck actions manager.
         /// </summary>
-        private StreamDeckActionProvider Actions { get; }
+        private IStreamDeckActionManager ActionManager { get; }
 
         /// <summary>
         /// Gets the Stream Deck connection controller.
@@ -131,24 +115,9 @@ namespace SharpDeck
         private IStreamDeckConnectionController ConnectionController { get; }
 
         /// <summary>
-        /// Gets the logger.
-        /// </summary>
-        private ILogger Logger { get; } = null;
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is registed with the Stream Deck.
         /// </summary>
         private bool IsRegisted { get; set; } = false;
-
-        /// <summary>
-        /// Gets the property inspector method collection caches.
-        /// </summary>
-        private ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
-
-        /// <summary>
-        /// Gets the service provider used to resolve new instances of the <see cref="StreamDeckAction"/>.
-        /// </summary>
-        private IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Runs the plugin.
@@ -164,29 +133,7 @@ namespace SharpDeck
         public Task RunAsync(CancellationToken cancellationToken = default)
         {
             this.RegisterActions();
-            return this.ConnectionController.ConnectAsync(new RegistrationParameters(Environment.GetCommandLineArgs()), cancellationToken);
-        }
-
-        /// <summary>
-        /// Handles the <see cref="IStreamDeckConnection.SendToPlugin"/> event; messages are intercepted to determine if a property inspector method should be invoked.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
-        private void HandleSendToPlugin(object sender, ActionEventArgs<JObject> e)
-        {
-            try
-            {
-                if (this.Actions.TryGet(e, out var action))
-                {
-                    _ = PropertyInspectorMethodCollections.GetOrAdd(action.GetType(), t => new PropertyInspectorMethodCollection(t, this.Logger))
-                        .InvokeAsync(action, e);
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Logger?.LogError(ex, $"Failed to handle event \"{e.Event}\" for \"{e.Action}\" ({e.Context}).");
-                _ = this.Connection.ShowAlertAsync(e.Context);
-            }
+            return this.ConnectionController.ConnectAsync(cancellationToken);
         }
 
         /// <summary>
@@ -201,18 +148,10 @@ namespace SharpDeck
                     throw new InvalidStreamDeckActionTypeException(type);
                 }
 
-                this.Actions.Register(attribute.UUID, () =>
+                if (!attribute.IsDrillDown)
                 {
-                    try
-                    {
-                        return (StreamDeckAction)ActivatorUtilities.CreateInstance(this.ServiceProvider, type);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Logger?.LogError(ex, $"Failed to create instance of action \"{attribute.UUID}\".");
-                        throw;
-                    }
-                });
+                    this.ActionManager.Register(attribute.UUID, type);
+                }
             }
         }
     }

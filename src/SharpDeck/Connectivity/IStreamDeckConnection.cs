@@ -1,4 +1,4 @@
-namespace SharpDeck
+namespace SharpDeck.Connectivity
 {
     using System;
     using System.Threading.Tasks;
@@ -205,8 +205,8 @@ namespace SharpDeck
         /// </summary>
         /// <param name="context">An opaque value identifying the plugin. This value should be set to the PluginUUID received during the registration procedure.</param>
         /// <param name="device">An opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.</param>
-        /// <param name="profile">The name of the profile to switch to. The name should be identical to the name provided in the manifest.json file.</param>
+        /// <param name="profile">The optional name of the profile to switch to. The name should be identical to the name provided in the manifest.json file; when empty, the Stream Deck will switch to the previous profile.</param>
         /// <returns>The task of switching profiles.</returns>
-        Task SwitchToProfileAsync(string context, string device, string profile);
+        Task SwitchToProfileAsync(string context, string device, string profile = "");
     }
 }

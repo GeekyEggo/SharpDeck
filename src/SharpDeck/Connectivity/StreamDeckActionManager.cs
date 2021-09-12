@@ -5,12 +5,14 @@ namespace SharpDeck.Connectivity
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
 
     /// <summary>
     /// Provides connectivity between a <see cref="IStreamDeckConnection"/> and registered <see cref="StreamDeckAction"/>.
     /// </summary>
-    public sealed class StreamDeckActionProvider : IDisposable
+    internal sealed class StreamDeckActionManager : IStreamDeckActionManager
     {
         /// <summary>
         /// The synchronization root.
@@ -18,13 +20,17 @@ namespace SharpDeck.Connectivity
         private static readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckActionProvider" /> class.
+        /// Initializes a new instance of the <see cref="StreamDeckActionManager" /> class.
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
-        public StreamDeckActionProvider(IStreamDeckConnection connection)
+        /// <param name="actionFactory">The factory responsible for creating <see cref="StreamDeckAction" />.</param>
+        /// <param name="logger">The logger.</param>
+        public StreamDeckActionManager(IStreamDeckConnection connection, IFactory<StreamDeckAction> actionFactory, ILogger<StreamDeckActionManager> logger)
         {
+            this.ActionFactory = actionFactory;
             this.Cache = new StreamDeckActionCacheCollection(connection);
             this.Connection = connection;
+            this.Logger = logger;
 
             // responsible for caching
             connection.WillAppear += this.Action_WillAppear;
@@ -43,7 +49,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// Gets the registered actions, used to initialize new instances of actions.
         /// </summary>
-        private IDictionary<string, Func<StreamDeckAction>> RegisteredActions { get; } = new ConcurrentDictionary<string, Func<StreamDeckAction>>();
+        private IDictionary<string, Type> RegisteredActions { get; } = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -56,25 +62,22 @@ namespace SharpDeck.Connectivity
         private IStreamDeckConnection Connection { get; }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Gets the logger.
         /// </summary>
-        public void Dispose()
-        {
-            this.RegisteredActions?.Clear();
-            this.Cache?.Dispose();
-
-            GC.SuppressFinalize(this);
-        }
+        private ILogger Logger { get; }
 
         /// <summary>
-        /// Registers a new <see cref="StreamDeckAction"/> for the specified action UUID.
+        /// Gets the factory responsible for creating new <see cref="StreamDeckAction"/>.
         /// </summary>
-        /// <typeparam name="T">The type of Stream Deck action.</typeparam>
+        private IFactory<StreamDeckAction> ActionFactory { get; }
+
+        /// <summary>
+        /// Registers a new <see cref="StreamDeckAction" /> for the specified action UUID.
+        /// </summary>
         /// <param name="actionUUID">The action UUID associated with the Stream Deck.</param>
-        /// <param name="valueFactory">The value factory, used to initialize a new action.</param>
-        public void Register<T>(string actionUUID, Func<T> valueFactory)
-            where T : StreamDeckAction
-            => this.RegisteredActions.Add(actionUUID, valueFactory);
+        /// <param name="type">The underlying type of the <see cref="StreamDeckAction"/>.</param>
+        public void Register(string actionUUID, Type type)
+            => this.RegisteredActions.Add(actionUUID, type);
 
         /// <summary>
         /// Attempts to get the action instance for the specified <paramref name="args"/>.
@@ -93,18 +96,18 @@ namespace SharpDeck.Connectivity
         private void Action_WillAppear(object sender, ActionEventArgs<AppearancePayload> args)
         {
             // Check if the action type is handled by this instance.
-            if (this.RegisteredActions.TryGetValue(args.Action, out var valueFactory))
+            if (this.RegisteredActions.TryGetValue(args.Action, out var type))
             {
-                _ = this.Action_WillAppearAsync(args, valueFactory);
+                _ = this.Action_WillAppearAsync(args, type);
             }
         }
 
         /// <summary>
-        /// Handles initializing the action and invoking the <see cref="IStreamDeckConnection.WillAppear"/> event.
+        /// Handles initializing the action and invoking the <see cref="IStreamDeckConnection.WillAppear" /> event.
         /// </summary>
-        /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
-        /// <param name="valueFactory">The value factory used to construct a new instance of the action when required.</param>
-        private async Task Action_WillAppearAsync(ActionEventArgs<AppearancePayload> args, Func<StreamDeckAction> valueFactory)
+        /// <param name="args">The <see cref="ActionEventArgs{AppearancePayload}" /> instance containing the event data.</param>
+        /// <param name="actionType">Type of the action.</param>
+        private async Task Action_WillAppearAsync(ActionEventArgs<AppearancePayload> args, Type actionType)
         {
             try
             {
@@ -112,7 +115,7 @@ namespace SharpDeck.Connectivity
 
                 if (!this.Cache.TryGet(args, out var action, args.Payload))
                 {
-                    action = valueFactory();
+                    action = this.ActionFactory.Create(actionType);
                     await this.Cache.AddAsync(args, action);
 
                     action.Initialize(args, this.Connection);
@@ -122,6 +125,8 @@ namespace SharpDeck.Connectivity
             }
             catch (Exception ex)
             {
+                this.Logger.LogError(ex, $"Failed to load action \"{args.Action}\".");
+
                 await this.Connection.ShowAlertAsync(args.Context);
                 await this.Connection.LogMessageAsync(ex.Message);
             }

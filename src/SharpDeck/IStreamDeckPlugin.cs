@@ -3,6 +3,7 @@
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using SharpDeck.Connectivity;
 
     /// <summary>
     /// Provides a wrapper for connecting and communication with a Stream Deck.

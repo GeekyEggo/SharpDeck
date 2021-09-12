@@ -101,6 +101,13 @@ namespace SharpDeck.Connectivity.Net
         public event EventHandler<ActionEventArgs<AppearancePayload>> WillDisappear;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="StreamDeckWebSocketConnection"/> class.
+        /// </summary>
+        /// <param name="registrationParameters">The registration parameters.</param>
+        public StreamDeckWebSocketConnection(RegistrationParameters registrationParameters)
+            => this.RegistrationParameters = registrationParameters;
+
+        /// <summary>
         /// Gets the information about the connection.
         /// </summary>
         public RegistrationInfo Info => this.RegistrationParameters.Info;
@@ -130,19 +137,16 @@ namespace SharpDeck.Connectivity.Net
         /// <summary>
         /// Initiates a connection to the Stream Deck asynchronously.
         /// </summary>
-        /// <param name="registrationParameters">The registration parameters.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
-        public Task ConnectAsync(RegistrationParameters registrationParameters, CancellationToken cancellationToken = default)
+        public Task ConnectAsync(CancellationToken cancellationToken = default)
         {
-            this.RegistrationParameters = registrationParameters;
-
-            this.WebSocket = new WebSocketConnection($"ws://localhost:{registrationParameters.Port}/", this.JsonSettings);
+            this.WebSocket = new WebSocketConnection($"ws://localhost:{this.RegistrationParameters.Port}/", this.JsonSettings);
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
 
             return Task.Run(async () =>
             {
                 await this.WebSocket.ConnectAsync();
-                await this.WebSocket.SendJsonAsync(new RegistrationMessage(registrationParameters.Event, registrationParameters.PluginUUID));
+                await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
                 this.Registered.Invoke(this, EventArgs.Empty);
 
                 await this.WebSocket.ReceiveAsync(cancellationToken);
