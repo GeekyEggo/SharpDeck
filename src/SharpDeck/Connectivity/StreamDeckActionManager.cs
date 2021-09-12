@@ -80,15 +80,6 @@ namespace SharpDeck.Connectivity
             => this.RegisteredActions.Add(actionUUID, type);
 
         /// <summary>
-        /// Attempts to get the action instance for the specified <paramref name="args"/>.
-        /// </summary>
-        /// <param name="args">The <see cref="IActionEventArgs"/> instance containing the event data.</param>
-        /// <param name="value">The <see cref="StreamDeckAction"/> instanced associated with the <paramref name="args"/>.</param>
-        /// <returns><c>true</c> when an instance exists for the given <paramref name="args"/>; otherwise <c>false</c>.</returns>
-        public bool TryGet(IActionEventArgs args, out StreamDeckAction value)
-            => this.Cache.TryGet(args, out value);
-
-        /// <summary>
         /// Handles the <see cref="IStreamDeckConnection.WillAppear"/> event of the <see cref="Connection"/>.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

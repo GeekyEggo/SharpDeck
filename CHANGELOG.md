@@ -42,6 +42,7 @@
 
 #### 🐞 Fixed 
 
+* `profile` is now optional when calling `IStreamDeckConnection.SwitchToProfileAsync`.
 * Fixed missing payload information for `deviceDidConnect`.
 * Fixed missing payload information for `titleParametersDidChange`.
 
