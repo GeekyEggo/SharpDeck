@@ -41,6 +41,7 @@
 
 #### 🐞 Fixed 
 
+* Fixed missing payload information for `deviceDidConnect`.
 * Fixed missing payload information for `titleParametersDidChange`.
 
 ## 5.0.2
