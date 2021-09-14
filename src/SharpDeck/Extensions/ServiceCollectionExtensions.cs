@@ -2,11 +2,11 @@
 {
     using System;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
     using SharpDeck.Connectivity.Net;
     using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
+    using SharpDeck.Interactivity;
 
     /// <summary>
     /// Provides extension methods for <see cref="IServiceCollection"/>.
@@ -22,14 +22,16 @@
         public static IServiceCollection AddStreamDeckPlugin(this IServiceCollection services, Action<IStreamDeckPlugin> configure = null)
         {
             return services
+                // Misc
+                .AddSingleton<IActivator, SelfContainedServiceProviderActivator>(serviceProvider => new SelfContainedServiceProviderActivator(serviceProvider))
 
                 // Connection with Stream Deck.
                 .AddSingleton(new RegistrationParameters(Environment.GetCommandLineArgs()))
                 .AddSingleton<IStreamDeckConnectionController, StreamDeckWebSocketConnection>()
                 .AddSingleton<IStreamDeckConnection>(serviceProvider => serviceProvider.GetRequiredService<IStreamDeckConnectionController>())
 
-                // Action management, and drill-down.
-                .AddSingleton<IFactory<StreamDeckAction>, StreamDeckButtonFactory<StreamDeckAction>>(serviceProvider => new StreamDeckButtonFactory<StreamDeckAction>(serviceProvider))
+                // Action interactivity.
+                .AddSingleton<IDrillDownFactory, DrillDownFactory>()
                 .AddSingleton<IStreamDeckActionManager, StreamDeckActionManager>()
 
                 // Plug-in.

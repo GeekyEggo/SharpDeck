@@ -6,6 +6,7 @@
 
 * `StreamDeckPlugin` is now a singleton.
 * Moved `SharpDeck.IStreamDeckConnection` to `SharpDeck.Connectivity.IStreamDeckConnection`.
+* Renamed `StreamDeckAction.StreamDeck` to `StreamDeckAction.Connection`.
 * Removed `StreamDeckPlugin.Create(string[], Assembly)`.
   * `string[]` args will now always use the `Environment.GetCommandLineArgs()`.
 * Removed `StreamDeckPlugin.OnSetup`.
@@ -15,6 +16,7 @@
 * Removed static `Run()` and `RunAsync(CancellationToken)` methods.
 * Removed `StreamDeckPlugin.WithServiceProvider(IServiceProvider)`, please use `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>`.
 * Removed `StreamDeckAction.EnablePropertyInspectorMethods`; always considered `true`.
+* Removed `InvalidStreamDeckActionTypeException` in favour of `NotSupportedException`.
 
 #### ⭐ Added
 

@@ -14,14 +14,8 @@
         /// <param name="uuid">The unique identifier of the action.</param>
         public StreamDeckActionAttribute(string uuid)
         {
-            this.IsDrillDown = false;
             this.UUID = uuid;
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this action represents a drill-down action handler.
-        /// </summary>
-        public bool IsDrillDown { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only alphanumeric characters (A-Z, a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.

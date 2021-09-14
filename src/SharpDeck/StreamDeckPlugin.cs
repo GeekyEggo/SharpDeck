@@ -6,8 +6,8 @@ namespace SharpDeck
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using SharpDeck.Connectivity;
-    using SharpDeck.Exceptions;
     using SharpDeck.Extensions;
+    using SharpDeck.Interactivity;
 
     /// <summary>
     /// Provides a singleton wrapper for connecting and communication with a Stream Deck.
@@ -22,7 +22,7 @@ namespace SharpDeck
         /// <summary>
         /// Private static field for <see cref="Current"/>.
         /// </summary>
-        private static StreamDeckPlugin _current;
+        private static IStreamDeckPlugin _current;
 
         /// <summary>
         /// Private member field for <see cref="Assembly"/>.
@@ -44,7 +44,7 @@ namespace SharpDeck
         /// <summary>
         /// Gets the singleton instance of the Stream Deck plugin.
         /// </summary>
-        public static StreamDeckPlugin Current
+        public static IStreamDeckPlugin Current
         {
             get
             {
@@ -56,7 +56,9 @@ namespace SharpDeck
                             .AddStreamDeckPlugin()
                             .BuildServiceProvider();
 
-                        _current = ActivatorUtilities.CreateInstance<StreamDeckPlugin>(serviceProvider);
+                        _current = new StreamDeckPlugin(
+                            serviceProvider.GetRequiredService<IStreamDeckConnectionController>(),
+                            serviceProvider.GetRequiredService<IStreamDeckActionManager>());
                     }
 
                     return _current;
@@ -141,16 +143,17 @@ namespace SharpDeck
         /// </summary>
         private void RegisterActions()
         {
-            foreach (var (type, attribute) in this.Assembly.GetTypesWithCustomAttribute<StreamDeckActionAttribute>())
+            foreach (var (type, attr) in this.Assembly.GetTypesWithCustomAttribute<StreamDeckActionAttribute>())
             {
-                if (!typeof(StreamDeckAction).IsAssignableFrom(type))
+                if (typeof(StreamDeckAction).IsAssignableFrom(type))
                 {
-                    throw new InvalidStreamDeckActionTypeException(type);
+                    // The attribute is on a valid attribute.
+                    this.ActionManager.Register(attr.UUID, type);
                 }
-
-                if (!attribute.IsDrillDown)
+                else
                 {
-                    this.ActionManager.Register(attribute.UUID, type);
+                    // The attribute is not on a supported type.
+                    throw new NotSupportedException($"Failed to register \"{attr.UUID}\"; class must inherit \"{typeof(StreamDeckAction)}\" or \"{typeof(StreamDeckAction<>)}\".");
                 }
             }
         }

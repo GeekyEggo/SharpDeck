@@ -8,6 +8,7 @@ namespace SharpDeck.Connectivity
     using Microsoft.Extensions.Logging;
     using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
+    using SharpDeck.Interactivity;
 
     /// <summary>
     /// Provides connectivity between a <see cref="IStreamDeckConnection"/> and registered <see cref="StreamDeckAction"/>.
@@ -23,14 +24,17 @@ namespace SharpDeck.Connectivity
         /// Initializes a new instance of the <see cref="StreamDeckActionManager" /> class.
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
-        /// <param name="actionFactory">The factory responsible for creating <see cref="StreamDeckAction" />.</param>
-        /// <param name="logger">The logger.</param>
-        public StreamDeckActionManager(IStreamDeckConnection connection, IFactory<StreamDeckAction> actionFactory, ILogger<StreamDeckActionManager> logger)
+        /// <param name="activator">The activator responsible for creating <see cref="StreamDeckAction" />.</param>
+        /// <param name="drillDownFactory">The drill-down factory.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        public StreamDeckActionManager(IStreamDeckConnection connection, IActivator activator, IDrillDownFactory drillDownFactory, ILoggerFactory loggerFactory = null)
         {
-            this.ActionFactory = actionFactory;
+            this.Activator = activator;
             this.Cache = new StreamDeckActionCacheCollection(connection);
             this.Connection = connection;
-            this.Logger = logger;
+            this.DrillDownFactory = drillDownFactory;
+            this.Logger = loggerFactory?.CreateLogger<StreamDeckActionManager>();
+            this.LoggerFactory = loggerFactory;
 
             // responsible for caching
             connection.WillAppear += this.Action_WillAppear;
@@ -47,9 +51,9 @@ namespace SharpDeck.Connectivity
         }
 
         /// <summary>
-        /// Gets the registered actions, used to initialize new instances of actions.
+        /// Gets the activator responsible for creating <see cref="StreamDeckAction" />
         /// </summary>
-        private IDictionary<string, Type> RegisteredActions { get; } = new ConcurrentDictionary<string, Type>();
+        private IActivator Activator { get; }
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -62,14 +66,24 @@ namespace SharpDeck.Connectivity
         private IStreamDeckConnection Connection { get; }
 
         /// <summary>
-        /// Gets the logger.
+        /// Gets the drill-down factory.
         /// </summary>
-        private ILogger Logger { get; }
+        private IDrillDownFactory DrillDownFactory { get; }
 
         /// <summary>
-        /// Gets the factory responsible for creating new <see cref="StreamDeckAction"/>.
+        /// Gets the logger.
         /// </summary>
-        private IFactory<StreamDeckAction> ActionFactory { get; }
+        public ILogger Logger { get; }
+
+        /// <summary>
+        /// Gets the logger factory.
+        /// </summary>
+        private ILoggerFactory LoggerFactory { get; }
+
+        /// <summary>
+        /// Gets the registered actions, used to initialize new instances of actions.
+        /// </summary>
+        private IDictionary<string, Type> RegisteredActions { get; } = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
         /// Registers a new <see cref="StreamDeckAction" /> for the specified action UUID.
@@ -106,17 +120,18 @@ namespace SharpDeck.Connectivity
 
                 if (!this.Cache.TryGet(args, out var action, args.Payload))
                 {
-                    action = this.ActionFactory.Create(actionType);
-                    await this.Cache.AddAsync(args, action);
+                    action = (StreamDeckAction)this.Activator.CreateInstance(actionType);
+                    action.Logger = this.LoggerFactory?.CreateLogger(actionType);
 
-                    action.Initialize(args, this.Connection);
+                    await this.Cache.AddAsync(args, action);
+                    action.Initialize(args, this.Connection, this.DrillDownFactory);
                 }
 
                 _ = this.InvokeOnActionAsync(action, args, a => a.OnWillAppear);
             }
             catch (Exception ex)
             {
-                this.Logger.LogError(ex, $"Failed to load action \"{args.Action}\".");
+                this.Logger?.LogError(ex, $"Failed to load action \"{args.Action}\".");
 
                 await this.Connection.ShowAlertAsync(args.Context);
                 await this.Connection.LogMessageAsync(ex.Message);
