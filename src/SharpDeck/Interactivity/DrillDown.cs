@@ -41,7 +41,7 @@
             this.Manager = manager;
 
             this.Buttons = new DeviceButtonMap(this.Context.Connection, this.Context.Device);
-            this.Context.Connection.KeyDown += Connection_KeyDown;
+            this.Context.Connection.KeyUp += Connection_KeyUp;
         }
 
         /// <summary>
@@ -126,7 +126,7 @@
             }
 
             this.Buttons.Dispose();
-            this.Context.Connection.KeyDown -= this.Connection_KeyDown;
+            this.Context.Connection.KeyUp -= this.Connection_KeyUp;
             this.Context.Connection.WillDisappear -= this.Connection_WillDisappear;
 
             this.PageChangingCancellationTokenSource?.Cancel();
@@ -142,11 +142,11 @@
         }
 
         /// <summary>
-        /// Handles the KeyDown event of the Connection control.
+        /// Handles the <see cref="IStreamDeckConnection.KeyUp"/> of the <see cref="IStreamDeckConnection"/> of the <see cref="Context"/>.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
-        private void Connection_KeyDown(object sender, ActionEventArgs<KeyPayload> e)
+        private void Connection_KeyUp(object sender, ActionEventArgs<KeyPayload> e)
         {
             using (this._syncRoot.Lock())
             {
