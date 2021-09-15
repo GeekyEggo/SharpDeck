@@ -32,7 +32,7 @@
         }
 
         /// <summary>
-        /// Gets the button for the specified coordinates.
+        /// Gets the button for the specified coordinates; otherwise <c>null</c>.
         /// </summary>
         /// <param name="coordinates">The coordinates.</param>
         /// <returns>The button at the specified <paramref name="coordinates"/>.</returns>
@@ -42,7 +42,7 @@
         }
 
         /// <summary>
-        /// Gets the button for the specified index.
+        /// Gets the button for the specified index; otherwise <c>null</c>.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The button at the specified <paramref name="index"/>.</returns>

@@ -44,7 +44,7 @@
         }
 
         /// <summary>
-        /// Gets the button map.
+        /// Gets the available buttons for the device.
         /// </summary>
         private MonitoredButtonCollection Buttons { get; }
 
@@ -59,11 +59,6 @@
         private IDrillDownController<T> Controller { get; }
 
         /// <summary>
-        /// Gets the logger.
-        /// </summary>
-        private ILogger Logger { get; }
-
-        /// <summary>
         /// Gets the data source containing the items to show.
         /// </summary>
         private IEnumerable<T> DataSource { get; set; } = Enumerable.Empty<T>();
@@ -72,6 +67,11 @@
         /// Gets or sets a value indicating whether this instance is disposed.
         /// </summary>
         private bool IsDisposed { get; set; } = false;
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        private ILogger Logger { get; }
 
         /// <summary>
         /// Gets or sets the cancellation token source that is cancelled upon a page changing.
@@ -152,7 +152,7 @@
 
                 this.DataSource = items;
                 this.Pager = new DevicePager<T>(this.Buttons, this.DataSource);
-                this.ShowCurrentPage();
+                await this.ShowCurrentPageAsync();
             }
 
             return await this.Result.Task;
@@ -211,13 +211,13 @@
                     // Next button.
                     case string ctx when ctx == this.Pager.NextButton?.Context:
                         this.Pager.MoveNext();
-                        this.ShowCurrentPage();
+                        this.ShowCurrentPageAsync().Forget(this.Logger);
                         break;
 
                     // Previous button.
                     case string ctx when ctx == this.Pager.PreviousButton?.Context:
                         this.Pager.MovePrevious();
-                        this.ShowCurrentPage();
+                        this.ShowCurrentPageAsync().Forget(this.Logger);
                         break;
 
                     // Default; this may not be an item depending on how many items the current page has.
@@ -247,39 +247,42 @@
         /// <summary>
         /// Shows the current page's items contained within <see cref="DevicePager{T}.Items"/>.
         /// </summary>
-        private void ShowCurrentPage()
+        /// <returns>The task of showing the current page.</returns>
+        private Task ShowCurrentPageAsync()
         {
             if (this.IsDisposed)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             // The cancellation token allows us to cancel any initialization that is still occuring from a previous page load.
             this.PageChangingCancellationTokenSource?.Cancel();
             this.PageChangingCancellationTokenSource = new CancellationTokenSource();
+
             var cancellationToken = this.PageChangingCancellationTokenSource.Token;
+            var tasks = new List<Task>();
 
             // Iterate over all available buttons.
-            for (var i = 0; i < this.Buttons.Length - this.Pager.NavigationButtonCount; i++)
+            for (var buttonIndex = CLOSE_BUTTON_OFFSET; buttonIndex < this.Buttons.Length - this.Pager.NavigationButtonCount; buttonIndex++)
             {
-                if (i < this.Pager.Items.Length)
+                var itemIndex = buttonIndex - CLOSE_BUTTON_OFFSET;
+                if (itemIndex < this.Pager.Items.Length)
                 {
                     // The button has an item, so initiate it.
-                    this.Controller
-                        .OnShowAsync(this.Context, new StreamDeckButton(this.Context.Connection, this.Buttons[i + CLOSE_BUTTON_OFFSET].Context), this.Pager.Items[i], cancellationToken)
-                        .Forget(this.Logger);
+                    tasks.Add(this.Controller.OnShowAsync(this.Context, new StreamDeckButton(this.Context.Connection, this.Buttons[buttonIndex].Context), this.Pager.Items[itemIndex], cancellationToken));
                 }
                 else
                 {
                     // The button does not have an item, so reset it to an empty button.
-                    this.Buttons[i + CLOSE_BUTTON_OFFSET]?.SetTitleAsync(cancellationToken: cancellationToken)
-                        .Forget(this.Logger);
+                    tasks.Add(this.Buttons[buttonIndex].SetDisplayAsync(image: SvgIcons.Transparent, cancellationToken: cancellationToken));
                 }
             }
 
             // Finally, set the navigation buttons; these may be null.
-            this.Pager.NextButton?.SetTitleAsync(">", cancellationToken: cancellationToken).Forget(this.Logger);
-            this.Pager.PreviousButton?.SetTitleAsync("<", cancellationToken: cancellationToken).Forget(this.Logger);
+            tasks.Add(this.Pager.NextButton?.SetDisplayAsync(">", cancellationToken: cancellationToken));
+            tasks.Add(this.Pager.PreviousButton?.SetDisplayAsync("<", cancellationToken: cancellationToken));
+
+            return Task.WhenAll(tasks);
         }
     }
 }
