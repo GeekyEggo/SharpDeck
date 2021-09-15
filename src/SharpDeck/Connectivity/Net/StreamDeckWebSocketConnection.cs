@@ -42,12 +42,12 @@ namespace SharpDeck.Connectivity.Net
         public event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.GetGlobalSettingsAsync()"/> has been called to retrieve the persistent global data stored for the plugin.
+        /// Occurs when <see cref="IStreamDeckConnection.GetGlobalSettingsAsync(CancellationToken)"/> has been called to retrieve the persistent global data stored for the plugin.
         /// </summary>
         public event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.
+        /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.
         /// </summary>
         public event EventHandler<ActionEventArgs<ActionPayload>> DidReceiveSettings;
 
@@ -146,7 +146,7 @@ namespace SharpDeck.Connectivity.Net
             return Task.Run(async () =>
             {
                 await this.WebSocket.ConnectAsync();
-                await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID));
+                await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), cancellationToken);
                 this.Registered.Invoke(this, EventArgs.Empty);
 
                 await this.WebSocket.ReceiveAsync(cancellationToken);
@@ -172,30 +172,43 @@ namespace SharpDeck.Connectivity.Net
         /// <summary>
         /// Requests the persistent global data stored for the plugin.
         /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
-        public Task GetGlobalSettingsAsync()
-            => this.SendAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID));
+        public Task GetGlobalSettingsAsync(CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID), cancellationToken);
 
         /// <summary>
         /// Requests the persistent global data stored for the plugin.
         /// </summary>
         /// <typeparam name="T">The type of the settings.</typeparam>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task containing the global settings.</returns>
-        public Task<T> GetGlobalSettingsAsync<T>()
+        public Task<T> GetGlobalSettingsAsync<T>(CancellationToken cancellationToken = default)
             where T : class
         {
             var taskSource = new TaskCompletionSource<T>();
 
-            // declare the local function handler that sets the task result
+            // Declare the local function handler that sets the task result
             void handler(object sender, StreamDeckEventArgs<SettingsPayload> e)
             {
-                this.DidReceiveGlobalSettings -= handler;
-                taskSource.TrySetResult(e.Payload.GetSettings<T>());
+                if (taskSource.TrySetResult(e.Payload.GetSettings<T>()))
+                {
+                    this.DidReceiveGlobalSettings -= handler;
+                }
             }
 
-            // listen for receiving events, and trigger a request
+            // Register the cancellation.
+            cancellationToken.Register(() =>
+            {
+                if (taskSource.TrySetCanceled())
+                {
+                    this.DidReceiveGlobalSettings -= handler;
+                }
+            });
+
+            // Listen for receiving events, and trigger a request.
             this.DidReceiveGlobalSettings += handler;
-            this.GetGlobalSettingsAsync();
+            this.GetGlobalSettingsAsync(cancellationToken);
 
             return taskSource.Task;
         }
@@ -204,25 +217,28 @@ namespace SharpDeck.Connectivity.Net
         /// Requests the persistent data stored for the specified context's action instance.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending the message; the result does not contain the settings.</returns>
-        public Task GetSettingsAsync(string context)
-            => this.SendAsync(new ContextMessage("getSettings", context));
+        public Task GetSettingsAsync(string context, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage("getSettings", context), cancellationToken);
 
         /// <summary>
         /// Write a debug log to the logs file.
         /// </summary>
         /// <param name="msg">The message to log.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of logging the message.</returns>
-        public Task LogMessageAsync(string msg)
-            => this.SendAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)));
+        public Task LogMessageAsync(string msg, CancellationToken cancellationToken = default)
+            => this.SendAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)), cancellationToken);
 
         /// <summary>
         /// Open a URL in the default browser.
         /// </summary>
         /// <param name="url">A URL to open in the default browser.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of opening the URL.</returns>
-        public Task OpenUrlAsync(string url)
-            => this.SendAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)));
+        public Task OpenUrlAsync(string url, CancellationToken cancellationToken = default)
+            => this.SendAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)), cancellationToken);
 
         /// <summary>
         /// Send a payload to the Property Inspector.
@@ -230,17 +246,19 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="context">An opaque value identifying the instances action.</param>
         /// <param name="action">The action unique identifier.</param>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>vvvvvv
         /// <returns>The task of sending payload to the property inspector.</returns>
-        public Task SendToPropertyInspectorAsync(string context, string action, object payload)
-            => this.SendAsync(new ActionMessage<object>("sendToPropertyInspector", context, action, payload));
+        public Task SendToPropertyInspectorAsync(string context, string action, object payload, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ActionMessage<object>("sendToPropertyInspector", context, action, payload), cancellationToken);
 
         /// <summary>
         /// Save persistent data for the plugin.
         /// </summary>
         /// <param name="settings">An object which persistently saved globally.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the global settings.</returns>
-        public Task SetGlobalSettingsAsync(object settings)
-            => this.SendAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, JObject.FromObject(settings, JsonSerializer.Create(this.JsonSettings))));
+        public Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, JObject.FromObject(settings, JsonSerializer.Create(this.JsonSettings))), cancellationToken);
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
@@ -249,27 +267,30 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). svg is also supported. If no image is passed, the image is reset to the default image from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the image.</returns>
-        public Task SetImageAsync(string context, string image, TargetType target = TargetType.Both, int? state = null)
-            => this.SendAsync(new ContextMessage<SetImagePayload>("setImage", context, new SetImagePayload(image, target, state)));
+        public Task SetImageAsync(string context, string image, TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage<SetImagePayload>("setImage", context, new SetImagePayload(image, target, state)), cancellationToken);
 
         /// <summary>
         /// Save persistent data for the action's instance.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="settings">An object which is persistently saved for the action's instance.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the settings.</returns>
-        public Task SetSettingsAsync(string context, object settings)
-            => this.SendAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings, JsonSerializer.Create(this.JsonSettings))));
+        public Task SetSettingsAsync(string context, object settings, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings, JsonSerializer.Create(this.JsonSettings))), cancellationToken);
 
         /// <summary>
         /// Change the state of the actions instance supporting multiple states.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="state">A 0-based integer value representing the state requested.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the state.</returns>
-        public Task SetStateAsync(string context, int state = 0)
-            => this.SendAsync(new ContextMessage<SetStatePayload>("setState", context, new SetStatePayload(state)));
+        public Task SetStateAsync(string context, int state = 0, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage<SetStatePayload>("setState", context, new SetStatePayload(state)), cancellationToken);
 
         /// <summary>
         /// Dynamically change the title of an instance of an action.
@@ -278,25 +299,28 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the title.</returns>
-        public Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both, int? state = null)
-            => this.SendAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target, state)));
+        public Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target, state)), cancellationToken);
 
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of showing the alert.</returns>
-        public Task ShowAlertAsync(string context)
-            => this.SendAsync(new ContextMessage("showAlert", context));
+        public Task ShowAlertAsync(string context, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage("showAlert", context), cancellationToken);
 
         /// <summary>
         /// Temporarily show an OK checkmark icon on the image displayed by an instance of an action.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of showing the OK.</returns>
-        public Task ShowOkAsync(string context)
-            => this.SendAsync(new ContextMessage("showOk", context));
+        public Task ShowOkAsync(string context, CancellationToken cancellationToken = default)
+            => this.SendAsync(new ContextMessage("showOk", context), cancellationToken);
 
         /// <summary>
         /// Switch to one of the preconfigured read-only profiles.
@@ -304,17 +328,19 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="context">An opaque value identifying the plugin. This value should be set to the PluginUUID received during the registration procedure.</param>
         /// <param name="device">An opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.</param>
         /// <param name="profile">The name of the profile to switch to. The name should be identical to the name provided in the manifest.json file.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of switching profiles.</returns>
-        public Task SwitchToProfileAsync(string context, string device, string profile)
-            => this.SendAsync(new DeviceMessage<SwitchToProfilePayload>("switchToProfile", context, device, new SwitchToProfilePayload(profile)));
+        public Task SwitchToProfileAsync(string context, string device, string profile = "", CancellationToken cancellationToken = default)
+            => this.SendAsync(new DeviceMessage<SwitchToProfilePayload>("switchToProfile", context, device, new SwitchToProfilePayload(profile)), cancellationToken);
 
         /// <summary>
         /// Sends the value to the Stream Deck asynchronously.
         /// </summary>
         /// <param name="value">The value.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task of sending the value.</returns>
-        private Task SendAsync(object value)
-            => this.WebSocket.SendJsonAsync(value);
+        private Task SendAsync(object value, CancellationToken cancellationToken)
+            => this.WebSocket.SendJsonAsync(value, cancellationToken);
 
         /// <summary>
         /// Handles the <see cref="WebSocketConnection.MessageReceived"/> public event of <see cref="WebSocket"/>.

@@ -3,6 +3,7 @@ namespace SharpDeck
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
@@ -17,7 +18,7 @@ namespace SharpDeck
     public class StreamDeckAction : ButtonFeedbackProvider
     {
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string)"/> has been called to retrieve the persistent data stored for the action.
+        /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.
         /// </summary>
         private event EventHandler<ActionEventArgs<ActionPayload>> DidReceiveSettings;
 
@@ -70,22 +71,34 @@ namespace SharpDeck
         /// Gets this action's instances settings asynchronously.
         /// </summary>
         /// <typeparam name="T">The type of the settings.</typeparam>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task containing the settings.</returns>
-        public Task<T> GetSettingsAsync<T>()
+        public Task<T> GetSettingsAsync<T>(CancellationToken cancellationToken = default)
             where T : class
         {
             this.ThrowIfDisposed();
 
             var taskSource = new TaskCompletionSource<T>();
 
-            // declare the local function handler that sets the task result
+            // Declare the local function handler that sets the task result.
             void handler(object sender, ActionEventArgs<ActionPayload> e)
             {
-                this.DidReceiveSettings -= handler;
-                taskSource.TrySetResult(e.Payload.GetSettings<T>());
+                if (taskSource.TrySetResult(e.Payload.GetSettings<T>()))
+                {
+                    this.DidReceiveSettings -= handler;
+                }
             }
 
-            // listen for receiving events, and trigger a request
+            // Register the cancellation.
+            cancellationToken.Register(() =>
+            {
+                if (taskSource.TrySetCanceled())
+                {
+                    this.DidReceiveSettings -= handler;
+                }
+            });
+
+            // Listen for receiving events, and trigger a request.
             this.DidReceiveSettings += handler;
             this.Connection.GetSettingsAsync(this.Context);
 
@@ -96,22 +109,24 @@ namespace SharpDeck
         /// Send a payload to the Property Inspector.
         /// </summary>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending payload to the property inspector.</returns>
-        public Task SendToPropertyInspectorAsync(object payload)
+        public Task SendToPropertyInspectorAsync(object payload, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload);
+            return this.Connection.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload, cancellationToken);
         }
 
         /// <summary>
         /// Save persistent data for the actions instance.
         /// </summary>
         /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the settings.</returns>
-        public Task SetSettingsAsync(object settings)
+        public Task SetSettingsAsync(object settings, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SetSettingsAsync(this.Context, settings);
+            return this.Connection.SetSettingsAsync(this.Context, settings, cancellationToken);
         }
 
         /// <summary>

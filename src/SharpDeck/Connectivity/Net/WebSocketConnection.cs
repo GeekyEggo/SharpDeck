@@ -151,7 +151,8 @@ namespace SharpDeck.Connectivity.Net
         /// Sends the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        public async Task SendAsync(string message)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task SendAsync(string message, CancellationToken cancellationToken)
         {
             if (this.WebSocket == null)
             {
@@ -163,7 +164,7 @@ namespace SharpDeck.Connectivity.Net
                 await this._syncRoot.WaitAsync();
 
                 var buffer = this.Encoding.GetBytes(message);
-                await this.WebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                await this.WebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, cancellationToken);
             }
             finally
             {
@@ -175,10 +176,11 @@ namespace SharpDeck.Connectivity.Net
         /// Serializes the value, and sends the message asynchronously.
         /// </summary>
         /// <param name="value">The value to serialize and send.</param>
-        public Task SendJsonAsync(object value)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public Task SendJsonAsync(object value, CancellationToken cancellationToken)
         {
             var json = JsonConvert.SerializeObject(value, this.JsonSettings);
-            return this.SendAsync(json);
+            return this.SendAsync(json, cancellationToken);
         }
     }
 }
