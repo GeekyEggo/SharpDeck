@@ -132,16 +132,28 @@
         /// <returns>The result of the drill down.</returns>
         public async Task<DrillDownResult<T>> ShowAsync(IEnumerable<T> items)
         {
-            // Todo: allow for this to be invoked multiple times.
-            await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.Profile);
-            await this.Buttons.WaitFullLayoutAsync();
+            using (await this._syncRoot.LockAsync())
+            {
+                if (this.IsDisposed)
+                {
+                    throw new ObjectDisposedException(this.GetType().FullName);
+                }
 
-            this.Context.Connection.WillDisappear += Connection_WillDisappear;
-            await this.Context.Connection.SetTitleAsync(this.Buttons[0].Context, "X");
+                this.PageChangingCancellationTokenSource?.Cancel();
 
-            this.DataSource = items;
-            this.Pager = new DevicePager<T>(this.Buttons, this.DataSource);
-            this.ShowCurrentPage();
+                // Switch to the profile, and await a full layout.
+                await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.Profile);
+                await this.Buttons.WaitFullLayoutAsync();
+                await this.Context.Connection.SetTitleAsync(this.Buttons[0].Context, "X");
+
+                // Listen to buttons disappearing, this allows us to dispose of the drill-down if the profile changes for a reason out of our control.
+                this.Context.Connection.WillDisappear -= this.Connection_WillDisappear;
+                this.Context.Connection.WillDisappear += this.Connection_WillDisappear;
+
+                this.DataSource = items;
+                this.Pager = new DevicePager<T>(this.Buttons, this.DataSource);
+                this.ShowCurrentPage();
+            }
 
             return await this.Result.Task;
         }

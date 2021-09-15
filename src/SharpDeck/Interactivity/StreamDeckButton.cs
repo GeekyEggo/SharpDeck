@@ -16,7 +16,7 @@
         /// </summary>
         /// <param name="connection">The connection to the Stream Deck.</param>
         /// <param name="context">The context used to identify the action.</param>
-        public StreamDeckButton(IStreamDeckConnection connection, string context)
+        internal StreamDeckButton(IStreamDeckConnection connection, string context)
             : this()
         {
             this.Connection = connection;
