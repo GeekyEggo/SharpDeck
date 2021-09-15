@@ -11,6 +11,11 @@
     public interface IButton : IDisposable
     {
         /// <summary>
+        /// Gets an opaque value identifying the instance of the action. You will need to pass this opaque value to several APIs like the `setTitle` API.
+        /// </summary>
+        string Context { get; }
+
+        /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
         /// </summary>
         /// <param name="image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). svg is also supported. If no image is passed, the image is reset to the default image from the manifest.</param>

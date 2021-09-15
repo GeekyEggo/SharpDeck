@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using SharpDeck.Events.Received;
 
     /// <summary>
     /// Provides pagination for a collection; the page size is dependent on the Stream Deck device.
@@ -18,12 +17,12 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="DevicePager{T}" /> class.
         /// </summary>
-        /// <param name="deviceButtonMap">The device button map.</param>
+        /// <param name="buttons">The available buttons for the device.</param>
         /// <param name="dataSource">The underlying data source to be paged.</param>
-        public DevicePager(DeviceButtonMap deviceButtonMap, IEnumerable<T> dataSource)
+        public DevicePager(MonitoredButtonCollection buttons, IEnumerable<T> dataSource)
         {
+            this.Buttons = buttons;
             this.DataSource = dataSource;
-            this.Buttons = deviceButtonMap;
 
             this.SetItems(0);
         }
@@ -49,19 +48,19 @@
         }
 
         /// <summary>
-        /// Gets the coordinates of the next button; otherwise <c>null</c>.
+        /// Gets the the next button when there is one; otherwise <c>null</c>.
         /// </summary>
-        public Coordinates NextButtonCoordinates => !this.IsLastPage ? this.Buttons[this.Buttons.Count - 1].Coordinates : null;
+        public IButton NextButton => !this.IsLastPage ? this.Buttons[this.Buttons.Length - 1] : null;
 
         /// <summary>
-        /// Gets the coordinates of the previous button; otherwise <c>null</c>.
+        /// Gets the the previous button when there is one; otherwise <c>null</c>.
         /// </summary>
-        public Coordinates PreviousButtonCoordinates => !this.IsFirstPage ? this.Buttons[this.Buttons.Count - this.NavigationButtonCount].Coordinates : null;
+        public IButton PreviousButton => !this.IsFirstPage ? this.Buttons[this.Buttons.Length - this.NavigationButtonCount] : null;
 
         /// <summary>
-        /// Gets the button map.
+        /// Gets the available buttons for the device.
         /// </summary>
-        private DeviceButtonMap Buttons { get; }
+        private MonitoredButtonCollection Buttons { get; }
 
         /// <summary>
         /// Gets or sets the current page index.
@@ -120,7 +119,7 @@
             this.PageIndex = pageIndex;
 
             // Reduce the capacity; the first page will always have at least 1 button (close). All other pages will have at least 2 (close and next/previous).
-            var capacity = this.IsFirstPage ? this.Buttons.Count - 1 : this.Buttons.Count - 2;
+            var capacity = this.IsFirstPage ? this.Buttons.Length - 1 : this.Buttons.Length - 2;
 
             // The first page has a greater capacity as it doesn't have a previous button.
             var offset = this.IsFirstPage ? 0 : capacity + ((this.PageIndex - 1) * (capacity - 1));

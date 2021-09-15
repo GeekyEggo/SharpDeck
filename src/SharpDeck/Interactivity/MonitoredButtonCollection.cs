@@ -1,7 +1,6 @@
 ﻿namespace SharpDeck.Interactivity
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
@@ -9,7 +8,7 @@
     /// <summary>
     /// Provides a monitored layout map of buttons for a <see cref="IdentifiableDeviceInfo" />.
     /// </summary>
-    public sealed class DeviceButtonMap : IDisposable
+    public sealed class MonitoredButtonCollection : IDisposable
     {
         /// <summary>
         /// The synchronization root.
@@ -17,37 +16,46 @@
         private readonly object _syncRoot = new object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DeviceButtonMap" /> class.
+        /// Initializes a new instance of the <see cref="MonitoredButtonCollection" /> class.
         /// </summary>
         /// <param name="connection">The connection to the Stream Deck.</param>
         /// <param name="device">The device to monitor.</param>
-        public DeviceButtonMap(IStreamDeckConnection connection, IDevice device)
+        public MonitoredButtonCollection(IStreamDeckConnection connection, IDevice device)
         {
             this.Connection = connection;
             this.Device = device;
 
-            this.Items = new (string Context, Coordinates Coordinates)[device.Size.Columns * device.Size.Rows];
+            this.Buttons = new IButton[device.Size.Columns * device.Size.Rows];
 
             this.Connection.WillAppear += Connection_WillAppear;
             this.Connection.WillDisappear += Connection_WillDisappear;
         }
 
         /// <summary>
-        /// Gets the button information for the specified index.
+        /// Gets the button for the specified coordinates.
         /// </summary>
-        /// <value>The button's context and coordinates.</value>
+        /// <param name="coordinates">The coordinates.</param>
+        /// <returns>The button at the specified <paramref name="coordinates"/>.</returns>
+        public IButton this[Coordinates coordinates]
+        {
+            get => this.TryGetIndex(this.Device.Id, coordinates, out var index) ? this[index] : default;
+        }
+
+        /// <summary>
+        /// Gets the button for the specified index.
+        /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The button at the specified <paramref name="index"/>.</returns>
-        public (string Context, Coordinates Coordinates) this[int index]
+        public IButton this[int index]
         {
-            get => this.Items[index];
-            private set => this.Items[index] = value;
+            get => index >= 0 && index < this.Length ? this.Buttons[index] : null;
+            private set => this.Buttons[index] = value;
         }
 
         /// <summary>
         /// Gets the total number of buttons available on the device.
         /// </summary>
-        public int Count => this.Items.Length;
+        public int Length => this.Buttons.Length;
 
         /// <summary>
         /// Gets the connection to the Stream Deck.
@@ -62,7 +70,7 @@
         /// <summary>
         /// Gets the buttons.
         /// </summary>
-        private (string Context, Coordinates Coordinates)[] Items { get; }
+        private IButton[] Buttons { get; }
 
         /// <summary>
         /// Gets the task completion source that represents a full layout.
@@ -83,37 +91,6 @@
             this.Connection.WillDisappear -= this.Connection_WillDisappear;
 
             GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dynamically change the title of an instance of an action.
-        /// </summary>
-        /// <param name="index">The index of the action to change.</param>
-        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <returns>The task of setting the title.</returns>
-        public async Task SetTitleAsync(int index, string title = "", CancellationToken cancellationToken = default)
-        {
-            if (index >= 0 && index < this.Items.Length)
-            {
-                await this.Connection.SetTitleAsync(this.Items[index].Context, title, cancellationToken: cancellationToken);
-            }
-        }
-
-        /// <summary>
-        /// Dynamically change the title of an instance of an action.
-        /// </summary>
-        /// <param name="coordinates">The coordinates of the action to change.</param>
-        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <returns>The task of setting the title.</returns>
-        public async Task SetTitleAsync(Coordinates coordinates, string title = "", CancellationToken cancellationToken = default)
-        {
-            if (coordinates != null
-                && this.TryGetIndex(this.Device.Id, coordinates, out var index))
-            {
-                await this.SetTitleAsync(index, title, cancellationToken);
-            }
         }
 
         /// <summary>
@@ -155,11 +132,11 @@
                 {
                     if (this[index] == default)
                     {
-                        this.TrackedCount = Math.Min(this.TrackedCount + 1, this.Count);
+                        this.TrackedCount = Math.Min(this.TrackedCount + 1, this.Length);
                     }
 
-                    this[index] = (e.Context, e.Payload.Coordinates);
-                    if (this.TrackedCount == this.Count)
+                    this[index] = new StreamDeckButton(this.Connection, e.Context);
+                    if (this.TrackedCount == this.Length)
                     {
                         this.FullLayoutTaskCompletionSource?.TrySetResult(true);
                     }
@@ -178,7 +155,7 @@
             {
                 if (this.TryGetIndex(e.Device, e.Payload.Coordinates, out var index))
                 {
-                    this.Items[index] = default;
+                    this.Buttons[index] = default;
                     this.TrackedCount = Math.Max(this.TrackedCount - 1, 0);
                 }
             }

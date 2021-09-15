@@ -3,8 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Cryptography;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
@@ -18,13 +16,6 @@
     /// <typeparam name="T">The type of the items within the drill down.</typeparam>
     public class DrillDown<T> : IDrillDown<T>
     {
-        private static string TRANSPARENT_SVG { get; }
-
-        static DrillDown()
-        {
-            TRANSPARENT_SVG = $"data:image/svg+xml;base64,{Convert.ToBase64String(Resources.Images.Transparent)}";
-        }
-
         /// <summary>
         /// The offset that represents the presence of the close-button.
         /// </summary>
@@ -47,7 +38,7 @@
             this.Controller = controller;
             this.Logger = logger;
 
-            this.Buttons = new DeviceButtonMap(this.Context.Connection, this.Context.Device);
+            this.Buttons = new MonitoredButtonCollection(this.Context.Connection, this.Context.Device);
             this.Context.Connection.KeyUp += Connection_KeyUp;
             this.Context.DrillDown = this;
         }
@@ -55,7 +46,7 @@
         /// <summary>
         /// Gets the button map.
         /// </summary>
-        private DeviceButtonMap Buttons { get; }
+        private MonitoredButtonCollection Buttons { get; }
 
         /// <summary>
         /// Get or sets the context that provides information about where and how the drill down will be shown.
@@ -210,22 +201,21 @@
                     return;
                 }
 
-                switch (e.Payload.Coordinates)
+                switch (e.Context)
                 {
                     // Close button.
-                    case Coordinates c
-                    when c.Column == 0 && c.Row == 0:
+                    case string ctx when ctx == this.Buttons[0]?.Context:
                         this.Dispose(false);
                         break;
 
                     // Next button.
-                    case Coordinates c when c.Equals(this.Pager.NextButtonCoordinates):
+                    case string ctx when ctx == this.Pager.NextButton?.Context:
                         this.Pager.MoveNext();
                         this.ShowCurrentPage();
                         break;
 
                     // Previous button.
-                    case Coordinates c when c.Equals(this.Pager.PreviousButtonCoordinates):
+                    case string ctx when ctx == this.Pager.PreviousButton?.Context:
                         this.Pager.MovePrevious();
                         this.ShowCurrentPage();
                         break;
@@ -270,7 +260,7 @@
             var cancellationToken = this.PageChangingCancellationTokenSource.Token;
 
             // Iterate over all available buttons.
-            for (var i = 0; i < this.Buttons.Count - this.Pager.NavigationButtonCount; i++)
+            for (var i = 0; i < this.Buttons.Length - this.Pager.NavigationButtonCount; i++)
             {
                 if (i < this.Pager.Items.Length)
                 {
@@ -282,15 +272,14 @@
                 else
                 {
                     // The button does not have an item, so reset it to an empty button.
-                    this.Context.Connection.SetImageAsync(this.Buttons[i].Context, TRANSPARENT_SVG);
-                    this.Buttons.SetTitleAsync(i + CLOSE_BUTTON_OFFSET, cancellationToken: cancellationToken)
+                    this.Buttons[i + CLOSE_BUTTON_OFFSET]?.SetTitleAsync(cancellationToken: cancellationToken)
                         .Forget(this.Logger);
                 }
             }
 
             // Finally, set the navigation buttons; these may be null.
-            this.Buttons.SetTitleAsync(this.Pager.NextButtonCoordinates, ">", cancellationToken).Forget(this.Logger);
-            this.Buttons.SetTitleAsync(this.Pager.PreviousButtonCoordinates, "<", cancellationToken).Forget(this.Logger);
+            this.Pager.NextButton?.SetTitleAsync(">", cancellationToken: cancellationToken).Forget(this.Logger);
+            this.Pager.PreviousButton?.SetTitleAsync("<", cancellationToken: cancellationToken).Forget(this.Logger);
         }
     }
 }
