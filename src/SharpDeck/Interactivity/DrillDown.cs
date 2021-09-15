@@ -19,6 +19,11 @@
         where TManager : class, IDrillDownManager<TItem>
     {
         /// <summary>
+        /// The offset that represents the presence of the close-button.
+        /// </summary>
+        private const int CLOSE_BUTTON_OFFSET = 1;
+
+        /// <summary>
         /// The synchronization root.
         /// </summary>
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
@@ -75,36 +80,20 @@
         private CancellationTokenSource PageChangingCancellationTokenSource { get; set; }
 
         /// <summary>
-        /// Gets or sets the index of the current page.
+        /// Gets or sets the pager.
         /// </summary>
-        private int PageIndex { get; set; } = 0;
-
-        /// <summary>
-        /// Gets or sets the page items.
-        /// </summary>
-        private TItem[] PageItems { get; set; }
-
-        /// <summary>
-        /// Gets or sets the available pager buttons.
-        /// </summary>
-        private NavigationButtons PagerButtons { get; set; }
+        private DevicePager<TItem> Pager { get; set; }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         public void Dispose()
         {
-            try
+            using (this._syncRoot.Lock())
             {
-                this._syncRoot.Wait();
                 this.Dispose(true);
+                GC.SuppressFinalize(this);
             }
-            finally
-            {
-                this._syncRoot.Release();
-            }
-
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -121,7 +110,8 @@
             await this.Context.Connection.SetTitleAsync(this.Buttons[0].Context, "X");
 
             this.DataSource = items;
-            await this.ShowCurrentPageAsync();
+            this.Pager = new DevicePager<TItem>(this.Buttons, this.DataSource);
+            this.ShowCurrentPage();
         }
 
         /// <summary>
@@ -130,21 +120,25 @@
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.IsDisposed)
+            if (this.IsDisposed)
             {
-                this.Buttons.Dispose();
-                this.Context.Connection.KeyDown -= this.Connection_KeyDown;
-
-                this.PageChangingCancellationTokenSource?.Cancel();
-                this.PageChangingCancellationTokenSource?.Dispose();
-
-                _ = this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id);
-
-                this.DataSource = null;
-                this.PageItems = null;
-
-                this.IsDisposed = true;
+                return;
             }
+
+            this.Buttons.Dispose();
+            this.Context.Connection.KeyDown -= this.Connection_KeyDown;
+            this.Context.Connection.WillDisappear -= this.Connection_WillDisappear;
+
+            this.PageChangingCancellationTokenSource?.Cancel();
+            this.PageChangingCancellationTokenSource?.Dispose();
+
+            this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id)
+                .Forget(this.Logger);
+
+            this.DataSource = null;
+            this.Pager = null;
+
+            this.IsDisposed = true;
         }
 
         /// <summary>
@@ -154,10 +148,8 @@
         /// <param name="e">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
         private void Connection_KeyDown(object sender, ActionEventArgs<KeyPayload> e)
         {
-            try
+            using (this._syncRoot.Lock())
             {
-                this._syncRoot.Wait();
-
                 if (this.IsDisposed)
                 {
                     return;
@@ -166,54 +158,36 @@
                 switch (e.Payload.Coordinates)
                 {
                     // Close button.
-                    case Coordinates c when c.Column == 0 && c.Row == 0:
+                    case Coordinates c
+                    when c.Column == 0 && c.Row == 0:
                         this.Dispose(false);
                         break;
 
-                    // Last button.
-                    case Coordinates c when
-                        c.Column == this.Context.Device.Size.Columns - 1 && c.Row == this.Context.Device.Size.Rows - 1 && this.PagerButtons != NavigationButtons.None:
-                        {
-                            if (this.PagerButtons.HasFlag(NavigationButtons.Next))
-                            {
-                                this.PageIndex++;
-                            }
-                            else
-                            {
-                                this.PageIndex = Math.Max(this.PageIndex - 1, 0);
-                            }
-
-                            _ = this.ShowCurrentPageAsync();
-                        }
+                    // Next button.
+                    case Coordinates c when c.Equals(this.Pager.NextButtonCoordinates):
+                        this.Pager.MoveNext();
+                        this.ShowCurrentPage();
                         break;
 
-                    // One from last button
-                    case Coordinates c when
-                        c.Column == this.Context.Device.Size.Columns - 2 && c.Row == this.Context.Device.Size.Rows - 1 && this.PagerButtons.HasFlag(NavigationButtons.Previous) && this.PagerButtons.HasFlag(NavigationButtons.Next):
-                        {
-                            this.PageIndex = Math.Max(this.PageIndex - 1, 0);
-                            _ = this.ShowCurrentPageAsync();
-                        }
+                    // Previous button.
+                    case Coordinates c when c.Equals(this.Pager.PreviousButtonCoordinates):
+                        this.Pager.MovePrevious();
+                        this.ShowCurrentPage();
                         break;
 
-                    // All other buttons
+                    // Default; this may not be an item depending on how many items the current page has.
                     default:
                         if (this.Buttons.TryGetIndex(e.Device, e.Payload.Coordinates, out var index))
                         {
-                            // We subtract one to account for the "close" button.
-                            index--;
-                            if (index < this.PageItems.Length)
+                            index -= CLOSE_BUTTON_OFFSET;
+                            if (index < this.Pager.Items.Length)
                             {
-                                var item = this.PageItems[index];
+                                var item = this.Pager.Items[index];
                                 _ = Task.Run(() => this.Manager.OnSelectedAsync(this.Context, item, CancellationToken.None));
                             }
                         }
                         break;
                 }
-            }
-            finally
-            {
-                this._syncRoot.Release();
             }
         }
 
@@ -223,101 +197,44 @@
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         private void Connection_WillDisappear(object sender, ActionEventArgs<AppearancePayload> e)
-            => this.Dispose(false);
+            => this.Dispose();
 
-        private async Task ShowCurrentPageAsync()
+        /// <summary>
+        /// Shows the current page's items contained within <see cref="DevicePager{T}.Items"/>.
+        /// </summary>
+        private void ShowCurrentPage()
         {
-            try
+            if (this.IsDisposed)
             {
-                await this._syncRoot.WaitAsync();
-
-                if (this.IsDisposed)
-                {
-                    return;
-                }
-
-                this.PageChangingCancellationTokenSource?.Cancel();
-                this.PageChangingCancellationTokenSource = new CancellationTokenSource();
-
-                if (this.PageIndex == 0)
-                {
-                    var items = this.DataSource
-                        .Skip(this.PageIndex)
-                        .Take(this.Buttons.Count);
-
-                    // When there is a full page of buttons, we need to display paging; this is to allow us to show the top left button as an "close" button.
-                    if (items.Count() == this.Buttons.Count)
-                    {
-                        await this.ShowAsync(items.Take(this.Buttons.Count - 2).ToArray(), NavigationButtons.Next, this.PageChangingCancellationTokenSource.Token);
-                    }
-                    else
-                    {
-                        await this.ShowAsync(items.ToArray(), NavigationButtons.None, this.PageChangingCancellationTokenSource.Token);
-                    }
-                }
-                else
-                {
-                    var offset = (this.Buttons.Count - 2) + ((this.PageIndex - 1) * (this.Buttons.Count - 3));
-                    var items = this.DataSource
-                        .Skip(offset)
-                        .Take(this.Buttons.Count - 1)
-                        .ToArray(); // We know we must display a back button.
-
-                    if (items.Length >= this.Buttons.Count - 1)
-                    {
-                        await this.ShowAsync(items.Take(this.Buttons.Count - 3).ToArray(), NavigationButtons.Previous | NavigationButtons.Next, this.PageChangingCancellationTokenSource.Token);
-                    }
-                    else
-                    {
-                        await this.ShowAsync(items.ToArray(), NavigationButtons.Previous, this.PageChangingCancellationTokenSource.Token);
-                    }
-                }
+                return;
             }
-            finally
-            {
-                this._syncRoot.Release();
-            }
-        }
 
-        private async Task ShowAsync(TItem[] items, NavigationButtons pagerButtons, CancellationToken cancellationToken)
-        {
-            const int offset = 1;
-            var pagerButtonCount = pagerButtons == NavigationButtons.None
-                ? this.Buttons.Count
-                : pagerButtons.HasFlag(NavigationButtons.Next) && pagerButtons.HasFlag(NavigationButtons.Previous)
-                    ? this.Buttons.Count - 2
-                    : this.Buttons.Count - 1;
+            // The cancellation token allows us to cancel any initialization that is still occuring from a previous page load.
+            this.PageChangingCancellationTokenSource?.Cancel();
+            this.PageChangingCancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = this.PageChangingCancellationTokenSource.Token;
 
-            for (var i = 0; i < pagerButtonCount; i++)
+            // Iterate over all available buttons.
+            for (var i = 0; i < this.Buttons.Count - this.Pager.NavigationButtonCount; i++)
             {
-                if (i < items.Length)
+                if (i < this.Pager.Items.Length)
                 {
+                    // The button has an item, so initiate it.
                     this.Manager
-                        .OnShowAsync(this.Context, new ButtonFeedbackProvider(this.Context.Connection, this.Buttons[i + offset].Context), items[i], cancellationToken)
+                        .OnShowAsync(this.Context, new ButtonFeedbackProvider(this.Context.Connection, this.Buttons[i + CLOSE_BUTTON_OFFSET].Context), this.Pager.Items[i], cancellationToken)
                         .Forget(this.Logger);
                 }
                 else
                 {
-                    await this.Context.Connection.SetTitleAsync(this.Buttons[i + offset].Context, cancellationToken: cancellationToken);
+                    // The button does not have an item, so reset it to an empty button.
+                    this.Buttons.SetTitleAsync(i + CLOSE_BUTTON_OFFSET, cancellationToken: cancellationToken)
+                        .Forget(this.Logger);
                 }
             }
 
-            this.PagerButtons = pagerButtons;
-            this.PageItems = items;
-
-            if (this.PagerButtons.HasFlag(NavigationButtons.Previous) && this.PagerButtons.HasFlag(NavigationButtons.Next))
-            {
-                await this.Context.Connection.SetTitleAsync(this.Buttons[this.Buttons.Count - 2].Context, "<", cancellationToken: cancellationToken);
-                await this.Context.Connection.SetTitleAsync(this.Buttons[this.Buttons.Count - 1].Context, ">", cancellationToken: cancellationToken);
-            }
-            else if (this.PagerButtons.HasFlag(NavigationButtons.Previous))
-            {
-                await this.Context.Connection.SetTitleAsync(this.Buttons[this.Buttons.Count - 1].Context, "<", cancellationToken: cancellationToken);
-            }
-            else if (this.PagerButtons.HasFlag(NavigationButtons.Next))
-            {
-                await this.Context.Connection.SetTitleAsync(this.Buttons[this.Buttons.Count - 1].Context, ">", cancellationToken: cancellationToken);
-            }
+            // Finally, set the navigation buttons; these may be null.
+            this.Buttons.SetTitleAsync(this.Pager.NextButtonCoordinates, ">", cancellationToken).Forget(this.Logger);
+            this.Buttons.SetTitleAsync(this.Pager.PreviousButtonCoordinates, "<", cancellationToken).Forget(this.Logger);
         }
     }
 }

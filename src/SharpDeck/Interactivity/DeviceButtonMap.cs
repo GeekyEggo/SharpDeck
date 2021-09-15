@@ -1,6 +1,7 @@
 ﻿namespace SharpDeck.Interactivity
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
@@ -82,6 +83,37 @@
             this.Connection.WillDisappear -= this.Connection_WillDisappear;
 
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dynamically change the title of an instance of an action.
+        /// </summary>
+        /// <param name="index">The index of the action to change.</param>
+        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The task of setting the title.</returns>
+        public async Task SetTitleAsync(int index, string title = "", CancellationToken cancellationToken = default)
+        {
+            if (index >= 0 && index < this.Items.Length)
+            {
+                await this.Connection.SetTitleAsync(this.Items[index].Context, title, cancellationToken: cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Dynamically change the title of an instance of an action.
+        /// </summary>
+        /// <param name="coordinates">The coordinates of the action to change.</param>
+        /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The task of setting the title.</returns>
+        public async Task SetTitleAsync(Coordinates coordinates, string title = "", CancellationToken cancellationToken = default)
+        {
+            if (coordinates != null
+                && this.TryGetIndex(this.Device.Id, coordinates, out var index))
+            {
+                await this.SetTitleAsync(index, title, cancellationToken);
+            }
         }
 
         /// <summary>
