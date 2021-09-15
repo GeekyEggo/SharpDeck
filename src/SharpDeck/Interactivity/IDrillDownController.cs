@@ -11,11 +11,6 @@
     public interface IDrillDownController<T>
     {
         /// <summary>
-        /// Gets the action UUID contained within the profile.
-        /// </summary>
-        string ActionUUID { get; }
-
-        /// <summary>
         /// Gets the name of the profile responsible for showing this drill down's action. This should loosely match the manifest.json; the device the drill down will be rendered
         /// on is appended as a suffix, i.e. "Mini", "" (Stream Deck), "XL", or "Mobile".
         /// </summary>
