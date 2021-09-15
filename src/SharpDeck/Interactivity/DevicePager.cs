@@ -119,26 +119,18 @@
         {
             this.PageIndex = pageIndex;
 
-            // Determine the maximum number of items that can be shown; we subtract 1 to allow for a "X" button.
-            var capacity = this.Buttons.Count - 1;
+            // Reduce the capacity; the first page will always have at least 1 button (close). All other pages will have at least 2 (close and next/previous).
+            var capacity = this.IsFirstPage ? this.Buttons.Count - 1 : this.Buttons.Count - 2;
 
-            if (this.IsFirstPage)
-            {
-                var items = this.DataSource.Take(capacity + 1);
+            // The first page has a greater capacity as it doesn't have a previous button.
+            var offset = this.IsFirstPage ? 0 : capacity + ((this.PageIndex - 1) * (capacity - 1));
 
-                this.IsLastPage = items.Count() <= capacity;
-                this.Items = items.Take(this.IsLastPage ? capacity : capacity - 1).ToArray();
-            }
-            else
-            {
-                // We must show a previous button, so the capacity is reduced.
-                capacity--;
-                var offset = capacity + ((this.PageIndex - 1) * (capacity - 1));
-                var items = this.DataSource.Skip(offset).Take(capacity + 1);
+            // Take an extra item to determine if there is a next page.
+            var items = this.DataSource.Skip(offset).Take(capacity + 1);
+            this.IsLastPage = items.Count() <= capacity;
 
-                this.IsLastPage = items.Count() <= capacity;
-                this.Items = items.Take(this.IsLastPage ? capacity : capacity - 1).ToArray();
-            }
+            // When there is a next page, we must allow for a "Next" button.
+            this.Items = items.Take(this.IsLastPage ? capacity : capacity - 1).ToArray();
         }
     }
 }
