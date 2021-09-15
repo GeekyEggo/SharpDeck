@@ -4,7 +4,7 @@
     using SharpDeck.Connectivity;
 
     /// <summary>
-    /// Provides contextual information about the current drill-down.
+    /// Provides contextual information about the current drill down.
     /// </summary>
     /// <typeparam name="T">The type of the items within the drill down.</typeparam>
     public class DrillDownContext<T>

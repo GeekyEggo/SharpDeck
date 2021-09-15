@@ -29,7 +29,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="DrillDown{T}" /> class.
         /// </summary>
-        /// <param name="context">The context that provides information about where and how the drill-down will be shown.</param>
+        /// <param name="context">The context that provides information about where and how the drill down will be shown.</param>
         /// <param name="controller">The controller that provides functionality for handling a selection, or rendering items.</param>
         /// <param name="logger">The optional logger.</param>
         internal DrillDown(DrillDownContext<T> context, IDrillDownController<T> controller, ILogger<DrillDown<T>> logger = null)
@@ -49,7 +49,7 @@
         private DeviceButtonMap Buttons { get; }
 
         /// <summary>
-        /// Get or sets the context that provides information about where and how the drill-down will be shown.
+        /// Get or sets the context that provides information about where and how the drill down will be shown.
         /// </summary>
         private DrillDownContext<T> Context { get; set; }
 
@@ -126,7 +126,7 @@
         }
 
         /// <summary>
-        /// Shows the drill-down with the given items asynchronously.
+        /// Shows the drill down with the given items asynchronously.
         /// </summary>
         /// <param name="items">The items to show.</param>
         /// <returns>The result of the drill down.</returns>
@@ -226,7 +226,7 @@
         }
 
         /// <summary>
-        /// Handles the <see cref="IStreamDeckConnection.WillDisappear"/> event for an action; this is a safety precaution in the event an action switch profiles away from the drill-down.
+        /// Handles the <see cref="IStreamDeckConnection.WillDisappear"/> event for an action; this is a safety precaution in the event an action switch profiles away from the drill down.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>

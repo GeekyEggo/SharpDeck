@@ -53,7 +53,7 @@ namespace SharpDeck
         private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
 
         /// <summary>
-        /// Gets the drill-down factory.
+        /// Gets the drill down factory.
         /// </summary>
         private IDrillDownFactory DrillDownFactory { get; set; }
 
@@ -134,7 +134,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The arguments containing the context.</param>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
-        /// <param name="drillDownFactory">The drill-down factory.</param>
+        /// <param name="drillDownFactory">The drill down factory.</param>
         /// <returns>The task of setting the context and initialization.</returns>
         internal void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckConnection connection, IDrillDownFactory drillDownFactory)
         {
@@ -286,11 +286,11 @@ namespace SharpDeck
             => Task.CompletedTask;
 
         /// <summary>
-        /// Shows the collection of <paramref name="items"/> as a drill-down asynchronouosly.
+        /// Shows the collection of <paramref name="items"/> as a drill down asynchronouosly.
         /// </summary>
-        /// <typeparam name="TController">The type of the drill-down controller.</typeparam>
+        /// <typeparam name="TController">The type of the drill down controller.</typeparam>
         /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
-        /// <param name="items">The items to display in the drill-down.</param>
+        /// <param name="items">The items to display in the drill down.</param>
         /// <returns>The result of the drill down.</returns>
         protected async Task<DrillDownResult<TItem>> ShowDrillDownAsync<TController, TItem>(IEnumerable<TItem> items)
             where TController : class, IDrillDownController<TItem>
@@ -302,7 +302,7 @@ namespace SharpDeck
             }
             catch (Exception ex)
             {
-                this.Logger?.LogError(ex, $"Failed to show drill-down for action \"{this.ActionUUID}\".");
+                this.Logger?.LogError(ex, $"Failed to show drill down for action \"{this.ActionUUID}\".");
                 await this.ShowAlertAsync();
             }
 

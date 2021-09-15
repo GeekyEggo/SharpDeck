@@ -71,10 +71,10 @@
         /// <summary>
         /// Creates a new <see cref="DrillDown{TItem}"/>.
         /// </summary>
-        /// <typeparam name="TController">The type of the drill-down controller.</typeparam>
+        /// <typeparam name="TController">The type of the drill down controller.</typeparam>
         /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
-        /// <param name="deviceUUID">The device UUID the drill-down is for.</param>
-        /// <returns>The drill-down.</returns>
+        /// <param name="deviceUUID">The device UUID the drill down is for.</param>
+        /// <returns>The drill down.</returns>
         public IDrillDown<TItem> Create<TController, TItem>(string deviceUUID)
             where TController : class, IDrillDownController<TItem>
         {
@@ -87,7 +87,7 @@
             if (device.Type == Enums.DeviceType.CorsairGKeys
                 || !controller.SupportedDevices.Contains(device.Type))
             {
-                throw new NotSupportedException($"Cannot show drill-down on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
+                throw new NotSupportedException($"Cannot show drill down on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
             }
 
             var ctx = new DrillDownContext<TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device);

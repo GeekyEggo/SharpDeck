@@ -21,7 +21,7 @@
         void CloseWithResult(T result);
 
         /// <summary>
-        /// Shows the drill-down with the given items asynchronously.
+        /// Shows the drill down with the given items asynchronously.
         /// </summary>
         /// <param name="items">The items to show.</param>
         /// <returns>The result of the drill down.</returns>

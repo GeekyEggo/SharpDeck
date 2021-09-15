@@ -25,7 +25,7 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
         /// <param name="activator">The activator responsible for creating <see cref="StreamDeckAction" />.</param>
-        /// <param name="drillDownFactory">The drill-down factory.</param>
+        /// <param name="drillDownFactory">The drill down factory.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         public StreamDeckActionManager(IStreamDeckConnection connection, IActivator activator, IDrillDownFactory drillDownFactory, ILoggerFactory loggerFactory = null)
         {
@@ -66,7 +66,7 @@ namespace SharpDeck.Connectivity
         private IStreamDeckConnection Connection { get; }
 
         /// <summary>
-        /// Gets the drill-down factory.
+        /// Gets the drill down factory.
         /// </summary>
         private IDrillDownFactory DrillDownFactory { get; }
 
