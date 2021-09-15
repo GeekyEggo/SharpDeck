@@ -5,10 +5,10 @@
     using SharpDeck.Enums;
 
     /// <summary>
-    /// Provides properties and methods for managing a drill-down.
+    /// Provides properties and methods that support controlling a drill-down.
     /// </summary>
-    /// <typeparam name="TItem">The type of the item handled by the drill-down.</typeparam>
-    public interface IDrillDownManager<TItem>
+    /// <typeparam name="T">The type of the items within the drill down.</typeparam>
+    public interface IDrillDownController<T>
     {
         /// <summary>
         /// Gets the action UUID contained within the profile.
@@ -36,7 +36,7 @@
         /// <param name="feedbackProvider">The feedback provider; this enables the button that represents the <paramref name="item"/> to be updated accordingly.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task of showing the item.</returns>
-        Task OnShowAsync(DrillDownContext context, IButtonFeedbackProvider feedbackProvider, TItem item, CancellationToken cancellationToken);
+        Task OnShowAsync(DrillDownContext<T> context, IButtonFeedbackProvider feedbackProvider, T item, CancellationToken cancellationToken);
 
         /// <summary>
         /// Called when the user selects an item.
@@ -45,6 +45,6 @@
         /// <param name="item">The selected item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task of handling the selection.</returns>
-        Task OnSelectedAsync(DrillDownContext context, TItem item, CancellationToken cancellationToken);
+        Task OnSelectedAsync(DrillDownContext<T> context, T item, CancellationToken cancellationToken);
     }
 }

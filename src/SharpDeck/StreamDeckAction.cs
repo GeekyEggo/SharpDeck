@@ -288,16 +288,16 @@ namespace SharpDeck
         /// <summary>
         /// Shows the collection of <paramref name="items"/> as a drill-down asynchronouosly.
         /// </summary>
-        /// <typeparam name="TManager">The type of the drill-down manager.</typeparam>
+        /// <typeparam name="TController">The type of the drill-down controller.</typeparam>
         /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
         /// <param name="items">The items to display in the drill-down.</param>
-        /// <returns>The task of showing the actions.</returns>
-        protected async Task ShowDrillDownAsync<TManager, TItem>(IEnumerable<TItem> items)
-            where TManager : class, IDrillDownManager<TItem>
+        /// <returns>The result of the drill down.</returns>
+        protected async Task<DrillDownResult<TItem>> ShowDrillDownAsync<TController, TItem>(IEnumerable<TItem> items)
+            where TController : class, IDrillDownController<TItem>
         {
             try
             {
-                await this.DrillDownFactory.Create<TManager, TItem>(this.Device)
+                return await this.DrillDownFactory.Create<TController, TItem>(this.Device)
                     .ShowAsync(items);
             }
             catch (Exception ex)
@@ -305,6 +305,8 @@ namespace SharpDeck
                 this.Logger?.LogError(ex, $"Failed to show drill-down for action \"{this.ActionUUID}\".");
                 await this.ShowAlertAsync();
             }
+
+            return DrillDownResult<TItem>.None;
         }
 
         /// <summary>

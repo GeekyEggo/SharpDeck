@@ -9,7 +9,7 @@
     using SharpDeck.Events.Received;
 
     /// <summary>
-    /// Provides a factory for creating <see cref="DrillDown{TManager, TItem}"/>.
+    /// Provides a factory for creating <see cref="DrillDown{T}"/>.
     /// </summary>
     internal class DrillDownFactory : IDrillDownFactory
     {
@@ -18,7 +18,7 @@
         /// </summary>
         /// <param name="connection">The connection to the Stream Deck.</param>
         /// <param name="registrationParameters">The registration parameters.</param>
-        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDrillDownManager{TItem}" />.</param>
+        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDrillDownController{TItem}" />.</param>
         /// <param name="loggerFactory">The optional logger factory.</param>
         public DrillDownFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IActivator activator, ILoggerFactory loggerFactory = null)
         {
@@ -44,7 +44,7 @@
         }
 
         /// <summary>
-        /// Gets the activator responsible for creating new instances of <see cref="IDrillDownManager{TItem}"/>.
+        /// Gets the activator responsible for creating new instances of <see cref="IDrillDownController{TItem}"/>.
         /// </summary>
         private IActivator Activator { get; }
 
@@ -69,29 +69,29 @@
         private RegistrationParameters RegistrationParameters { get; }
 
         /// <summary>
-        /// Creates a new <see cref="DrillDown{TManager, TItem}"/>.
+        /// Creates a new <see cref="DrillDown{TItem}"/>.
         /// </summary>
-        /// <typeparam name="TManager">The type of the drill-down manager.</typeparam>
+        /// <typeparam name="TController">The type of the drill-down controller.</typeparam>
         /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
         /// <param name="deviceUUID">The device UUID the drill-down is for.</param>
         /// <returns>The drill-down.</returns>
-        public IDrillDown<TManager, TItem> Create<TManager, TItem>(string deviceUUID)
-            where TManager : class, IDrillDownManager<TItem>
+        public IDrillDown<TItem> Create<TController, TItem>(string deviceUUID)
+            where TController : class, IDrillDownController<TItem>
         {
             if (!this.Devices.TryGetValue(deviceUUID, out var device))
             {
                 throw new ArgumentException($"A device with UUID \"{deviceUUID}\" could not be found.");
             }
 
-            var manager = (TManager)this.Activator.CreateInstance(typeof(TManager));
+            var controller = (TController)this.Activator.CreateInstance(typeof(TController));
             if (device.Type == Enums.DeviceType.CorsairGKeys
-                || !manager.SupportedDevices.Contains(device.Type))
+                || !controller.SupportedDevices.Contains(device.Type))
             {
                 throw new NotSupportedException($"Cannot show drill-down on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
             }
 
-            var ctx = new DrillDownContext(this.Connection, this.RegistrationParameters.PluginUUID, device);
-            return new DrillDown<TManager, TItem>(ctx, manager, this.LoggerFactory?.CreateLogger<DrillDown<TManager, TItem>>());
+            var ctx = new DrillDownContext<TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device);
+            return new DrillDown<TItem>(ctx, controller, this.LoggerFactory?.CreateLogger<DrillDown<TItem>>());
         }
     }
 }

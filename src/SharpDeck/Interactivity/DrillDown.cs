@@ -11,12 +11,10 @@
     using SharpDeck.Extensions;
 
     /// <summary>
-    /// Provides drill-down functioanlity for the given <typeparamref name="TItem" /> using actions of type <typeparamref name="TManager" />.
+    /// Provides functionality for showing the items of type <typeparamref name="T"/> as part of a drill down.
     /// </summary>
-    /// <typeparam name="TManager">The type of the drill-down manager.</typeparam>
-    /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
-    public class DrillDown<TManager, TItem> : IDrillDown<TManager, TItem>
-        where TManager : class, IDrillDownManager<TItem>
+    /// <typeparam name="T">The type of the items within the drill down.</typeparam>
+    public class DrillDown<T> : IDrillDown<T>
     {
         /// <summary>
         /// The offset that represents the presence of the close-button.
@@ -29,19 +27,20 @@
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DrillDown{TManager, TItem}" /> class.
+        /// Initializes a new instance of the <see cref="DrillDown{T}" /> class.
         /// </summary>
         /// <param name="context">The context that provides information about where and how the drill-down will be shown.</param>
-        /// <param name="manager">The manager that provides functionality for handling a selection, or rendering items.</param>
+        /// <param name="controller">The controller that provides functionality for handling a selection, or rendering items.</param>
         /// <param name="logger">The optional logger.</param>
-        internal DrillDown(DrillDownContext context, TManager manager, ILogger<DrillDown<TManager, TItem>> logger = null)
+        internal DrillDown(DrillDownContext<T> context, IDrillDownController<T> controller, ILogger<DrillDown<T>> logger = null)
         {
             this.Context = context;
+            this.Controller = controller;
             this.Logger = logger;
-            this.Manager = manager;
 
             this.Buttons = new DeviceButtonMap(this.Context.Connection, this.Context.Device);
             this.Context.Connection.KeyUp += Connection_KeyUp;
+            this.Context.DrillDown = this;
         }
 
         /// <summary>
@@ -50,9 +49,14 @@
         private DeviceButtonMap Buttons { get; }
 
         /// <summary>
-        /// Get the context that provides information about where and how the drill-down will be shown.
+        /// Get or sets the context that provides information about where and how the drill-down will be shown.
         /// </summary>
-        private DrillDownContext Context { get; }
+        private DrillDownContext<T> Context { get; set; }
+
+        /// <summary>
+        /// Gets the action responsible for handling the display and selection of an item
+        /// </summary>
+        private IDrillDownController<T> Controller { get; }
 
         /// <summary>
         /// Gets the logger.
@@ -62,17 +66,12 @@
         /// <summary>
         /// Gets the data source containing the items to show.
         /// </summary>
-        private IEnumerable<TItem> DataSource { get; set; } = Enumerable.Empty<TItem>();
+        private IEnumerable<T> DataSource { get; set; } = Enumerable.Empty<T>();
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is disposed.
         /// </summary>
         private bool IsDisposed { get; set; } = false;
-
-        /// <summary>
-        /// Gets the action responsible for handling the display and selection of an item
-        /// </summary>
-        private TManager Manager { get; }
 
         /// <summary>
         /// Gets or sets the cancellation token source that is cancelled upon a page changing.
@@ -82,7 +81,37 @@
         /// <summary>
         /// Gets or sets the pager.
         /// </summary>
-        private DevicePager<TItem> Pager { get; set; }
+        private DevicePager<T> Pager { get; set; }
+
+        /// <summary>
+        /// Gets the task completion source that represents the result of this drill down.
+        /// </summary>
+        private TaskCompletionSource<DrillDownResult<T>> Result { get; } = new TaskCompletionSource<DrillDownResult<T>>();
+
+        /// <summary>
+        /// Closes the drill down, and switches back to the previous profile.
+        /// </summary>
+        public void Close()
+        {
+            using (this._syncRoot.Lock())
+            {
+                this.Result.TrySetResult(DrillDownResult<T>.None);
+                this.Dispose(false);
+            }
+        }
+
+        /// <summary>
+        /// Closes the drill down, and switches back to the previous profile; the result of the drill down is set to the specified <paramref name="result" />.
+        /// </summary>
+        /// <param name="result">The result of the drill down.</param>
+        public void CloseWithResult(T result)
+        {
+            using (this._syncRoot.Lock())
+            {
+                this.Result.TrySetResult(new DrillDownResult<T>(true, result));
+                this.Dispose(false);
+            }
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -100,18 +129,21 @@
         /// Shows the drill-down with the given items asynchronously.
         /// </summary>
         /// <param name="items">The items to show.</param>
-        /// <returns>The task of showing the items.</returns>
-        public async Task ShowAsync(IEnumerable<TItem> items)
+        /// <returns>The result of the drill down.</returns>
+        public async Task<DrillDownResult<T>> ShowAsync(IEnumerable<T> items)
         {
-            await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Manager.Profile);
+            // Todo: allow for this to be invoked multiple times.
+            await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Controller.Profile);
             await this.Buttons.WaitFullLayoutAsync();
 
             this.Context.Connection.WillDisappear += Connection_WillDisappear;
             await this.Context.Connection.SetTitleAsync(this.Buttons[0].Context, "X");
 
             this.DataSource = items;
-            this.Pager = new DevicePager<TItem>(this.Buttons, this.DataSource);
+            this.Pager = new DevicePager<T>(this.Buttons, this.DataSource);
             this.ShowCurrentPage();
+
+            return await this.Result.Task;
         }
 
         /// <summary>
@@ -135,8 +167,10 @@
             this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id)
                 .Forget(this.Logger);
 
+            this.Context = null;
             this.DataSource = null;
             this.Pager = null;
+            this.Result.TrySetResult(DrillDownResult<T>.None);
 
             this.IsDisposed = true;
         }
@@ -183,7 +217,7 @@
                             if (index < this.Pager.Items.Length)
                             {
                                 var item = this.Pager.Items[index];
-                                _ = Task.Run(() => this.Manager.OnSelectedAsync(this.Context, item, CancellationToken.None));
+                                _ = Task.Run(() => this.Controller.OnSelectedAsync(this.Context, item, CancellationToken.None));
                             }
                         }
                         break;
@@ -220,7 +254,7 @@
                 if (i < this.Pager.Items.Length)
                 {
                     // The button has an item, so initiate it.
-                    this.Manager
+                    this.Controller
                         .OnShowAsync(this.Context, new ButtonFeedbackProvider(this.Context.Connection, this.Buttons[i + CLOSE_BUTTON_OFFSET].Context), this.Pager.Items[i], cancellationToken)
                         .Forget(this.Logger);
                 }
