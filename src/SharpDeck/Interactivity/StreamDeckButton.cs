@@ -57,15 +57,15 @@
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action.
         /// </summary>
-        /// <param name="base64Image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). If no image is passed, the image is reset to the default image from the manifest.</param>
+        /// <param name="image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). If no image is passed, the image is reset to the default image from the manifest.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the image.</returns>
-        public Task SetImageAsync(string base64Image, TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
+        public Task SetImageAsync(string image = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SetImageAsync(this.Context, base64Image, target, state, cancellationToken);
+            return this.Connection.SetImageAsync(this.Context, image, target, state, cancellationToken);
         }
 
         /// <summary>

@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
@@ -16,6 +18,13 @@
     /// <typeparam name="T">The type of the items within the drill down.</typeparam>
     public class DrillDown<T> : IDrillDown<T>
     {
+        private static string TRANSPARENT_SVG { get; }
+
+        static DrillDown()
+        {
+            TRANSPARENT_SVG = $"data:image/svg+xml;base64,{Convert.ToBase64String(Resources.Images.Transparent)}";
+        }
+
         /// <summary>
         /// The offset that represents the presence of the close-button.
         /// </summary>
@@ -273,6 +282,7 @@
                 else
                 {
                     // The button does not have an item, so reset it to an empty button.
+                    this.Context.Connection.SetImageAsync(this.Buttons[i].Context, TRANSPARENT_SVG);
                     this.Buttons.SetTitleAsync(i + CLOSE_BUTTON_OFFSET, cancellationToken: cancellationToken)
                         .Forget(this.Logger);
                 }

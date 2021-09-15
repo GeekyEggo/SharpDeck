@@ -269,7 +269,7 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the image.</returns>
-        public Task SetImageAsync(string context, string image, TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
+        public Task SetImageAsync(string context, string image = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
             => this.SendAsync(new ContextMessage<SetImagePayload>("setImage", context, new SetImagePayload(image, target, state)), cancellationToken);
 
         /// <summary>

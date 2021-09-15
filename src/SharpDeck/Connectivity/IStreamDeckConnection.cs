@@ -167,7 +167,7 @@ namespace SharpDeck.Connectivity
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the image.</returns>
-        Task SetImageAsync(string context, string image, TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default);
+        Task SetImageAsync(string context, string image = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Save persistent data for the actions instance.
