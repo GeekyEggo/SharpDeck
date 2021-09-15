@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
     using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
@@ -17,11 +18,13 @@
         /// </summary>
         /// <param name="connection">The connection to the Stream Deck.</param>
         /// <param name="registrationParameters">The registration parameters.</param>
-        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDrillDownManager{TItem}"/>.</param>
-        public DrillDownFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IActivator activator)
+        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDrillDownManager{TItem}" />.</param>
+        /// <param name="loggerFactory">The optional logger factory.</param>
+        public DrillDownFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IActivator activator, ILoggerFactory loggerFactory = null)
         {
             this.Activator = activator;
             this.Connection = connection;
+            this.LoggerFactory = loggerFactory;
             this.RegistrationParameters = registrationParameters;
 
             this.Connection.DeviceDidConnect += (_, args) => this.Devices.TryAdd(
@@ -53,7 +56,12 @@
         /// <summary>
         /// Gets the devices.
         /// </summary>
-        private ConcurrentDictionary<string, IdentifiableDeviceInfo> Devices { get; } = new ConcurrentDictionary<string, IdentifiableDeviceInfo>();
+        private ConcurrentDictionary<string, IDevice> Devices { get; } = new ConcurrentDictionary<string, IDevice>();
+
+        /// <summary>
+        /// Gets the logger factory.
+        /// </summary>
+        private ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
         /// Gets the registration parameters.
@@ -82,7 +90,8 @@
                 throw new NotSupportedException($"Cannot show drill-down on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
             }
 
-            return new DrillDown<TManager, TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device, manager);
+            var ctx = new DrillDownContext(this.Connection, this.RegistrationParameters.PluginUUID, device);
+            return new DrillDown<TManager, TItem>(ctx, manager, this.LoggerFactory?.CreateLogger<DrillDown<TManager, TItem>>());
         }
     }
 }

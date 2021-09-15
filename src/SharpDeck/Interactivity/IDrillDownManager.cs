@@ -32,17 +32,19 @@
         /// Called when an item becomes visible within the drill-down.
         /// </summary>
         /// <param name="item">The item that has become visible.</param>
+        /// <param name="context">The drill-down context.</param>
         /// <param name="feedbackProvider">The feedback provider; this enables the button that represents the <paramref name="item"/> to be updated accordingly.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task of showing the item.</returns>
-        Task OnShowAsync(TItem item, IButtonFeedbackProvider feedbackProvider, CancellationToken cancellationToken);
+        Task OnShowAsync(DrillDownContext context, IButtonFeedbackProvider feedbackProvider, TItem item, CancellationToken cancellationToken);
 
         /// <summary>
         /// Called when the user selects an item.
         /// </summary>
+        /// <param name="context">The drill-down context.</param>
         /// <param name="item">The selected item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task of handling the selection.</returns>
-        Task OnSelectedAsync(TItem item, CancellationToken cancellationToken);
+        Task OnSelectedAsync(DrillDownContext context, TItem item, CancellationToken cancellationToken);
     }
 }
