@@ -6,9 +6,9 @@
     using SharpDeck.Enums;
 
     /// <summary>
-    /// Provides methods that enable feedback to be displayed on a Stream Deck button.
+    /// Provides methods that enable rendering and feedback to be displayed on a Stream Deck button.
     /// </summary>
-    public interface IButtonFeedbackProvider : IDisposable
+    public interface IButton : IDisposable
     {
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.

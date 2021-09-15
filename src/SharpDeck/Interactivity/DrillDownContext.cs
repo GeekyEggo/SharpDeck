@@ -20,11 +20,13 @@
         /// <param name="connection">The connection to the Stream Deck.</param>
         /// <param name="pluginUUID">The unique identifier of the plugin.</param>
         /// <param name="device">The device information.</param>
-        internal DrillDownContext(IStreamDeckConnection connection, string pluginUUID, IDevice device)
+        /// <param name="profile">The name of profile used to display the drill down.</param>
+        internal DrillDownContext(IStreamDeckConnection connection, string pluginUUID, IDevice device, string profile)
         {
             this.Connection = connection;
-            this.PluginUUID = pluginUUID;
             this.Device = device;
+            this.PluginUUID = pluginUUID;
+            this.Profile = profile;
         }
 
         /// <summary>
@@ -46,5 +48,10 @@
         /// Gets the unique identifier of the plugin.
         /// </summary>
         public string PluginUUID { get; }
+
+        /// <summary>
+        /// Gets the name of profile used to display the drill down.
+        /// </summary>
+        public string Profile { get; }
     }
 }

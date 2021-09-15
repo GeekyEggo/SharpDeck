@@ -15,7 +15,7 @@ namespace SharpDeck
     /// <summary>
     /// Provides a base implementation for a Stream Deck action.
     /// </summary>
-    public class StreamDeckAction : ButtonFeedbackProvider
+    public class StreamDeckAction : StreamDeckButton
     {
         /// <summary>
         /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.

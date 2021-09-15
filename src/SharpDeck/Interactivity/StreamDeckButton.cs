@@ -7,16 +7,16 @@
     using SharpDeck.Enums;
 
     /// <summary>
-    /// Provides methods that enable feedback to be displayed on a Stream Deck button.
+    /// Provides methods that enable rendering and feedback to be displayed on a Stream Deck button.
     /// </summary>
-    public class ButtonFeedbackProvider : IButtonFeedbackProvider
+    public class StreamDeckButton : IButton
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ButtonFeedbackProvider"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckButton"/> class.
         /// </summary>
         /// <param name="connection">The connection to the Stream Deck.</param>
         /// <param name="context">The context used to identify the action.</param>
-        public ButtonFeedbackProvider(IStreamDeckConnection connection, string context)
+        public StreamDeckButton(IStreamDeckConnection connection, string context)
             : this()
         {
             this.Connection = connection;
@@ -24,9 +24,9 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ButtonFeedbackProvider"/> class.
+        /// Initializes a new instance of the <see cref="StreamDeckButton"/> class.
         /// </summary>
-        protected private ButtonFeedbackProvider()
+        protected private StreamDeckButton()
         {
         }
 

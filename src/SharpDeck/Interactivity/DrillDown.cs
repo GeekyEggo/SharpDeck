@@ -7,7 +7,6 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
-    using SharpDeck.Enums;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
 
@@ -134,7 +133,7 @@
         public async Task<DrillDownResult<T>> ShowAsync(IEnumerable<T> items)
         {
             // Todo: allow for this to be invoked multiple times.
-            await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.GetFullProfileName(this.Controller.Profile));
+            await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.Profile);
             await this.Buttons.WaitFullLayoutAsync();
 
             this.Context.Connection.WillDisappear += Connection_WillDisappear;
@@ -218,7 +217,7 @@
                             if (index < this.Pager.Items.Length)
                             {
                                 var item = this.Pager.Items[index];
-                                _ = Task.Run(() => this.Controller.OnSelectedAsync(this.Context, item, CancellationToken.None));
+                                _ = Task.Run(() => this.Controller.OnSelectedAsync(this.Context, item).Forget(this.Logger));
                             }
                         }
                         break;
@@ -233,23 +232,6 @@
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         private void Connection_WillDisappear(object sender, ActionEventArgs<AppearancePayload> e)
             => this.Dispose();
-
-        /// <summary>
-        /// Gets the full name of the profile based on the device type.
-        /// </summary>
-        /// <param name="profile">The profile.</param>
-        /// <returns>The full name of the profile.</returns>
-        private string GetFullProfileName(string profile)
-        {
-            switch (this.Context.Device.Type)
-            {
-                case DeviceType.StreamDeckMini: return $"{profile}Mini";
-                case DeviceType.StreamDeck: return profile;
-                case DeviceType.StreamDeckXL: return $"{profile}XL";
-                case DeviceType.StreamDeckMobile: return $"{profile}Mobile";
-                default: throw new NotSupportedException($"{this.Context.Device.Type} is not a supported device for drill downs.");
-            }
-        }
 
         /// <summary>
         /// Shows the current page's items contained within <see cref="DevicePager{T}.Items"/>.
@@ -273,7 +255,7 @@
                 {
                     // The button has an item, so initiate it.
                     this.Controller
-                        .OnShowAsync(this.Context, new ButtonFeedbackProvider(this.Context.Connection, this.Buttons[i + CLOSE_BUTTON_OFFSET].Context), this.Pager.Items[i], cancellationToken)
+                        .OnShowAsync(this.Context, new StreamDeckButton(this.Context.Connection, this.Buttons[i + CLOSE_BUTTON_OFFSET].Context), this.Pager.Items[i], cancellationToken)
                         .Forget(this.Logger);
                 }
                 else

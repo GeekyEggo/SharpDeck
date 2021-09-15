@@ -2,10 +2,10 @@
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Linq;
     using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
     using SharpDeck.DependencyInjection;
+    using SharpDeck.Enums;
     using SharpDeck.Events.Received;
 
     /// <summary>
@@ -84,13 +84,13 @@
             }
 
             var controller = (TController)this.Activator.CreateInstance(typeof(TController));
-            if (device.Type == Enums.DeviceType.CorsairGKeys
-                || !controller.SupportedDevices.Contains(device.Type))
+            if (device.Type == DeviceType.CorsairGKeys
+                || !controller.TryGetProfileName(device.Type, out var profile))
             {
                 throw new NotSupportedException($"Cannot show drill down on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
             }
 
-            var ctx = new DrillDownContext<TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device);
+            var ctx = new DrillDownContext<TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device, profile);
             return new DrillDown<TItem>(ctx, controller, this.LoggerFactory?.CreateLogger<DrillDown<TItem>>());
         }
     }
