@@ -103,6 +103,8 @@
         {
             using (this._syncRoot.Lock())
             {
+                this.Logger?.LogTrace($"Setting result of drill down profile \"{this.Context.Profile}\" to \"{result}\"; switching to previous profile.");
+
                 this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
                 this.Result.TrySetResult(new DrillDownResult<T>(true, result));
 
@@ -139,6 +141,7 @@
                 this.PageChangingCancellationTokenSource?.Cancel();
 
                 // Switch to the profile, and await a full layout.
+                this.Logger?.LogTrace($"Switching to drill down profile \"{this.Context.Profile}\".");
                 await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.Profile);
                 await this.Buttons.WaitFullLayoutAsync();
                 await this.Buttons[0].SetDisplayAsync(image: Images.Close);
@@ -175,6 +178,7 @@
 
             if (disposing)
             {
+                this.Logger?.LogTrace($"Drill down profile \"{this.Context.Profile}\" is being disposed; switching to previous profile.");
                 this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
                 this.Result.TrySetResult(DrillDownResult<T>.None);
             }
@@ -196,10 +200,13 @@
             // Close is a constant.
             if (e.Context == this.Buttons[0].Context)
             {
+                this.Logger?.LogTrace($"Close button pressed; exiting drill down profile \"{this.Context.Profile}\".");
                 this.Dispose();
+
                 return;
             }
 
+            this.Logger?.LogTrace($"Key pressed at \"{e.Payload.Coordinates}\" in drill down profile \"{this.Context.Profile}\".");
             using (this._syncRoot.Lock())
             {
                 if (this.IsDisposed)
@@ -243,7 +250,10 @@
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         private void Connection_WillDisappear(object sender, ActionEventArgs<AppearancePayload> e)
-            => this.Dispose();
+        {
+            this.Logger?.LogTrace($"\"{e.Action}\" disappearing; exiting drill down profile \"{this.Context.Profile}\".");
+            this.Dispose();
+        }
 
         /// <summary>
         /// Shows the current page's items contained within <see cref="DevicePager{T}.Items"/>.
@@ -251,6 +261,8 @@
         /// <returns>The task of showing the current page.</returns>
         private Task ShowCurrentPageAsync()
         {
+            this.Logger?.LogTrace($"Refreshing items in drill down profile \"{this.Context.PluginUUID}\".");
+
             if (this.IsDisposed)
             {
                 return Task.CompletedTask;

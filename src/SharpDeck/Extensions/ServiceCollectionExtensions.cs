@@ -1,7 +1,7 @@
-﻿namespace SharpDeck.Extensions
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
-    using Microsoft.Extensions.DependencyInjection;
+    using SharpDeck;
     using SharpDeck.Connectivity;
     using SharpDeck.Connectivity.Net;
     using SharpDeck.DependencyInjection;

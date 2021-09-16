@@ -29,5 +29,12 @@
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
             => HashCode.Combine(this.Column, this.Row);
+
+        /// <summary>
+        /// Converts this instance to a <see cref="string"/>.
+        /// </summary>
+        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        public override string ToString()
+            => $"{this.Column},{this.Row}";
     }
 }

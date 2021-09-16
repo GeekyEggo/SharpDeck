@@ -6,7 +6,6 @@
     using Microsoft.Extensions.Logging;
     using NLog.Extensions.Logging;
     using SharpDeck;
-    using SharpDeck.Extensions;
 
     /// <summary>
     /// The plugin.
