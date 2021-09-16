@@ -7,7 +7,6 @@ namespace SharpDeck
     using Microsoft.Extensions.DependencyInjection;
     using SharpDeck.Connectivity;
     using SharpDeck.Extensions;
-    using SharpDeck.Interactivity;
 
     /// <summary>
     /// Provides a singleton wrapper for connecting and communication with a Stream Deck.

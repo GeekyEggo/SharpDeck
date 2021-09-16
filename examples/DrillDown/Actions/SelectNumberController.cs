@@ -1,8 +1,8 @@
 ﻿namespace DrillDown.Actions
 {
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SharpDeck.Enums;
     using SharpDeck.Extensions;
     using SharpDeck.Interactivity;
@@ -13,6 +13,18 @@
     public class SelectNumberController : IDrillDownController<int>
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="SelectNumberController"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        public SelectNumberController(ILogger<SelectNumberController> logger)
+            => this.Logger = logger;
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        private ILogger Logger { get; }
+
+        /// <summary>
         /// Called when the user selects an item from the drill down.
         /// </summary>
         /// <param name="context">The drill down context; this can be used to set the result of, or close, the drill down.</param>
@@ -20,6 +32,7 @@
         /// <returns>The task of handling the item being selected.</returns>
         public Task OnSelectedAsync(DrillDownContext<int> context, int item)
         {
+            this.Logger.LogTrace($"Selected {item}.");
             context.DrillDown.CloseWithResult(item);
             return Task.CompletedTask;
         }
@@ -36,7 +49,7 @@
         {
             if (!cancellationToken.IsCancellationRequested)
             {
-                await button.SetImageAsync();
+                await button.SetImageAsync(cancellationToken: cancellationToken);
                 await button.SetTitleAsync(item.ToString(), cancellationToken: cancellationToken);
             }
         }

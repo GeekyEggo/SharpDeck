@@ -39,7 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Counter", "Counter", "{33FA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter_net48", "..\examples\Counter\net48\Counter_net48.csproj", "{CD620C06-FD35-4A9E-936D-6B00C928ACB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillDown", "..\examples\DrillDown\DrillDown.csproj", "{E34D031D-91B5-40C3-8FD8-F6CDBBEE7371}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrillDown", "..\examples\DrillDown\DrillDown.csproj", "{E34D031D-91B5-40C3-8FD8-F6CDBBEE7371}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
