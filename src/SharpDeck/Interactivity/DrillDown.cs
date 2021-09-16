@@ -9,6 +9,7 @@
     using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
+    using SharpDeck.Resources;
 
     /// <summary>
     /// Provides functionality for showing the items of type <typeparamref name="T"/> as part of a drill down.
@@ -144,7 +145,7 @@
                 // Switch to the profile, and await a full layout.
                 await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.Profile);
                 await this.Buttons.WaitFullLayoutAsync();
-                await this.Context.Connection.SetTitleAsync(this.Buttons[0].Context, "X");
+                await this.Buttons[0].SetDisplayAsync(image: Images.Close);
 
                 // Listen to buttons disappearing, this allows us to dispose of the drill-down if the profile changes for a reason out of our control.
                 this.Context.Connection.WillDisappear -= this.Connection_WillDisappear;
@@ -274,13 +275,13 @@
                 else
                 {
                     // The button does not have an item, so reset it to an empty button.
-                    tasks.Add(this.Buttons[buttonIndex].SetDisplayAsync(image: SvgIcons.Transparent, cancellationToken: cancellationToken));
+                    tasks.Add(this.Buttons[buttonIndex].SetDisplayAsync(image: Images.None, cancellationToken: cancellationToken));
                 }
             }
 
             // Finally, set the navigation buttons; these may be null.
-            tasks.Add(this.Pager.NextButton?.SetDisplayAsync(">", cancellationToken: cancellationToken));
-            tasks.Add(this.Pager.PreviousButton?.SetDisplayAsync("<", cancellationToken: cancellationToken));
+            tasks.Add(this.Pager.NextButton?.SetDisplayAsync(image: Images.Right, cancellationToken: cancellationToken));
+            tasks.Add(this.Pager.PreviousButton?.SetDisplayAsync(image: Images.Left, cancellationToken: cancellationToken));
 
             return Task.WhenAll(tasks);
         }
