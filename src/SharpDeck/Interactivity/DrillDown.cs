@@ -93,13 +93,7 @@
         /// Closes the drill down, and switches back to the previous profile.
         /// </summary>
         public void Close()
-        {
-            using (this._syncRoot.Lock())
-            {
-                this.Result.TrySetResult(DrillDownResult<T>.None);
-                this.Dispose(false);
-            }
-        }
+            => this.Dispose();
 
         /// <summary>
         /// Closes the drill down, and switches back to the previous profile; the result of the drill down is set to the specified <paramref name="result" />.
@@ -109,7 +103,9 @@
         {
             using (this._syncRoot.Lock())
             {
+                this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
                 this.Result.TrySetResult(new DrillDownResult<T>(true, result));
+
                 this.Dispose(false);
             }
         }
@@ -177,13 +173,15 @@
             this.PageChangingCancellationTokenSource?.Cancel();
             this.PageChangingCancellationTokenSource?.Dispose();
 
-            this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id)
-                .Forget(this.Logger);
+            if (disposing)
+            {
+                this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
+                this.Result.TrySetResult(DrillDownResult<T>.None);
+            }
 
             this.Context = null;
             this.DataSource = null;
             this.Pager = null;
-            this.Result.TrySetResult(DrillDownResult<T>.None);
 
             this.IsDisposed = true;
         }
@@ -195,6 +193,13 @@
         /// <param name="e">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
         private void Connection_KeyUp(object sender, ActionEventArgs<KeyPayload> e)
         {
+            // Close is a constant.
+            if (e.Context == this.Buttons[0].Context)
+            {
+                this.Dispose();
+                return;
+            }
+
             using (this._syncRoot.Lock())
             {
                 if (this.IsDisposed)
@@ -204,11 +209,6 @@
 
                 switch (e.Context)
                 {
-                    // Close button.
-                    case string ctx when ctx == this.Buttons[0]?.Context:
-                        this.Dispose(false);
-                        break;
-
                     // Next button.
                     case string ctx when ctx == this.Pager.NextButton?.Context:
                         this.Pager.MoveNext();
@@ -280,8 +280,8 @@
             }
 
             // Finally, set the navigation buttons; these may be null.
-            tasks.Add(this.Pager.NextButton?.SetDisplayAsync(image: Images.Right, cancellationToken: cancellationToken));
-            tasks.Add(this.Pager.PreviousButton?.SetDisplayAsync(image: Images.Left, cancellationToken: cancellationToken));
+            tasks.Add(this.Pager.NextButton?.SetDisplayAsync(image: Images.Right, cancellationToken: cancellationToken) ?? Task.CompletedTask);
+            tasks.Add(this.Pager.PreviousButton?.SetDisplayAsync(image: Images.Left, cancellationToken: cancellationToken) ?? Task.CompletedTask);
 
             return Task.WhenAll(tasks);
         }

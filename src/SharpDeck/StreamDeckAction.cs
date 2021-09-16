@@ -270,7 +270,7 @@ namespace SharpDeck
         protected virtual void OnInit(ActionEventArgs<AppearancePayload> args) { }
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.KeyDown"/> is held down for <see cref="LongKeyPressInterval"/>.
+        /// When a <see cref="LongKeyPressInterval"/> is defined, this occurs on <see cref="IStreamDeckConnection.KeyUp"/> after the interval has elapsed in relation to <see cref="IStreamDeckConnection.KeyDown"/>.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
@@ -278,7 +278,7 @@ namespace SharpDeck
             => Task.CompletedTask;
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.KeyDown"/> is released before <see cref="LongKeyPressInterval"/>.
+        /// Occurs when the button is pressed, typically on <see cref="IStreamDeckConnection.KeyUp"/>. When a <see cref="LongKeyPressInterval"/> is defined, this will occur on <see cref="IStreamDeckConnection.KeyUp"/> when the interval has not elapsed in relation to <see cref="IStreamDeckConnection.KeyDown"/>.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
