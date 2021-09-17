@@ -20,13 +20,20 @@
         /// </summary>
         /// <param name="configure">The delegate responsible for configuring the actions.</param>
         /// <returns>This instance.</returns>
-        IPluginHostBuilder ConfigureActions(Action<IStreamDeckActionRegistry> configure);
+        IPluginHostBuilder ConfigureActions(Action<PluginHostBuilderContext, IStreamDeckActionRegistry> configure);
+
+        /// <summary>
+        /// Configures the connection to the Stream Deck within the <see cref="IPluginHost"/>.
+        /// </summary>
+        /// <param name="configure">The delegate responsible for configuring the connection.</param>
+        /// <returns>This instance.</returns>
+        IPluginHostBuilder ConfigureConnection(Action<PluginHostBuilderContext, IStreamDeckConnection> configure);
 
         /// <summary>
         /// Configures the service provider to be used by the <see cref="IPluginHost"/>.
         /// </summary>
         /// <param name="configure">The delegate responsible for configuring the service provider.</param>
         /// <returns>This instance.</returns>
-        IPluginHostBuilder ConfigureServices(Action<PluginHostBuilderContext, IServiceCollection> configure);
+        IPluginHostBuilder ConfigureServices(Action<IServiceCollection> configure);
     }
 }

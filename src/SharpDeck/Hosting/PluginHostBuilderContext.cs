@@ -1,6 +1,6 @@
 ﻿namespace SharpDeck.Hosting
 {
-    using SharpDeck.Connectivity;
+    using System;
     using SharpDeck.Events.Received;
 
     /// <summary>
@@ -9,13 +9,13 @@
     public struct PluginHostBuilderContext
     {
         /// <summary>
-        /// Gets the connection that will be used to communicate with the Stream Deck.
-        /// </summary>
-        public IStreamDeckConnection Connection { get; internal set; }
-
-        /// <summary>
         /// Gets the registration parameters.
         /// </summary>
         public RegistrationParameters RegistrationParameters { get; internal set; }
+
+        /// <summary>
+        /// Gets the services.
+        /// </summary>
+        public IServiceProvider Services { get; internal set; }
     }
 }
