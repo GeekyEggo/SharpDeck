@@ -3,7 +3,7 @@ name: examples
 on:
   push:
     branches:
-    - master
+    - main
     tags:
     - '!*'
     paths:
@@ -35,6 +35,9 @@ jobs:
 
     - name: 'Build Counter (.NET Core 3.1)'
       run: dotnet build ./examples/Counter/netcoreapp3.1/ --configuration Release
+
+    - name: Build Drill Down
+      run: dotnet build ./examples/DrillDown/ --configuration Release
 
     - name: Build Shared Counter
       run: dotnet build ./examples/SharedCounter/ --configuration Release
