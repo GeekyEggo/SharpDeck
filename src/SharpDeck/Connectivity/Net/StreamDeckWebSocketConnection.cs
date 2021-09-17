@@ -147,7 +147,7 @@ namespace SharpDeck.Connectivity.Net
             {
                 await this.WebSocket.ConnectAsync();
                 await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), cancellationToken);
-                this.Registered.Invoke(this, EventArgs.Empty);
+                this.Registered?.Invoke(this, EventArgs.Empty);
 
                 await this.WebSocket.ReceiveAsync(cancellationToken);
             });

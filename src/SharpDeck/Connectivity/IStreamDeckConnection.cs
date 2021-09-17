@@ -97,11 +97,6 @@ namespace SharpDeck.Connectivity
         event EventHandler<ActionEventArgs<AppearancePayload>> WillDisappear;
 
         /// <summary>
-        /// Gets the information about the connection.
-        /// </summary>
-        RegistrationInfo Info { get; }
-
-        /// <summary>
         /// Requests the persistent global data stored for the plugin.
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token.</param>

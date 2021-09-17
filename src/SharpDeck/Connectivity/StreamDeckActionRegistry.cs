@@ -3,17 +3,19 @@ namespace SharpDeck.Connectivity
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
+    using SharpDeck.Extensions;
     using SharpDeck.Interactivity;
 
     /// <summary>
-    /// Provides connectivity between a <see cref="IStreamDeckConnection"/> and registered <see cref="StreamDeckAction"/>.
+    /// Provides a registry of actions to be handled by the plugin.
     /// </summary>
-    internal sealed class StreamDeckActionManager : IStreamDeckActionManager
+    internal sealed class StreamDeckActionRegistry : IStreamDeckActionRegistry
     {
         /// <summary>
         /// The synchronization root.
@@ -21,19 +23,19 @@ namespace SharpDeck.Connectivity
         private static readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckActionManager" /> class.
+        /// Initializes a new instance of the <see cref="StreamDeckActionRegistry" /> class.
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
         /// <param name="activator">The activator responsible for creating <see cref="StreamDeckAction" />.</param>
         /// <param name="drillDownFactory">The drill down factory.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public StreamDeckActionManager(IStreamDeckConnection connection, IActivator activator, IDrillDownFactory drillDownFactory, ILoggerFactory loggerFactory = null)
+        public StreamDeckActionRegistry(IStreamDeckConnection connection, IActivator activator, IDrillDownFactory drillDownFactory, ILoggerFactory loggerFactory = null)
         {
             this.Activator = activator;
             this.Cache = new StreamDeckActionCacheCollection(connection);
             this.Connection = connection;
             this.DrillDownFactory = drillDownFactory;
-            this.Logger = loggerFactory?.CreateLogger<StreamDeckActionManager>();
+            this.Logger = loggerFactory?.CreateLogger<StreamDeckActionRegistry>();
             this.LoggerFactory = loggerFactory;
 
             // responsible for caching
@@ -86,12 +88,41 @@ namespace SharpDeck.Connectivity
         private IDictionary<string, Type> RegisteredActions { get; } = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
-        /// Registers a new <see cref="StreamDeckAction" /> for the specified action UUID.
+        /// Registers the specified <typeparamref name="T"/> action, with the given <paramref name="actionUUID"/>.
         /// </summary>
-        /// <param name="actionUUID">The action UUID associated with the Stream Deck.</param>
-        /// <param name="type">The underlying type of the <see cref="StreamDeckAction"/>.</param>
-        public void Register(string actionUUID, Type type)
-            => this.RegisteredActions.Add(actionUUID, type);
+        /// <typeparam name="T">The type of the action.</typeparam>
+        /// <param name="actionUUID">The action UUID.</param>
+        /// <returns>The modified registry.</returns>
+        public IStreamDeckActionRegistry Register<T>(string actionUUID)
+            where T : StreamDeckAction
+        {
+            this.RegisteredActions.Add(actionUUID, typeof(T));
+            return this;
+        }
+
+        /// <summary>
+        /// Registers all instances of <see cref="StreamDeckAction" /> with the specified <paramref name="assembly" />; the action UUID is determined by the <see cref="StreamDeckActionAttribute.UUID" />
+        /// </summary>
+        /// <param name="assembly">The assembly to search in.</param>
+        /// <returns>The modified registry.</returns>
+        public IStreamDeckActionRegistry RegisterAll(Assembly assembly)
+        {
+            foreach (var (type, attr) in assembly.GetTypesWithCustomAttribute<StreamDeckActionAttribute>())
+            {
+                if (typeof(StreamDeckAction).IsAssignableFrom(type))
+                {
+                    // The attribute is on a valid attribute.
+                    this.RegisteredActions.Add(attr.UUID, type);
+                }
+                else
+                {
+                    // The attribute is not on a supported type.
+                    throw new NotSupportedException($"Failed to register \"{attr.UUID}\"; class must inherit \"{typeof(StreamDeckAction)}\" or \"{typeof(StreamDeckAction<>)}\".");
+                }
+            }
+
+            return this;
+        }
 
         /// <summary>
         /// Handles the <see cref="IStreamDeckConnection.WillAppear"/> event of the <see cref="Connection"/>.

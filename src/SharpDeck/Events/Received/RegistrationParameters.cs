@@ -46,23 +46,23 @@ namespace SharpDeck.Events.Received
         }
 
         /// <summary>
-        /// Gets or sets the event type that should be used to register the plugin once the WebSocket is opened.
+        /// Gets the event type that should be used to register the plugin once the WebSocket is opened.
         /// </summary>
-        public string Event { get; set; }
+        public string Event { get; }
 
         /// <summary>
-        /// Gets or sets the information about the Stream Deck application and devices information.
+        /// Gets the information about the Stream Deck application and devices information.
         /// </summary>
-        public RegistrationInfo Info { get; set; }
+        public RegistrationInfo Info { get; }
 
         /// <summary>
-        /// Gets or sets the port.
+        /// Gets the port.
         /// </summary>
-        public int Port { get; set; }
+        public int Port { get; }
 
         /// <summary>
-        /// Gets or sets a unique identifier string that should be used to register the plugin once the WebSocket is opened.
+        /// Gets a unique identifier string that should be used to register the plugin once the WebSocket is opened.
         /// </summary>
-        public string PluginUUID { get; set; }
+        public string PluginUUID { get; }
     }
 }
