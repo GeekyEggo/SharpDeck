@@ -1,6 +1,7 @@
 namespace SharpDeck
 {
     using System.Threading.Tasks;
+    using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
 
     /// <summary>

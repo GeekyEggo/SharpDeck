@@ -9,10 +9,5 @@
         /// Gets or sets an opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.
         /// </summary>
         public string Device { get; set; }
-
-        /// <summary>
-        /// Gets or sets the device information.
-        /// </summary>
-        public DeviceInfo DeviceInfo { get; set; }
     }
 }

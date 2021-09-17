@@ -4,6 +4,7 @@ namespace SharpDeck.PropertyInspectors
     using System.Reflection;
     using System.Threading.Tasks;
     using Newtonsoft.Json.Linq;
+    using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
 

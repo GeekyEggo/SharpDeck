@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides a factory for creating <see cref="DrillDown{T}"/>.
     /// </summary>
-    internal interface IDrillDownFactory
+    public interface IDrillDownFactory
     {
         /// <summary>
         /// Creates a new <see cref="DrillDown{TItem}"/>.

@@ -1,10 +1,13 @@
 namespace SharpDeck.Tests.PropertyInspectors
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Moq;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
+    using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
+    using SharpDeck.Interactivity;
     using SharpDeck.PropertyInspectors;
     using SharpDeck.Tests.Mocks;
 
@@ -55,7 +58,7 @@ namespace SharpDeck.Tests.PropertyInspectors
         {
             // given
             var action = new FooStreamDeckAction();
-            action.Initialize(CONTEXT, new Mock<IStreamDeckConnection>().Object);
+            action.Initialize(CONTEXT, new Mock<IStreamDeckConnection>().Object, new Mock<IDrillDownFactory>().Object);
             var args = this.GetArgs(@event);
 
             // when, then
@@ -82,8 +85,8 @@ namespace SharpDeck.Tests.PropertyInspectors
 
             // given
             var streamDeckSender = new Mock<IStreamDeckConnection>();
-            streamDeckSender.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                .Callback<string, string, object>((contextUUID, actionUUID, payload) =>
+            streamDeckSender.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Callback<string, string, object, CancellationToken>((contextUUID, actionUUID, payload, CancellationToken) =>
                 {
                     if (actionUUID == CONTEXT.Action && contextUUID == CONTEXT.Context && ((FooPropertyInspectorPayload)payload).Event == sendToPropertyInspectorEvent)
                     {
@@ -93,7 +96,7 @@ namespace SharpDeck.Tests.PropertyInspectors
 
             var action = new FooStreamDeckAction();
             var args = this.GetArgs(sendToPluginEvent);
-            action.Initialize(CONTEXT, streamDeckSender.Object);
+            action.Initialize(CONTEXT, streamDeckSender.Object, new Mock<IDrillDownFactory>().Object);
 
             // when
             await this.Collection.InvokeAsync(action, args);

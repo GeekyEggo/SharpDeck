@@ -1,6 +1,7 @@
 namespace SharpDeck.PropertyInspectors
 {
     using System;
+    using SharpDeck.Connectivity;
 
     /// <summary>
     /// Provides a decorator for methods, allowing them to be automatically triggered by <see cref="IStreamDeckConnection.SendToPlugin" />.
