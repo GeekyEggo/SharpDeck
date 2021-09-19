@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     using System;
     using System.Threading;
@@ -14,7 +14,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckButton"/> class.
         /// </summary>
-        /// <param name="connection">The connection to the Stream Deck.</param>
+        /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="context">The context used to identify the action.</param>
         internal StreamDeckButton(IStreamDeckConnection connection, string context)
             : this()

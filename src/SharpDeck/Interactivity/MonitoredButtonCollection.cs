@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     using System;
     using System.Threading.Tasks;
@@ -18,7 +18,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="MonitoredButtonCollection" /> class.
         /// </summary>
-        /// <param name="connection">The connection to the Stream Deck.</param>
+        /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="device">The device to monitor.</param>
         public MonitoredButtonCollection(IStreamDeckConnection connection, IDevice device)
         {
@@ -58,7 +58,7 @@
         public int Length => this.Buttons.Length;
 
         /// <summary>
-        /// Gets the connection to the Stream Deck.
+        /// Gets the connection with the Stream Deck.
         /// </summary>
         private IStreamDeckConnection Connection { get; }
 

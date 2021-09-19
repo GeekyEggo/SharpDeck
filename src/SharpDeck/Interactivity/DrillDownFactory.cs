@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     using System;
     using System.Collections.Concurrent;
@@ -16,7 +16,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="DrillDownFactory" /> class.
         /// </summary>
-        /// <param name="connection">The connection to the Stream Deck.</param>
+        /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="registrationParameters">The registration parameters.</param>
         /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDrillDownController{TItem}" />.</param>
         /// <param name="loggerFactory">The optional logger factory.</param>
@@ -49,7 +49,7 @@
         private IActivator Activator { get; }
 
         /// <summary>
-        /// Gets the connection to the Stream Deck.
+        /// Gets the connection with the Stream Deck.
         /// </summary>
         private IStreamDeckConnection Connection { get; }
 

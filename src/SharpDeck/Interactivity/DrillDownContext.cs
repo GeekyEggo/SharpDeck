@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     using System;
     using SharpDeck.Connectivity;
@@ -17,7 +17,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="DrillDownContext{TItem}"/> struct.
         /// </summary>
-        /// <param name="connection">The connection to the Stream Deck.</param>
+        /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="pluginUUID">The unique identifier of the plugin.</param>
         /// <param name="device">The device information.</param>
         /// <param name="profile">The name of profile used to display the drill down.</param>
@@ -30,7 +30,7 @@
         }
 
         /// <summary>
-        /// Gets the connection to the Stream Deck.
+        /// Gets the connection with the Stream Deck.
         /// </summary>
         public IStreamDeckConnection Connection { get; }
 
