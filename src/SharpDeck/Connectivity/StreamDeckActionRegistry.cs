@@ -133,7 +133,7 @@ namespace SharpDeck.Connectivity
         /// <inheritdoc/>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this.Logger.LogTrace($"Starting action registry.");
+            this.Logger?.LogTrace($"Starting action registry.");
             this.IsEnabled = true;
 
             return Task.CompletedTask;
