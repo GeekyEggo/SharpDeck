@@ -103,7 +103,7 @@ namespace SharpDeck.Interactivity
         {
             using (this._syncRoot.Lock())
             {
-                this.Logger?.LogTrace($"Setting result of dynamic profile \"{this.Context.Profile}\" to \"{result}\"; switching to previous profile.");
+                this.Logger?.LogTrace($"Setting result of dynamic profile \"{this.Context.ProfileName}\" to \"{result}\"; switching to previous profile.");
 
                 this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
                 this.Result.TrySetResult(new DynamicProfileResult<T>(true, result));
@@ -146,7 +146,7 @@ namespace SharpDeck.Interactivity
                 await this.Buttons.WaitFullLayoutAsync();
                 await this.Buttons[0].SetDisplayAsync(image: Images.Close);
 
-                // Listen to buttons disappearing, this allows us to dispose of the drill-down if the profile changes for a reason out of our control.
+                // Listen to buttons disappearing, this allows us to dispose of the dynamic profile if the profile changes for a reason out of our control.
                 this.Context.Connection.WillDisappear -= this.Connection_WillDisappear;
                 this.Context.Connection.WillDisappear += this.Connection_WillDisappear;
 
@@ -178,7 +178,7 @@ namespace SharpDeck.Interactivity
 
             if (disposing)
             {
-                this.Logger?.LogTrace($"Dynamic profile \"{this.Context.Profile}\" is being disposed; switching to previous profile.");
+                this.Logger?.LogTrace($"Dynamic profile \"{this.Context.ProfileName}\" is being disposed; switching to previous profile.");
                 this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
                 this.Result.TrySetResult(DynamicProfileResult<T>.None);
             }
@@ -200,7 +200,7 @@ namespace SharpDeck.Interactivity
             // Close is a constant.
             if (e.Context == this.Buttons[0].Context)
             {
-                this.Logger?.LogTrace($"Close button pressed; exiting dynamic profile \"{this.Context.Profile}\".");
+                this.Logger?.LogTrace($"Close button pressed; exiting dynamic profile \"{this.Context.ProfileName}\".");
                 this.Dispose();
 
                 return;
@@ -236,7 +236,7 @@ namespace SharpDeck.Interactivity
                             if (index < this.Pager.Items.Length)
                             {
                                 var item = this.Pager.Items[index];
-                                _ = Task.Run(() => this.Controller.OnSelectedAsync(this.Context, item).Forget(this.Logger));
+                                _ = Task.Run(() => this.Controller.OnItemSelectedAsync(this.Context, item).Forget(this.Logger));
                             }
                         }
                         break;
@@ -282,7 +282,7 @@ namespace SharpDeck.Interactivity
                 if (itemIndex < this.Pager.Items.Length)
                 {
                     // The button has an item, so initiate it.
-                    tasks.Add(this.Controller.OnShowAsync(this.Context, new StreamDeckButton(this.Context.Connection, this.Buttons[buttonIndex].Context), this.Pager.Items[itemIndex], cancellationToken));
+                    tasks.Add(this.Controller.OnItemWillAppearAsync(this.Context, new StreamDeckButton(this.Context.Connection, this.Buttons[buttonIndex].Context), this.Pager.Items[itemIndex], cancellationToken));
                 }
                 else
                 {

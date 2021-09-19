@@ -1,4 +1,4 @@
-﻿namespace DrillDown
+namespace DynamicProfiles
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;

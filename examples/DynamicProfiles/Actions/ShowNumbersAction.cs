@@ -1,4 +1,4 @@
-﻿namespace DrillDown.Actions
+namespace DynamicProfiles.Actions
 {
     using System.Linq;
     using System.Threading.Tasks;
@@ -9,7 +9,7 @@
     /// <summary>
     /// Provides action handling for the "Show Numbers" action.
     /// </summary>
-    [StreamDeckAction("com.geekyeggo.drilldown.shownumbers")]
+    [StreamDeckAction("com.geekyeggo.dynamicprofiles.shownumbers")]
     public class ShowNumbersAction : StreamDeckAction
     {
         /// <summary>
@@ -21,7 +21,7 @@
             await base.OnKeyPress(args);
 
             var numbers = Enumerable.Range(1, 119);
-            var result = await this.ShowDrillDownAsync<SelectNumberController, int>(numbers);
+            var result = await this.ShowDynamicProfileAsync<SelectNumberController, int>(numbers);
             await this.SetTitleAsync(result.IsSuccess ? result.Item.ToString() : string.Empty);
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,17 +16,17 @@
         /// <param name="context">The dynamic profile context; this can be used to set the result of, or close, the dynamic profile.</param>
         /// <param name="item">The item that was selected by the user.</param>
         /// <returns>The task of handling the item being selected.</returns>
-        Task OnSelectedAsync(DynamicProfileContext<T> context, T item);
+        Task OnItemSelectedAsync(DynamicProfileContext<T> context, T item);
 
         /// <summary>
-        /// Called when an item within the dynamic profile becomes visible; this allows for the button to be customized and styled via the <paramref name="button"/>.
+        /// Called when an item within the dynamic profile is becoming visible; this allows for the button to be customized and styled.
         /// </summary>
         /// <param name="item">The item that has become visible.</param>
         /// <param name="context">The dynamic profile context.</param>
         /// <param name="button">The button that represents the <paramref name="item"/>; this allows for the button to be customized and styled, i.e. the title and image set.</param>
         /// <param name="cancellationToken">The cancellation token; this is cancelled when the current page of the dynamic profile changes, or the dynamic profile is closed.</param>
         /// <returns>The task responsible for rendering the item.</returns>
-        Task OnShowAsync(DynamicProfileContext<T> context, IButton button, T item, CancellationToken cancellationToken);
+        Task OnItemWillAppearAsync(DynamicProfileContext<T> context, IButton button, T item, CancellationToken cancellationToken);
 
         /// <summary>
         /// Tries to get the name of the profile that will be used to display the dynamic profile for the specified <paramref name="deviceType"/>; this profile must be registered within the plugin's manifest.
