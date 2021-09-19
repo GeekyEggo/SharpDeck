@@ -1,6 +1,5 @@
 ﻿namespace SharpDeck.Connectivity
 {
-    using System;
     using System.Reflection;
 
     /// <summary>
@@ -8,11 +7,6 @@
     /// </summary>
     public interface IStreamDeckActionRegistry
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether this registry is enabled.
-        /// </summary>
-        bool IsEnabled { get; set; }
-
         /// <summary>
         /// Registers the specified <typeparamref name="T"/> action, with the given <paramref name="actionUUID"/>.
         /// </summary>

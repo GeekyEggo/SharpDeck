@@ -8,6 +8,7 @@
     /// <summary>
     /// Provides configuration for <see cref="StreamDeckLoggerProvider"/>.
     /// </summary>
+    [Obsolete]
     internal class StreamDeckLoggerProviderConfiguration
     {
         /// <summary>

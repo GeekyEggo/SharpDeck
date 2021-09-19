@@ -22,27 +22,25 @@
         /// <returns>The service collection for chaining.</returns>
         public static IServiceCollection AddStreamDeck(this IServiceCollection services, Action<IPluginBuilder> configurePlugin = default)
         {
-            var registrationParameters = new RegistrationParameters(Environment.GetCommandLineArgs());
-            var connection = new StreamDeckWebSocketConnection(registrationParameters);
-
-            var pluginBuilder = new PluginBuilder(connection, registrationParameters, services);
-            configurePlugin?.Invoke(pluginBuilder);
-
             return services
                 // Misc
                 .AddSingleton<IActivator, SelfContainedServiceProviderActivator>(provider => new SelfContainedServiceProviderActivator(provider))
 
                 // Connection with Stream Deck.
-                .AddSingleton(registrationParameters)
-                .AddSingleton<IStreamDeckConnection>(connection)
-                .AddSingleton<IStreamDeckConnectionController>(connection)
+                .AddSingleton(new RegistrationParameters(Environment.GetCommandLineArgs()))
+                .AddSingleton<IStreamDeckConnection>(provider => provider.GetRequiredService<StreamDeckWebSocketConnection>())
+                .AddSingleton<StreamDeckWebSocketConnection>()
 
                 // Action interactivity.
                 .AddSingleton<IDrillDownFactory, DrillDownFactory>()
-                .AddSingleton<IStreamDeckActionRegistry, StreamDeckActionRegistry>(provider =>
+                .AddSingleton<IStreamDeckActionRegistry>(provider => provider.GetRequiredService<StreamDeckActionRegistry>())
+                .AddSingleton<StreamDeckActionRegistry>(provider =>
                 {
+                    var builder = ActivatorUtilities.CreateInstance<PluginBuilder>(provider);
+                    configurePlugin?.Invoke(builder);
+
                     var registry = ActivatorUtilities.CreateInstance<StreamDeckActionRegistry>(provider);
-                    foreach (var assembly in pluginBuilder.Assemblies)
+                    foreach (var assembly in builder.Assemblies)
                     {
                         registry.RegisterAll(assembly);
                     }
@@ -50,8 +48,10 @@
                     return registry;
                 })
 
-                // Host
-                .AddSingleton<IHostedService, StreamDeckPluginService>();
+                // Hosts
+                .AddSingleton<IHostedService>(provider => provider.GetRequiredService<StreamDeckActionRegistry>())
+                .AddSingleton<IHostedService>(provider => provider.GetRequiredService<StreamDeckWebSocketConnection>());
+
         }
     }
 }

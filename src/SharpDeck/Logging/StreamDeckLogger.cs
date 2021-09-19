@@ -12,6 +12,7 @@
     /// <summary>
     /// Provides an implementation of <see cref="ILogger"/> that utilizes <see cref="IStreamDeckConnection.LogMessageAsync(string, System.Threading.CancellationToken)"/>.
     /// </summary>
+    [Obsolete]
     internal sealed class StreamDeckLogger : ILogger
     {
         /// <summary>

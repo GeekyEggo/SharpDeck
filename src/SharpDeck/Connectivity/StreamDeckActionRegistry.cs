@@ -6,6 +6,7 @@ namespace SharpDeck.Connectivity
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
@@ -15,7 +16,7 @@ namespace SharpDeck.Connectivity
     /// <summary>
     /// Provides a registry of actions to be handled by the plugin.
     /// </summary>
-    internal sealed class StreamDeckActionRegistry : IStreamDeckActionRegistry
+    internal sealed class StreamDeckActionRegistry : IStreamDeckActionRegistry, IHostedService
     {
         /// <summary>
         /// The synchronization root.
@@ -53,11 +54,6 @@ namespace SharpDeck.Connectivity
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this registry is enabled.
-        /// </summary>
-        public bool IsEnabled { get; set; }
-
-        /// <summary>
         /// Gets the activator responsible for creating <see cref="StreamDeckAction" />
         /// </summary>
         private IActivator Activator { get; }
@@ -78,9 +74,14 @@ namespace SharpDeck.Connectivity
         private IDrillDownFactory DrillDownFactory { get; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this registry is enabled.
+        /// </summary>
+        private bool IsEnabled { get; set; } = false;
+
+        /// <summary>
         /// Gets the logger.
         /// </summary>
-        public ILogger Logger { get; }
+        private ILogger Logger { get; }
 
         /// <summary>
         /// Gets the logger factory.
@@ -127,6 +128,22 @@ namespace SharpDeck.Connectivity
             }
 
             return this;
+        }
+
+        /// <inheritdoc/>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            this.Logger.LogTrace($"Starting action registry.");
+            this.IsEnabled = true;
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            this.IsEnabled = false;
+            return Task.CompletedTask;
         }
 
         /// <summary>

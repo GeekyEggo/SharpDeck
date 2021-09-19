@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.Extensions.Logging
 {
+    using System;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using SharpDeck.Logging;
@@ -7,6 +8,7 @@
     /// <summary>
     /// Provides extensions for <see cref="ILoggingBuilder"/>.
     /// </summary>
+    [Obsolete]
     public static class LoggingBuilderExtensions
     {
         /// <summary>

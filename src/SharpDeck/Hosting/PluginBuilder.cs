@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Reflection;
-    using Microsoft.Extensions.DependencyInjection;
     using SharpDeck.Connectivity;
     using SharpDeck.Events.Received;
 
@@ -16,13 +15,11 @@
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="registrationParameters">The registration parameters.</param>
-        /// <param name="services">The services.</param>
-        internal PluginBuilder(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IServiceCollection services)
+        public PluginBuilder(IStreamDeckConnection connection, RegistrationParameters registrationParameters)
         {
             this.Assemblies.Add(Assembly.GetEntryAssembly());
             this.Connection = connection;
             this.RegistrationParameters = registrationParameters;
-            this.Services = services;
         }
 
         /// <summary>
@@ -39,11 +36,6 @@
         /// Gets the registration parameters.
         /// </summary>
         public RegistrationParameters RegistrationParameters { get; }
-
-        /// <summary>
-        /// Gets the services.
-        /// </summary>
-        public IServiceCollection Services { get; }
 
         /// <summary>
         /// Adds the specified assembly to the plugin; all instances of <see cref="StreamDeckAction" /> or <see cref="StreamDeckAction{TSettings}" /> that have the attribute <see cref="StreamDeckActionAttribute" /> will be intercepted.

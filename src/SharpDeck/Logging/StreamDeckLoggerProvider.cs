@@ -1,5 +1,6 @@
 ﻿namespace SharpDeck.Logging
 {
+    using System;
     using System.Threading;
     using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
@@ -7,6 +8,7 @@
     /// <summary>
     /// Provides an implementation of <see cref="ILoggerProvider"/> that utilizes the <see cref="IStreamDeckConnection.LogMessageAsync(string, CancellationToken)"/> for logging.
     /// </summary>
+    [Obsolete]
     [ProviderAlias("StreamDeck")]
     internal sealed class StreamDeckLoggerProvider : ILoggerProvider
     {

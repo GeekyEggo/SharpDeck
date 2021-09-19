@@ -3,6 +3,8 @@ namespace SharpDeck.Connectivity.Net
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
@@ -14,7 +16,7 @@ namespace SharpDeck.Connectivity.Net
     /// <summary>
     /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.
     /// </summary>
-    internal sealed class StreamDeckWebSocketConnection : IStreamDeckConnectionController
+    internal sealed class StreamDeckWebSocketConnection : IHostedService, IStreamDeckConnection
     {
         /// <summary>
         /// Occurs when the plugin registers itself.
@@ -104,8 +106,12 @@ namespace SharpDeck.Connectivity.Net
         /// Initializes a new instance of the <see cref="StreamDeckWebSocketConnection"/> class.
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
-        public StreamDeckWebSocketConnection(RegistrationParameters registrationParameters)
-            => this.RegistrationParameters = registrationParameters;
+        /// <param name="logger">The logger.</param>
+        public StreamDeckWebSocketConnection(RegistrationParameters registrationParameters, ILogger<StreamDeckWebSocketConnection> logger)
+        {
+            this.Logger = logger;
+            this.RegistrationParameters = registrationParameters;
+        }
 
         /// <summary>
         /// Gets the information about the connection.
@@ -130,34 +136,37 @@ namespace SharpDeck.Connectivity.Net
         private RegistrationParameters RegistrationParameters { get; set; }
 
         /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        private ILogger<StreamDeckWebSocketConnection> Logger { get; }
+
+        /// <summary>
         /// Gets or sets the web socket.
         /// </summary>
         private WebSocketConnection WebSocket { get; set; }
 
-        /// <summary>
-        /// Initiates a connection to the Stream Deck asynchronously.
-        /// </summary>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        public Task ConnectAsync(CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public Task StartAsync(CancellationToken cancellationToken)
         {
+            this.Logger.LogTrace("Connecting to Stream Deck.");
             this.WebSocket = new WebSocketConnection($"ws://localhost:{this.RegistrationParameters.Port}/", this.JsonSettings);
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
 
             return Task.Run(async () =>
             {
                 await this.WebSocket.ConnectAsync();
+                this.Logger.LogTrace($"Connected to Stream Deck; registering plugin.");
+
                 await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), cancellationToken);
                 this.Registered?.Invoke(this, EventArgs.Empty);
 
+                this.Logger.LogTrace($"Plugin registrered.");
                 await this.WebSocket.ReceiveAsync(cancellationToken);
             });
         }
 
-        /// <summary>
-        /// Disconnects the connection to the Stream Deck asynchronously.
-        /// </summary>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        public Task DisconnectAsync(CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public Task StopAsync(CancellationToken cancellationToken = default)
             => this.WebSocket.DisconnectAsync();
 
         /// <summary>
