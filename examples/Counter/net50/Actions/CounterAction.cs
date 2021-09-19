@@ -1,4 +1,4 @@
-namespace Counter_netcoreapp31.Actions
+namespace Counter_net50.Actions
 {
     using System.Threading.Tasks;
     using SharpDeck;
@@ -8,7 +8,7 @@ namespace Counter_netcoreapp31.Actions
     /// <summary>
     /// The counter action; displays the count which is increment on each press.
     /// </summary>
-    [StreamDeckAction("Counter", "com.geekyeggo.counternetcoreapp31.counter")]
+    [StreamDeckAction("Counter", "com.geekyeggo.counternet50.counter")]
     public class CounterAction : StreamDeckAction<CounterSettings>
     {
         /// <summary>
