@@ -54,6 +54,11 @@ namespace SharpDeck.Connectivity.Net
         public Uri Uri { get; }
 
         /// <summary>
+        /// Gets the connection task completion source.
+        /// </summary>
+        private TaskCompletionSource<bool> ConnectionTaskCompletionSource { get; } = new TaskCompletionSource<bool>();
+
+        /// <summary>
         /// Gets or sets the web socket.
         /// </summary>
         private ClientWebSocket WebSocket { get; set; }
@@ -61,12 +66,23 @@ namespace SharpDeck.Connectivity.Net
         /// <summary>
         /// Connects the web socket.
         /// </summary>
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
             if (this.WebSocket == null)
             {
+                // Connect the web socket.
                 this.WebSocket = new ClientWebSocket();
-                await this.WebSocket.ConnectAsync(this.Uri, CancellationToken.None);
+                await this.WebSocket.ConnectAsync(this.Uri, cancellationToken);
+
+                // Asynchronously listen for messages.
+                _ = Task.Factory.StartNew(async () =>
+                {
+                    await this.ReceiveAsync(cancellationToken);
+                    this.ConnectionTaskCompletionSource.TrySetResult(true);
+                },
+                cancellationToken,
+                TaskCreationOptions.LongRunning | TaskCreationOptions.RunContinuationsAsynchronously,
+                TaskScheduler.Default);
             }
         }
 
@@ -86,6 +102,7 @@ namespace SharpDeck.Connectivity.Net
                 }
 
                 socket.Dispose();
+                this.ConnectionTaskCompletionSource?.TrySetResult(true);
             }
         }
 
@@ -96,55 +113,6 @@ namespace SharpDeck.Connectivity.Net
         {
             _ = this.DisconnectAsync();
             GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Receive data as an asynchronous operation.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task<WebSocketCloseStatus> ReceiveAsync(CancellationToken cancellationToken)
-        {
-            var buffer = new byte[BUFFER_SIZE];
-            var textBuffer = new StringBuilder(BUFFER_SIZE);
-
-            try
-            {
-                while (this.WebSocket?.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
-                {
-                    // await a message
-                    var result = await this.WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
-                    if (result == null)
-                    {
-                        continue;
-                    }
-
-                    if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus != null && result.CloseStatus.HasValue && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
-                    {
-                        // stop listening, and return the close status
-                        return result.CloseStatus.GetValueOrDefault();
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        // append to the text buffer, and determine if the message has finished
-                        textBuffer.Append(this.Encoding.GetString(buffer, 0, result.Count));
-                        if (result.EndOfMessage)
-                        {
-                            this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(textBuffer.ToString()));
-                            textBuffer.Clear();
-                        }
-                    }
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                return WebSocketCloseStatus.NormalClosure;
-            }
-            catch (Exception)
-            {
-                return WebSocketCloseStatus.InternalServerError;
-            }
-
-            return WebSocketCloseStatus.NormalClosure;
         }
 
         /// <summary>
@@ -186,6 +154,66 @@ namespace SharpDeck.Connectivity.Net
 
             var json = JsonConvert.SerializeObject(value, this.JsonSettings);
             return this.SendAsync(json, cancellationToken);
+        }
+
+        /// <summary>
+        /// Waits the underlying connection to disconnect asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task of the live connection.</returns>
+        public Task WaitDisconnectAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.Register(() => this.ConnectionTaskCompletionSource.TrySetCanceled(), useSynchronizationContext: false);
+            return this.ConnectionTaskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Receive data as an asynchronous operation.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task<WebSocketCloseStatus> ReceiveAsync(CancellationToken cancellationToken)
+        {
+            var buffer = new byte[BUFFER_SIZE];
+            var textBuffer = new StringBuilder(BUFFER_SIZE);
+
+            try
+            {
+                while (this.WebSocket?.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
+                {
+                    // await a message
+                    var result = await this.WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                    if (result == null)
+                    {
+                        continue;
+                    }
+
+                    if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus != null && result.CloseStatus.HasValue && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
+                    {
+                        // Stop listening, and return the close status.
+                        return result.CloseStatus.GetValueOrDefault();
+                    }
+                    else if (result.MessageType == WebSocketMessageType.Text)
+                    {
+                        // Append to the text buffer, and determine if the message has finished
+                        textBuffer.Append(this.Encoding.GetString(buffer, 0, result.Count));
+                        if (result.EndOfMessage)
+                        {
+                            this.MessageReceived?.Invoke(this, new WebSocketMessageEventArgs(textBuffer.ToString()));
+                            textBuffer.Clear();
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return WebSocketCloseStatus.NormalClosure;
+            }
+            catch (Exception)
+            {
+                return WebSocketCloseStatus.InternalServerError;
+            }
+
+            return WebSocketCloseStatus.NormalClosure;
         }
     }
 }

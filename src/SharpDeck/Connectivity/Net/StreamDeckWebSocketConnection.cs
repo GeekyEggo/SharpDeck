@@ -146,23 +146,20 @@ namespace SharpDeck.Connectivity.Net
         private WebSocketConnection WebSocket { get; set; }
 
         /// <inheritdoc/>
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             this.Logger.LogTrace("Connecting to Stream Deck.");
             this.WebSocket = new WebSocketConnection($"ws://localhost:{this.RegistrationParameters.Port}/", this.JsonSettings);
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
 
-            return Task.Run(async () =>
-            {
-                await this.WebSocket.ConnectAsync();
-                this.Logger.LogTrace($"Connected to Stream Deck; registering plugin.");
+            await this.WebSocket.ConnectAsync();
+            this.Logger.LogTrace($"Connected to Stream Deck; registering plugin.");
 
-                await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), cancellationToken);
-                this.Registered?.Invoke(this, EventArgs.Empty);
+            await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), cancellationToken);
+            this.Registered?.Invoke(this, EventArgs.Empty);
 
-                this.Logger.LogTrace($"Plugin registrered.");
-                await this.WebSocket.ReceiveAsync(cancellationToken);
-            });
+            this.Logger.LogTrace($"Plugin registrered.");
+            await this.WebSocket.WaitDisconnectAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
