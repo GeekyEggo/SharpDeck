@@ -4,29 +4,29 @@ namespace SharpDeck.Interactivity
     using SharpDeck.Connectivity;
 
     /// <summary>
-    /// Provides contextual information about the current drill down.
+    /// Provides contextual information about the current dynamic profile.
     /// </summary>
-    /// <typeparam name="T">The type of the items within the drill down.</typeparam>
-    public class DrillDownContext<T>
+    /// <typeparam name="T">The type of the items within the dynamic profile.</typeparam>
+    public class DynamicProfileContext<T>
     {
         /// <summary>
         /// Occurs when a close is requested.
         /// </summary>
-        internal event EventHandler<DrillDownResult<T>> CloseRequested;
+        internal event EventHandler<DynamicProfileResult<T>> CloseRequested;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DrillDownContext{TItem}"/> struct.
+        /// Initializes a new instance of the <see cref="DynamicProfileContext{TItem}" /> struct.
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="pluginUUID">The unique identifier of the plugin.</param>
         /// <param name="device">The device information.</param>
-        /// <param name="profile">The name of profile used to display the drill down.</param>
-        internal DrillDownContext(IStreamDeckConnection connection, string pluginUUID, IDevice device, string profile)
+        /// <param name="profileName">The name of the profile.</param>
+        internal DynamicProfileContext(IStreamDeckConnection connection, string pluginUUID, IDevice device, string profileName)
         {
             this.Connection = connection;
             this.Device = device;
             this.PluginUUID = pluginUUID;
-            this.Profile = profile;
+            this.ProfileName = profileName;
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace SharpDeck.Interactivity
         public IDevice Device { get; }
 
         /// <summary>
-        /// Gets the drill down.
+        /// Gets the dynamic profile.
         /// </summary>
-        public IDrillDown<T> DrillDown { get; internal set; }
+        public IDynamicProfile<T> Profile { get; internal set; }
 
         /// <summary>
         /// Gets the unique identifier of the plugin.
@@ -50,8 +50,8 @@ namespace SharpDeck.Interactivity
         public string PluginUUID { get; }
 
         /// <summary>
-        /// Gets the name of profile used to display the drill down.
+        /// Gets the name of the profile.
         /// </summary>
-        public string Profile { get; }
+        public string ProfileName { get; }
     }
 }

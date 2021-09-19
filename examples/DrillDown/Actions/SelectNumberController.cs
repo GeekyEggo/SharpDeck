@@ -1,4 +1,4 @@
-﻿namespace DrillDown.Actions
+namespace DrillDown.Actions
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -10,7 +10,7 @@
     /// <summary>
     /// The drill down controller responsible for handling the selection of a number.
     /// </summary>
-    public class SelectNumberController : IDrillDownController<int>
+    public class SelectNumberController : IDynamicProfileController<int>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectNumberController"/> class.
@@ -30,11 +30,11 @@
         /// <param name="context">The drill down context; this can be used to set the result of, or close, the drill down.</param>
         /// <param name="item">The item that was selected by the user.</param>
         /// <returns>The task of handling the item being selected.</returns>
-        public Task OnSelectedAsync(DrillDownContext<int> context, int item)
+        public Task OnSelectedAsync(DynamicProfileContext<int> context, int item)
         {
             this.Logger.LogTrace($"Selected {item}.");
 
-            context.DrillDown.CloseWithResult(item);
+            context.Profile.CloseWithResult(item);
             return Task.CompletedTask;
         }
 
@@ -46,7 +46,7 @@
         /// <param name="button">The button that represents the <paramref name="item"/>; this allows for the button to be customized and styled, i.e. the title and image set.</param>
         /// <param name="cancellationToken">The cancellation token; this is cancelled when the current page of the drill down changes, or the drill down is closed.</param>
         /// <returns>The task responsible for rendering the item.</returns>
-        public async Task OnShowAsync(DrillDownContext<int> context, IButton button, int item, CancellationToken cancellationToken)
+        public async Task OnShowAsync(DynamicProfileContext<int> context, IButton button, int item, CancellationToken cancellationToken)
         {
             if (!cancellationToken.IsCancellationRequested)
             {

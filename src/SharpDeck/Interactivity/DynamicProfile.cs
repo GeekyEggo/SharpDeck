@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     using System;
     using System.Collections.Generic;
@@ -12,10 +12,10 @@
     using SharpDeck.Resources;
 
     /// <summary>
-    /// Provides functionality for showing the items of type <typeparamref name="T"/> as part of a drill down.
+    /// Provides functionality for showing the items of type <typeparamref name="T"/> as part of a dynamic profile.
     /// </summary>
-    /// <typeparam name="T">The type of the items within the drill down.</typeparam>
-    public class DrillDown<T> : IDrillDown<T>
+    /// <typeparam name="T">The type of the items within the dynamic profile.</typeparam>
+    public class DynamicProfile<T> : IDynamicProfile<T>
     {
         /// <summary>
         /// The offset that represents the presence of the close-button.
@@ -28,12 +28,12 @@
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DrillDown{T}" /> class.
+        /// Initializes a new instance of the <see cref="DynamicProfile{T}" /> class.
         /// </summary>
-        /// <param name="context">The context that provides information about where and how the drill down will be shown.</param>
+        /// <param name="context">The context that provides information about where and how the dynamic profile will be shown.</param>
         /// <param name="controller">The controller that provides functionality for handling a selection, or rendering items.</param>
         /// <param name="logger">The optional logger.</param>
-        internal DrillDown(DrillDownContext<T> context, IDrillDownController<T> controller, ILogger<DrillDown<T>> logger = null)
+        internal DynamicProfile(DynamicProfileContext<T> context, IDynamicProfileController<T> controller, ILogger<DynamicProfile<T>> logger = null)
         {
             this.Context = context;
             this.Controller = controller;
@@ -41,7 +41,7 @@
 
             this.Buttons = new MonitoredButtonCollection(this.Context.Connection, this.Context.Device);
             this.Context.Connection.KeyUp += Connection_KeyUp;
-            this.Context.DrillDown = this;
+            this.Context.Profile = this;
         }
 
         /// <summary>
@@ -50,14 +50,14 @@
         private MonitoredButtonCollection Buttons { get; }
 
         /// <summary>
-        /// Get or sets the context that provides information about where and how the drill down will be shown.
+        /// Get or sets the context that provides information about where and how the dynamic profile will be shown.
         /// </summary>
-        private DrillDownContext<T> Context { get; set; }
+        private DynamicProfileContext<T> Context { get; set; }
 
         /// <summary>
         /// Gets the action responsible for handling the display and selection of an item
         /// </summary>
-        private IDrillDownController<T> Controller { get; }
+        private IDynamicProfileController<T> Controller { get; }
 
         /// <summary>
         /// Gets the data source containing the items to show.
@@ -85,28 +85,28 @@
         private DevicePager<T> Pager { get; set; }
 
         /// <summary>
-        /// Gets the task completion source that represents the result of this drill down.
+        /// Gets the task completion source that represents the result of this dynamic profile.
         /// </summary>
-        private TaskCompletionSource<DrillDownResult<T>> Result { get; } = new TaskCompletionSource<DrillDownResult<T>>();
+        private TaskCompletionSource<DynamicProfileResult<T>> Result { get; } = new TaskCompletionSource<DynamicProfileResult<T>>();
 
         /// <summary>
-        /// Closes the drill down, and switches back to the previous profile.
+        /// Closes the dynamic profile, and switches back to the previous profile.
         /// </summary>
         public void Close()
             => this.Dispose();
 
         /// <summary>
-        /// Closes the drill down, and switches back to the previous profile; the result of the drill down is set to the specified <paramref name="result" />.
+        /// Closes the dynamic profile, and switches back to the previous profile; the result of the dynamic profile is set to the specified <paramref name="result" />.
         /// </summary>
-        /// <param name="result">The result of the drill down.</param>
+        /// <param name="result">The result of the dynamic profile.</param>
         public void CloseWithResult(T result)
         {
             using (this._syncRoot.Lock())
             {
-                this.Logger?.LogTrace($"Setting result of drill down profile \"{this.Context.Profile}\" to \"{result}\"; switching to previous profile.");
+                this.Logger?.LogTrace($"Setting result of dynamic profile \"{this.Context.Profile}\" to \"{result}\"; switching to previous profile.");
 
                 this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
-                this.Result.TrySetResult(new DrillDownResult<T>(true, result));
+                this.Result.TrySetResult(new DynamicProfileResult<T>(true, result));
 
                 this.Dispose(false);
             }
@@ -125,11 +125,11 @@
         }
 
         /// <summary>
-        /// Shows the drill down with the given items asynchronously.
+        /// Shows the dynamic profile with the given items asynchronously.
         /// </summary>
         /// <param name="items">The items to show.</param>
-        /// <returns>The result of the drill down.</returns>
-        public async Task<DrillDownResult<T>> ShowAsync(IEnumerable<T> items)
+        /// <returns>The result of the dynamic profile.</returns>
+        public async Task<DynamicProfileResult<T>> ShowAsync(IEnumerable<T> items)
         {
             using (await this._syncRoot.LockAsync())
             {
@@ -141,8 +141,8 @@
                 this.PageChangingCancellationTokenSource?.Cancel();
 
                 // Switch to the profile, and await a full layout.
-                this.Logger?.LogTrace($"Switching to drill down profile \"{this.Context.Profile}\".");
-                await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.Profile);
+                this.Logger?.LogTrace($"Switching to dynamic profile \"{this.Context.ProfileName}\".");
+                await this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id, this.Context.ProfileName);
                 await this.Buttons.WaitFullLayoutAsync();
                 await this.Buttons[0].SetDisplayAsync(image: Images.Close);
 
@@ -178,9 +178,9 @@
 
             if (disposing)
             {
-                this.Logger?.LogTrace($"Drill down profile \"{this.Context.Profile}\" is being disposed; switching to previous profile.");
+                this.Logger?.LogTrace($"Dynamic profile \"{this.Context.Profile}\" is being disposed; switching to previous profile.");
                 this.Context.Connection.SwitchToProfileAsync(this.Context.PluginUUID, this.Context.Device.Id).Forget(this.Logger);
-                this.Result.TrySetResult(DrillDownResult<T>.None);
+                this.Result.TrySetResult(DynamicProfileResult<T>.None);
             }
 
             this.Context = null;
@@ -200,13 +200,13 @@
             // Close is a constant.
             if (e.Context == this.Buttons[0].Context)
             {
-                this.Logger?.LogTrace($"Close button pressed; exiting drill down profile \"{this.Context.Profile}\".");
+                this.Logger?.LogTrace($"Close button pressed; exiting dynamic profile \"{this.Context.Profile}\".");
                 this.Dispose();
 
                 return;
             }
 
-            this.Logger?.LogTrace($"Key pressed at \"{e.Payload.Coordinates}\" in drill down profile \"{this.Context.Profile}\".");
+            this.Logger?.LogTrace($"Key pressed at \"{e.Payload.Coordinates}\" in dynamic profile \"{this.Context.ProfileName}\".");
             using (this._syncRoot.Lock())
             {
                 if (this.IsDisposed)
@@ -245,13 +245,13 @@
         }
 
         /// <summary>
-        /// Handles the <see cref="IStreamDeckConnection.WillDisappear"/> event for an action; this is a safety precaution in the event an action switch profiles away from the drill down.
+        /// Handles the <see cref="IStreamDeckConnection.WillDisappear"/> event for an action; this is a safety precaution in the event an action switch profiles away from the dynamic profile.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ActionEventArgs{AppearancePayload}"/> instance containing the event data.</param>
         private void Connection_WillDisappear(object sender, ActionEventArgs<AppearancePayload> e)
         {
-            this.Logger?.LogTrace($"\"{e.Action}\" disappearing; exiting drill down profile \"{this.Context.Profile}\".");
+            this.Logger?.LogTrace($"\"{e.Action}\" disappearing; exiting dynamic profile \"{this.Context.ProfileName}\".");
             this.Dispose();
         }
 
@@ -261,7 +261,7 @@
         /// <returns>The task of showing the current page.</returns>
         private Task ShowCurrentPageAsync()
         {
-            this.Logger?.LogTrace($"Refreshing items in drill down profile \"{this.Context.PluginUUID}\".");
+            this.Logger?.LogTrace($"Refreshing items in dynamic profile \"{this.Context.PluginUUID}\".");
 
             if (this.IsDisposed)
             {

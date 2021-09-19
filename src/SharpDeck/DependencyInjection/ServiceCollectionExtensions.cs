@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using Microsoft.Extensions.Hosting;
@@ -32,7 +32,7 @@
                 .AddSingleton<StreamDeckWebSocketConnection>()
 
                 // Action interactivity.
-                .AddSingleton<IDrillDownFactory, DrillDownFactory>()
+                .AddSingleton<IDynamicProfileFactory, DynamicProfileFactory>()
                 .AddSingleton<IStreamDeckActionRegistry>(provider => provider.GetRequiredService<StreamDeckActionRegistry>())
                 .AddSingleton<StreamDeckActionRegistry>(provider =>
                 {

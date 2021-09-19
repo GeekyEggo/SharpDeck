@@ -9,18 +9,18 @@ namespace SharpDeck.Interactivity
     using SharpDeck.Events.Received;
 
     /// <summary>
-    /// Provides a factory for creating <see cref="DrillDown{T}"/>.
+    /// Provides a factory for creating <see cref="DynamicProfile{T}"/>.
     /// </summary>
-    internal class DrillDownFactory : IDrillDownFactory
+    internal class DynamicProfileFactory : IDynamicProfileFactory
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DrillDownFactory" /> class.
+        /// Initializes a new instance of the <see cref="DynamicProfileFactory" /> class.
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="registrationParameters">The registration parameters.</param>
-        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDrillDownController{TItem}" />.</param>
+        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDynamicProfileController{TItem}" />.</param>
         /// <param name="loggerFactory">The optional logger factory.</param>
-        public DrillDownFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IActivator activator, ILoggerFactory loggerFactory = null)
+        public DynamicProfileFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IActivator activator, ILoggerFactory loggerFactory = null)
         {
             this.Activator = activator;
             this.Connection = connection;
@@ -44,7 +44,7 @@ namespace SharpDeck.Interactivity
         }
 
         /// <summary>
-        /// Gets the activator responsible for creating new instances of <see cref="IDrillDownController{TItem}"/>.
+        /// Gets the activator responsible for creating new instances of <see cref="IDynamicProfileController{TItem}"/>.
         /// </summary>
         private IActivator Activator { get; }
 
@@ -69,14 +69,14 @@ namespace SharpDeck.Interactivity
         private RegistrationParameters RegistrationParameters { get; }
 
         /// <summary>
-        /// Creates a new <see cref="DrillDown{TItem}"/>.
+        /// Creates a new <see cref="DynamicProfile{TItem}"/>.
         /// </summary>
-        /// <typeparam name="TController">The type of the drill down controller.</typeparam>
+        /// <typeparam name="TController">The type of the dynamic profile controller.</typeparam>
         /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
-        /// <param name="deviceUUID">The device UUID the drill down is for.</param>
-        /// <returns>The drill down.</returns>
-        public IDrillDown<TItem> Create<TController, TItem>(string deviceUUID)
-            where TController : class, IDrillDownController<TItem>
+        /// <param name="deviceUUID">The device UUID the dynamic profile is for.</param>
+        /// <returns>The dynamic profile.</returns>
+        public IDynamicProfile<TItem> Create<TController, TItem>(string deviceUUID)
+            where TController : class, IDynamicProfileController<TItem>
         {
             if (!this.Devices.TryGetValue(deviceUUID, out var device))
             {
@@ -87,11 +87,11 @@ namespace SharpDeck.Interactivity
             if (device.Type == DeviceType.CorsairGKeys
                 || !controller.TryGetProfileName(device.Type, out var profile))
             {
-                throw new NotSupportedException($"Cannot show drill down on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
+                throw new NotSupportedException($"Cannot show dynamic profile on device \"{deviceUUID}\" as \"{device.Type}\" is not a supported device type.");
             }
 
-            var ctx = new DrillDownContext<TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device, profile);
-            return new DrillDown<TItem>(ctx, controller, this.LoggerFactory?.CreateLogger<DrillDown<TItem>>());
+            var ctx = new DynamicProfileContext<TItem>(this.Connection, this.RegistrationParameters.PluginUUID, device, profile);
+            return new DynamicProfile<TItem>(ctx, controller, this.LoggerFactory?.CreateLogger<DynamicProfile<TItem>>());
         }
     }
 }

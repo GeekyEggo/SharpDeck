@@ -58,7 +58,7 @@ namespace SharpDeck.Tests.PropertyInspectors
         {
             // given
             var action = new FooStreamDeckAction();
-            action.Initialize(CONTEXT, new Mock<IStreamDeckConnection>().Object, new Mock<IDrillDownFactory>().Object);
+            action.Initialize(CONTEXT, new Mock<IStreamDeckConnection>().Object, new Mock<IDynamicProfileFactory>().Object);
             var args = this.GetArgs(@event);
 
             // when, then
@@ -96,7 +96,7 @@ namespace SharpDeck.Tests.PropertyInspectors
 
             var action = new FooStreamDeckAction();
             var args = this.GetArgs(sendToPluginEvent);
-            action.Initialize(CONTEXT, streamDeckSender.Object, new Mock<IDrillDownFactory>().Object);
+            action.Initialize(CONTEXT, streamDeckSender.Object, new Mock<IDynamicProfileFactory>().Object);
 
             // when
             await this.Collection.InvokeAsync(action, args);

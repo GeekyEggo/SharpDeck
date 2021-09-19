@@ -28,14 +28,14 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
         /// <param name="activator">The activator responsible for creating <see cref="StreamDeckAction" />.</param>
-        /// <param name="drillDownFactory">The drill down factory.</param>
+        /// <param name="dynamicProfileFactory">The dynamic profile factory.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public StreamDeckActionRegistry(IStreamDeckConnection connection, IActivator activator, IDrillDownFactory drillDownFactory, ILoggerFactory loggerFactory = null)
+        public StreamDeckActionRegistry(IStreamDeckConnection connection, IActivator activator, IDynamicProfileFactory dynamicProfileFactory, ILoggerFactory loggerFactory = null)
         {
             this.Activator = activator;
             this.Cache = new StreamDeckActionCacheCollection(connection);
             this.Connection = connection;
-            this.DrillDownFactory = drillDownFactory;
+            this.DynamicProfileFactory = dynamicProfileFactory;
             this.Logger = loggerFactory?.CreateLogger<StreamDeckActionRegistry>();
             this.LoggerFactory = loggerFactory;
 
@@ -69,9 +69,9 @@ namespace SharpDeck.Connectivity
         private IStreamDeckConnection Connection { get; }
 
         /// <summary>
-        /// Gets the drill down factory.
+        /// Gets the dynamic profile factory.
         /// </summary>
-        private IDrillDownFactory DrillDownFactory { get; }
+        private IDynamicProfileFactory DynamicProfileFactory { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this registry is enabled.
@@ -178,7 +178,7 @@ namespace SharpDeck.Connectivity
                     action.Logger = this.LoggerFactory?.CreateLogger(actionType);
 
                     await this.Cache.AddAsync(args, action);
-                    action.Initialize(args, this.Connection, this.DrillDownFactory);
+                    action.Initialize(args, this.Connection, this.DynamicProfileFactory);
                 }
 
                 _ = this.InvokeOnActionAsync(action, args, a => a.OnWillAppear);

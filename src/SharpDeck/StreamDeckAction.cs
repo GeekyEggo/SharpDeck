@@ -53,9 +53,9 @@ namespace SharpDeck
         private static ConcurrentDictionary<Type, PropertyInspectorMethodCollection> PropertyInspectorMethodCollections { get; } = new ConcurrentDictionary<Type, PropertyInspectorMethodCollection>();
 
         /// <summary>
-        /// Gets the drill down factory.
+        /// Gets the dynamic profile factory.
         /// </summary>
-        private IDrillDownFactory DrillDownFactory { get; set; }
+        private IDynamicProfileFactory DynamicProfileFactory { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is disposed.
@@ -134,16 +134,16 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The arguments containing the context.</param>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
-        /// <param name="drillDownFactory">The drill down factory.</param>
+        /// <param name="dynamicProfileFactory">The dynamic profile factory.</param>
         /// <returns>The task of setting the context and initialization.</returns>
-        internal void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckConnection connection, IDrillDownFactory drillDownFactory)
+        internal void Initialize(ActionEventArgs<AppearancePayload> args, IStreamDeckConnection connection, IDynamicProfileFactory dynamicProfileFactory)
         {
             this.ActionUUID = args.Action;
             this.Context = args.Context;
             this.Device = args.Device;
             this.Connection = connection;
 
-            this.DrillDownFactory = drillDownFactory;
+            this.DynamicProfileFactory = dynamicProfileFactory;
             this.OnInit(args);
         }
 
@@ -286,27 +286,27 @@ namespace SharpDeck
             => Task.CompletedTask;
 
         /// <summary>
-        /// Shows the collection of <paramref name="items"/> as a drill down asynchronouosly.
+        /// Shows the collection of <paramref name="items"/> as a dynamic profile asynchronouosly.
         /// </summary>
-        /// <typeparam name="TController">The type of the drill down controller.</typeparam>
+        /// <typeparam name="TController">The type of the dynamic profile controller.</typeparam>
         /// <typeparam name="TItem">The type of the items the manager is capable of handling.</typeparam>
-        /// <param name="items">The items to display in the drill down.</param>
-        /// <returns>The result of the drill down.</returns>
-        protected async Task<DrillDownResult<TItem>> ShowDrillDownAsync<TController, TItem>(IEnumerable<TItem> items)
-            where TController : class, IDrillDownController<TItem>
+        /// <param name="items">The items to display in the dynamic profile.</param>
+        /// <returns>The result of the dynamic profile.</returns>
+        protected async Task<DynamicProfileResult<TItem>> ShowDynamicProfileAsync<TController, TItem>(IEnumerable<TItem> items)
+            where TController : class, IDynamicProfileController<TItem>
         {
             try
             {
-                return await this.DrillDownFactory.Create<TController, TItem>(this.Device)
+                return await this.DynamicProfileFactory.Create<TController, TItem>(this.Device)
                     .ShowAsync(items);
             }
             catch (Exception ex)
             {
-                this.Logger?.LogError(ex, $"Failed to show drill down for action \"{this.ActionUUID}\".");
+                this.Logger?.LogError(ex, $"Failed to show dynamic profile for action \"{this.ActionUUID}\".");
                 await this.ShowAlertAsync();
             }
 
-            return DrillDownResult<TItem>.None;
+            return DynamicProfileResult<TItem>.None;
         }
 
         /// <summary>
