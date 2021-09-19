@@ -33,6 +33,7 @@
         public Task OnSelectedAsync(DrillDownContext<int> context, int item)
         {
             this.Logger.LogTrace($"Selected {item}.");
+
             context.DrillDown.CloseWithResult(item);
             return Task.CompletedTask;
         }

@@ -154,10 +154,10 @@ namespace SharpDeck.Connectivity.Net
         }
 
         /// <summary>
-        /// Disconnects the connection asynchronously.
+        /// Disconnects the connection to the Stream Deck asynchronously.
         /// </summary>
-        /// <returns>The task of disconnecting</returns>
-        public Task DisconnectAsync()
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        public Task DisconnectAsync(CancellationToken cancellationToken = default)
             => this.WebSocket.DisconnectAsync();
 
         /// <summary>

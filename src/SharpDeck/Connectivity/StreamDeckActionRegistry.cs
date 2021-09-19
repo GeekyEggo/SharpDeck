@@ -53,6 +53,11 @@ namespace SharpDeck.Connectivity
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this registry is enabled.
+        /// </summary>
+        public bool IsEnabled { get; set; }
+
+        /// <summary>
         /// Gets the activator responsible for creating <see cref="StreamDeckAction" />
         /// </summary>
         private IActivator Activator { get; }
@@ -132,7 +137,8 @@ namespace SharpDeck.Connectivity
         private void Action_WillAppear(object sender, ActionEventArgs<AppearancePayload> args)
         {
             // Check if the action type is handled by this instance.
-            if (this.RegisteredActions.TryGetValue(args.Action, out var type))
+            if (this.IsEnabled
+                && this.RegisteredActions.TryGetValue(args.Action, out var type))
             {
                 _ = this.Action_WillAppearAsync(args, type);
             }
@@ -183,7 +189,8 @@ namespace SharpDeck.Connectivity
             where T : IActionEventArgs
         {
             // Invokes the event on the action.
-            if (this.Cache.TryGet(args, out var action))
+            if (this.IsEnabled
+                && this.Cache.TryGet(args, out var action))
             {
                 _ = this.InvokeOnActionAsync(action, args, getPropagator);
             }

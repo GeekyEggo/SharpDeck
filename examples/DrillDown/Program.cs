@@ -1,10 +1,9 @@
 ﻿namespace DrillDown
 {
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using NLog.Extensions.Logging;
-    using SharpDeck;
 
     /// <summary>
     /// The plugin.
@@ -20,25 +19,21 @@
 #if DEBUG
             System.Diagnostics.Debugger.Launch();
 #endif
-            new PluginHostBuilder()
-                .ConfigureServices(services =>
+            new HostBuilder()
+                .ConfigureAppConfiguration((hostingContext, configBuilder) =>
                 {
-                    // Setup the configuration to read from the App.config file.
-                    var config = new ConfigurationBuilder()
+                    configBuilder
                         .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                        .Build();
-
-                    // Configure the logging
-                    services.AddScoped<IConfiguration>(_ => config)
-                        .AddLogging(loggingBuilder =>
-                        {
-                            loggingBuilder.ClearProviders()
-                                .AddConfiguration(config.GetSection("Logging"))
-                                .AddNLog(new NLogLoggingConfiguration(config.GetSection("NLog")));
-                        });
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
                 })
-                .Build()
+                .ConfigureLogging((hostingContext, loggingBuilder) =>
+                {
+                    loggingBuilder
+                        .ClearProviders()
+                        .AddConfiguration(hostingContext.Configuration.GetSection("Logging"))
+                        .AddNLog(new NLogLoggingConfiguration(hostingContext.Configuration.GetSection("NLog")));
+                })
+                .UseStreamDeck()
                 .Start();
         }
     }

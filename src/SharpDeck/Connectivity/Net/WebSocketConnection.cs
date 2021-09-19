@@ -179,6 +179,11 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task SendJsonAsync(object value, CancellationToken cancellationToken)
         {
+            if (this.WebSocket.State != WebSocketState.Open)
+            {
+                return Task.CompletedTask;
+            }
+
             var json = JsonConvert.SerializeObject(value, this.JsonSettings);
             return this.SendAsync(json, cancellationToken);
         }

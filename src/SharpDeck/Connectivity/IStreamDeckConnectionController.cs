@@ -13,5 +13,11 @@
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         Task ConnectAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Disconnects the connection to the Stream Deck asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        Task DisconnectAsync(CancellationToken cancellationToken = default);
     }
 }
