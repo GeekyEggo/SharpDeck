@@ -30,14 +30,14 @@ jobs:
       with:
         dotnet-version: '5.0.x'
 
-    - name: 'Build Counter (.NET 4.8)'
+    - name: 'Build Counter (.NET Framework 4.8)'
       run: dotnet build ./examples/Counter/net48/ --configuration Release
 
-    - name: 'Build Counter (.NET Core 3.1)'
-      run: dotnet build ./examples/Counter/netcoreapp3.1/ --configuration Release
+    - name: 'Build Counter (.NET 5.0)'
+      run: dotnet build ./examples/Counter/net50/ --configuration Release
 
-    - name: Build Drill Down
-      run: dotnet build ./examples/DrillDown/ --configuration Release
+    - name: Build Dynamic Profiles
+      run: dotnet build ./examples/DynamicProfiles/ --configuration Release
 
     - name: Build Shared Counter
       run: dotnet build ./examples/SharedCounter/ --configuration Release
