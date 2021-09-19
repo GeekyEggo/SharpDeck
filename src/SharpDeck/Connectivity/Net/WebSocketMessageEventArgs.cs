@@ -12,9 +12,7 @@ namespace SharpDeck.Connectivity.Net
         /// </summary>
         /// <param name="message">The message.</param>
         public WebSocketMessageEventArgs(string message)
-        {
-            this.Message = message;
-        }
+            => this.Message = message;
 
         /// <summary>
         /// Gets the message.

@@ -28,9 +28,7 @@ namespace SharpDeck.Connectivity
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
         public StreamDeckActionCacheCollection(IStreamDeckConnection connection)
-        {
-            this.Connection = connection;
-        }
+            => this.Connection = connection;
 
         /// <summary>
         /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
