@@ -2,9 +2,9 @@ namespace SharpDeck.Interactivity
 {
     using System;
     using System.Collections.Concurrent;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using SharpDeck.Connectivity;
-    using SharpDeck.DependencyInjection;
     using SharpDeck.Enums;
     using SharpDeck.Events.Received;
 
@@ -18,14 +18,14 @@ namespace SharpDeck.Interactivity
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck.</param>
         /// <param name="registrationParameters">The registration parameters.</param>
-        /// <param name="activator">The the activator responsible for creating new instances of <see cref="IDynamicProfileController{TItem}" />.</param>
+        /// <param name="serviceProvider">The service provider responsible for creating new instances of <see cref="IDynamicProfileController{TItem}" />.</param>
         /// <param name="loggerFactory">The optional logger factory.</param>
-        public DynamicProfileFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IActivator activator, ILoggerFactory loggerFactory = null)
+        public DynamicProfileFactory(IStreamDeckConnection connection, RegistrationParameters registrationParameters, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null)
         {
-            this.Activator = activator;
             this.Connection = connection;
             this.LoggerFactory = loggerFactory;
             this.RegistrationParameters = registrationParameters;
+            this.ServiceProvider = serviceProvider;
 
             this.Connection.DeviceDidConnect += (_, args) => this.Devices.TryAdd(
                 args.Device,
@@ -42,11 +42,6 @@ namespace SharpDeck.Interactivity
                 this.Devices.TryAdd(device.Id, device);
             }
         }
-
-        /// <summary>
-        /// Gets the activator responsible for creating new instances of <see cref="IDynamicProfileController{TItem}"/>.
-        /// </summary>
-        private IActivator Activator { get; }
 
         /// <summary>
         /// Gets the connection with the Stream Deck.
@@ -69,6 +64,11 @@ namespace SharpDeck.Interactivity
         private RegistrationParameters RegistrationParameters { get; }
 
         /// <summary>
+        /// Gets the service provider responsible for creating new instances of <see cref="IDynamicProfileController{TItem}" />.
+        /// </summary>
+        private IServiceProvider ServiceProvider { get; }
+
+        /// <summary>
         /// Creates a new <see cref="DynamicProfile{TItem}"/>.
         /// </summary>
         /// <typeparam name="TController">The type of the dynamic profile controller.</typeparam>
@@ -83,7 +83,7 @@ namespace SharpDeck.Interactivity
                 throw new ArgumentException($"A device with UUID \"{deviceUUID}\" could not be found.");
             }
 
-            var controller = (TController)this.Activator.CreateInstance(typeof(TController));
+            var controller = ActivatorUtilities.CreateInstance<TController>(this.ServiceProvider);
             if (device.Type == DeviceType.CorsairGKeys
                 || !controller.TryGetProfileName(device.Type, out var profile))
             {

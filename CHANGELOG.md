@@ -1,48 +1,59 @@
-# Change Log 
+# Change Log
 
 ## 6.0.0
 
 #### 🚨 Breaking
 
-* `StreamDeckPlugin` is now a singleton.
-* Moved `SharpDeck.IStreamDeckConnection` to `SharpDeck.Connectivity.IStreamDeckConnection`.
-* Renamed `StreamDeckAction.StreamDeck` to `StreamDeckAction.Connection`.
-* Removed `StreamDeckPlugin.Create(string[], Assembly)`.
-  * `string[]` args will now always use the `Environment.GetCommandLineArgs()`.
-* Removed `StreamDeckPlugin.OnSetup`.
-* Removed `StreamDeckPlugin.OnRegistered`, please use either:
-  * `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)`.
-  * `StreamDeckPlugin.Current.Connection`.
-* Removed static `Run()` and `RunAsync(CancellationToken)` methods.
-* Removed `StreamDeckPlugin.WithServiceProvider(IServiceProvider)`, please use `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>`.
-* Removed `StreamDeckAction.EnablePropertyInspectorMethods`; always considered `true`.
+* Majority of `StreamDeckPlugin` deprecated in favour of [host builders](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host).
+  * Provides basic run functionality; `Run()` or `Run(CancellationToken)`.
+* `StreamDeckAction`.
+  * Renamed property `StreamDeck` to `Connection`.
+  * Removed property `EnablePropertyInspectorMethods`; always considered `true`.
 * Removed `InvalidStreamDeckActionTypeException` in favour of `NotSupportedException`.
+* Moved `IStreamDeckConnection` to `SharpDeck.Connectivity` namespace.
 
 #### ⭐ Added
 
+* Added support for host builders via `UseStreamDeck(Action<PluginContext> configurePlugin)`.
+  * Namespace `SharpDeck.Extensions.Hosting`.
+  * Example usage;
+  ```csharp
+  new HostBuilder()
+      .ConfigureServices(services =>
+      {
+          services.AddSingleton<MyService>();
+      })
+      .UseStreamDeck(pluginContext =>
+      {
+          /*
+           * PluginContext allows access to the action registry, connection, and registration parameters.
+           * e.g. the following can be used to register actions outside of the entry assembly.
+           */
+          pluginContext.Actions.AddAssembly(typeof(MyPlugin).Assembly);
+      })
+      .Start();
+  ```
+* Added support for `IServiceCollection` registration via `AddStreamDeckPlugin(Action<IStreamDeckPlugin>)`.
+  * Namespace `SharpDeck.Extensions.DependencyInjection`.
 * Added support for long key presses.
   * Configurable via `StreamDeckAction.LongKeyPressInterval`
     * Default 500ms.
     * Disabled when `TimeSpan.Zero`.
-  * `StreamDeckAction.OnKeyPress(ActionEventArgs<KeyPayload>)` invoked on short-press, or when key disappears (if not long-press).
-  * `StreamDeckAction.OnKeyLongPress(ActionEventArgs<KeyPayload>)` invoked on long-press.
-* Added `IServiceCollection.AddStreamDeckPlugin(Action<IStreamDeckPlugin>)` extension method.
-  * `SharpDeck.Extensions` namespace.
-  * Includes registration of `IStreamDeckPlugin` and `IStreamDeckConnection`.
-  * The `IServiceCollection` is used when resolving instances of `StreamDeckAction`.
-* Added logging support to `StreamDeckPlugin`.
+* `StreamDeckAction.OnKeyPress(ActionEventArgs<KeyPayload>)` invoked on:
+  * Short-press.
+  * -or- when key disappears (if not long-press).
+* `StreamDeckAction.OnKeyLongPress(ActionEventArgs<KeyPayload>)` invoked on:
+  * Long-press.
 * Added logging support to all property inspector method invocations.
 * Added Stream Deck alert for actions when an exception is thrown whilst invoking a property inspector method.
 
 #### ♻ Changed
 
-* The underlying connection with the Stream Deck can now be accessed via the `StreamDeckPlugin.Current.Connection`.
-* The assembly containing the Stream Deck actions is now accessible via`StreamDeckPlugin.Current.Assembly`.
 * Removed manifest generation.
 * Removed `McMaster.Extensions.CommandLineUtils` dependency.
 * Updated third-party library dependencies.
 
-#### 🐞 Fixed 
+#### 🐞 Fixed
 
 * `profile` is now optional when calling `IStreamDeckConnection.SwitchToProfileAsync`.
 * Fixed missing payload information for `deviceDidConnect`.
@@ -65,7 +76,7 @@
 
 ## 5.0.1
 
-#### 🐞 Fixed 
+#### 🐞 Fixed
 
 * Fixed an issue with `StreamDeckClient.Run()` not blocking the main thread.
 

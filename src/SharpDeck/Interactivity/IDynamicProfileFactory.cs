@@ -1,9 +1,9 @@
-﻿namespace SharpDeck.Interactivity
+namespace SharpDeck.Interactivity
 {
     /// <summary>
     /// Provides a factory for creating <see cref="DynamicProfile{T}"/>.
     /// </summary>
-    public interface IDynamicProfileFactory
+    internal interface IDynamicProfileFactory
     {
         /// <summary>
         /// Creates a new <see cref="DynamicProfile{TItem}"/>.

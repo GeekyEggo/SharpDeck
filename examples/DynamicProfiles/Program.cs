@@ -4,6 +4,7 @@ namespace DynamicProfiles
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using NLog.Extensions.Logging;
+    using SharpDeck.Extensions.Hosting;
 
     /// <summary>
     /// The plugin.

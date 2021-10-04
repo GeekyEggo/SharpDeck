@@ -1,7 +1,8 @@
-﻿namespace Microsoft.Extensions.Hosting
+namespace SharpDeck.Extensions.Hosting
 {
     using System;
-    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using SharpDeck.Extensions.DependencyInjection;
     using SharpDeck.Hosting;
 
     /// <summary>
@@ -15,7 +16,7 @@
         /// <param name="builder">This instance.</param>
         /// <param name="configurePlugin">The optional configuration to be applied to the plugin.</param>
         /// <returns>The host builder for chaining.</returns>
-        public static IHostBuilder UseStreamDeck(this IHostBuilder builder, Action<IPluginBuilder> configurePlugin = default)
+        public static IHostBuilder UseStreamDeck(this IHostBuilder builder, Action<PluginContext> configurePlugin = default)
             => builder.ConfigureServices((_, services) => services.AddStreamDeck(configurePlugin));
     }
 }

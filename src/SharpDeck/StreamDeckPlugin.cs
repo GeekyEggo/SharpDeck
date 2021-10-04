@@ -1,10 +1,11 @@
-﻿namespace SharpDeck
+namespace SharpDeck
 {
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using SharpDeck.Extensions.DependencyInjection;
 
     /// <summary>
     /// Provides static methods for starting the Stream Deck plugin.

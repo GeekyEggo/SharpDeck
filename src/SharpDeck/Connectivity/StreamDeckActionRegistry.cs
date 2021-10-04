@@ -6,9 +6,9 @@ namespace SharpDeck.Connectivity
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using SharpDeck.DependencyInjection;
     using SharpDeck.Events.Received;
     using SharpDeck.Extensions;
     using SharpDeck.Interactivity;
@@ -27,17 +27,17 @@ namespace SharpDeck.Connectivity
         /// Initializes a new instance of the <see cref="StreamDeckActionRegistry" /> class.
         /// </summary>
         /// <param name="connection">The connection with the Stream Deck responsible for sending and receiving events and messages.</param>
-        /// <param name="activator">The activator responsible for creating <see cref="StreamDeckAction" />.</param>
         /// <param name="dynamicProfileFactory">The dynamic profile factory.</param>
+        /// <param name="serviceProvider">The service provider responsible for creating <see cref="StreamDeckAction" />.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public StreamDeckActionRegistry(IStreamDeckConnection connection, IActivator activator, IDynamicProfileFactory dynamicProfileFactory, ILoggerFactory loggerFactory = null)
+        public StreamDeckActionRegistry(IStreamDeckConnection connection, IDynamicProfileFactory dynamicProfileFactory, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null)
         {
-            this.Activator = activator;
             this.Cache = new StreamDeckActionCacheCollection(connection);
             this.Connection = connection;
             this.DynamicProfileFactory = dynamicProfileFactory;
             this.Logger = loggerFactory?.CreateLogger<StreamDeckActionRegistry>();
             this.LoggerFactory = loggerFactory;
+            this.ServiceProvider = serviceProvider;
 
             // responsible for caching
             connection.WillAppear += this.Action_WillAppear;
@@ -52,11 +52,6 @@ namespace SharpDeck.Connectivity
             connection.TitleParametersDidChange         += (_, e) => this.InvokeOnAction(e, a => a.OnTitleParametersDidChange);
             connection.WillDisappear                    += (_, e) => this.InvokeOnAction(e, a => a.OnWillDisappear);
         }
-
-        /// <summary>
-        /// Gets the activator responsible for creating <see cref="StreamDeckAction" />
-        /// </summary>
-        private IActivator Activator { get; }
 
         /// <summary>
         /// Gets the actions that have been initialized, and can be invoked when a specific event is received from an Elgato Stream Deck.
@@ -92,6 +87,11 @@ namespace SharpDeck.Connectivity
         /// Gets the registered actions, used to initialize new instances of actions.
         /// </summary>
         private IDictionary<string, Type> RegisteredActions { get; } = new ConcurrentDictionary<string, Type>();
+
+        /// <summary>
+        /// Gets service provider responsible for creating <see cref="StreamDeckAction" />.
+        /// </summary>
+        private IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Registers the specified <typeparamref name="T"/> action, with the given <paramref name="actionUUID"/>.
@@ -174,7 +174,7 @@ namespace SharpDeck.Connectivity
 
                 if (!this.Cache.TryGet(args, out var action, args.Payload))
                 {
-                    action = (StreamDeckAction)this.Activator.CreateInstance(actionType);
+                    action = (StreamDeckAction)ActivatorUtilities.CreateInstance(this.ServiceProvider, actionType);
                     action.Logger = this.LoggerFactory?.CreateLogger(actionType);
 
                     await this.Cache.AddAsync(args, action);
