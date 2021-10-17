@@ -23,7 +23,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected override Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
+        protected internal override Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
             => this.OnDidReceiveSettings(args, args.Payload.GetSettings<TSettings>());
 
         /// <summary>

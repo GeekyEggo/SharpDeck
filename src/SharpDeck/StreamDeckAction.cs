@@ -40,7 +40,7 @@ namespace SharpDeck
         /// <summary>
         /// Gets the logger.
         /// </summary>
-        internal protected ILogger Logger { get; internal set; }
+        protected internal ILogger Logger { get; internal set; }
 
         /// <summary>
         /// Gets or sets the interval before a long press is invoked; occurs after <see cref="OnKeyDown(ActionEventArgs{KeyPayload})"/>. Setting this to <see cref="TimeSpan.Zero"/> will disable long-press interaction.
@@ -152,7 +152,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
+        protected internal virtual Task OnDidReceiveSettings(ActionEventArgs<ActionPayload> args)
         {
             this.DidReceiveSettings?.Invoke(this, args);
             return Task.CompletedTask;
@@ -163,7 +163,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnKeyDown(ActionEventArgs<KeyPayload> args)
+        protected internal virtual Task OnKeyDown(ActionEventArgs<KeyPayload> args)
         {
             this.KeyPressStack.Push(args);
             if (this.LongKeyPressInterval > TimeSpan.Zero)
@@ -183,7 +183,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnKeyUp(ActionEventArgs<KeyPayload> args)
+        protected internal virtual Task OnKeyUp(ActionEventArgs<KeyPayload> args)
         {
             this.TryHandleKeyPress(this.OnKeyPress);
             return Task.CompletedTask;
@@ -194,7 +194,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnPropertyInspectorDidAppear(ActionEventArgs args)
+        protected internal virtual Task OnPropertyInspectorDidAppear(ActionEventArgs args)
             => Task.CompletedTask;
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnPropertyInspectorDidDisappear(ActionEventArgs args)
+        protected internal virtual Task OnPropertyInspectorDidDisappear(ActionEventArgs args)
             => Task.CompletedTask;
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{JObject}"/> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual async Task OnSendToPlugin(ActionEventArgs<JObject> args)
+        protected internal virtual async Task OnSendToPlugin(ActionEventArgs<JObject> args)
         {
             try
             {
@@ -229,7 +229,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{TitlePayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
+        protected internal virtual Task OnTitleParametersDidChange(ActionEventArgs<TitlePayload> args)
             => Task.CompletedTask;
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
+        protected internal virtual Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
             => Task.CompletedTask;
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace SharpDeck
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
-        internal protected virtual Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
+        protected internal virtual Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
         {
             this.TryHandleKeyPress(this.OnKeyPress);
             return Task.CompletedTask;

@@ -26,7 +26,7 @@ namespace SharpDeck.Interactivity
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckButton"/> class.
         /// </summary>
-        protected private StreamDeckButton()
+        private protected StreamDeckButton()
         {
         }
 
@@ -38,7 +38,7 @@ namespace SharpDeck.Interactivity
         /// <summary>
         /// Gets the connection with the Stream Deck; this is responsible for sending and receiving events and messages.
         /// </summary>
-        public IStreamDeckConnection StreamDeck { get; protected private set; }
+        public IStreamDeckConnection StreamDeck { get; private protected set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is disposed.
