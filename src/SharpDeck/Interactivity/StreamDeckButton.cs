@@ -19,8 +19,8 @@ namespace SharpDeck.Interactivity
         internal StreamDeckButton(IStreamDeckConnection connection, string context)
             : this()
         {
-            this.Connection = connection;
             this.Context = context;
+            this.StreamDeck = connection;
         }
 
         /// <summary>
@@ -31,14 +31,14 @@ namespace SharpDeck.Interactivity
         }
 
         /// <summary>
-        /// Gets the connection with the Stream Deck responsible for sending and receiving events and messages.
-        /// </summary>
-        public IStreamDeckConnection Connection { get; protected private set; }
-
-        /// <summary>
         /// Gets an opaque value identifying the instance of the action. You will need to pass this opaque value to several APIs like the `setTitle` API.
         /// </summary>
         public string Context { get; internal set; }
+
+        /// <summary>
+        /// Gets the connection with the Stream Deck; this is responsible for sending and receiving events and messages.
+        /// </summary>
+        public IStreamDeckConnection StreamDeck { get; protected private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is disposed.
@@ -65,7 +65,7 @@ namespace SharpDeck.Interactivity
         public Task SetImageAsync(string image = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SetImageAsync(this.Context, image, target, state, cancellationToken);
+            return this.StreamDeck.SetImageAsync(this.Context, image, target, state, cancellationToken);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace SharpDeck.Interactivity
         public Task SetStateAsync(int state = 0, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SetStateAsync(this.Context, state, cancellationToken);
+            return this.StreamDeck.SetStateAsync(this.Context, state, cancellationToken);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SharpDeck.Interactivity
         public Task SetTitleAsync(string title = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SetTitleAsync(this.Context, title, target, state, cancellationToken);
+            return this.StreamDeck.SetTitleAsync(this.Context, title, target, state, cancellationToken);
         }
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
@@ -101,7 +101,7 @@ namespace SharpDeck.Interactivity
         public Task ShowAlertAsync(CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.ShowAlertAsync(this.Context, cancellationToken);
+            return this.StreamDeck.ShowAlertAsync(this.Context, cancellationToken);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace SharpDeck.Interactivity
         public Task ShowOkAsync(CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.ShowOkAsync(this.Context, cancellationToken);
+            return this.StreamDeck.ShowOkAsync(this.Context, cancellationToken);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace SharpDeck.Interactivity
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            this.Connection = null;
+            this.StreamDeck = null;
             this.IsDisposed = true;
         }
 

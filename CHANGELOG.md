@@ -2,17 +2,16 @@
 
 ## 6.0.0
 
-#### 🚨 Breaking
+### 🚨 Breaking
 
 * Majority of `StreamDeckPlugin` deprecated in favour of [host builders](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host).
   * Provides basic run functionality; `Run()` or `Run(CancellationToken)`.
 * `StreamDeckAction`.
-  * Renamed property `StreamDeck` to `Connection`.
   * Removed property `EnablePropertyInspectorMethods`; always considered `true`.
 * Removed `InvalidStreamDeckActionTypeException` in favour of `NotSupportedException`.
 * Moved `IStreamDeckConnection` to `SharpDeck.Connectivity` namespace.
 
-#### ⭐ Added
+### ⭐ Added
 
 * Added support for host builders via `UseStreamDeck(Action<PluginContext> configurePlugin)`.
   * Namespace `SharpDeck.Extensions.Hosting`.
@@ -47,13 +46,13 @@
 * Added logging support to all property inspector method invocations.
 * Added Stream Deck alert for actions when an exception is thrown whilst invoking a property inspector method.
 
-#### ♻ Changed
+### ♻ Changed
 
 * Removed manifest generation.
 * Removed `McMaster.Extensions.CommandLineUtils` dependency.
 * Updated third-party library dependencies.
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * `profile` is now optional when calling `IStreamDeckConnection.SwitchToProfileAsync`.
 * Fixed missing payload information for `deviceDidConnect`.
@@ -61,7 +60,7 @@
 
 ## 5.0.2
 
-#### ⭐ Added
+### ⭐ Added
 
 * New `IStreamDeckConnection.GetGlobalSettingsAsync<T>()` now returns the global settings!
 * New `StreamDeckPlugin.OnRegistered(Func<IStreamDeckConnection>)` delegate; called after the plugin is registered.
@@ -76,18 +75,18 @@
 
 ## 5.0.1
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * Fixed an issue with `StreamDeckClient.Run()` not blocking the main thread.
 
 ## 5.0.0
 
-#### 🚨 Breaking
+### 🚨 Breaking
 
 * Removed `StreamDeckClient`; replaced with `IStreamDeckConnection`.
 * Updated `StreamDeckAction.StreamDeck` to be `IStreamDeckConnection`.
 
-#### ⭐ Added
+### ⭐ Added
 
 * Greatly simplfied starting a plugin.
   * `StreamDeckPlugin.Run()`
@@ -96,30 +95,30 @@
 * Added GitHub workflows.
 * Added `StreamDeckAction.OnInit` virtual.
 
-#### ♻ Changed
+### ♻ Changed
 
 * Actions with `StreamDeckAttribute` are automatically registered.
 * Complete re-write of action caching.
 * Complete re-write of event routing.
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * Fixed an issue with incorrect actions being invoked.
 
 ## 4.0.1/2
 
-#### ♻ Changed
+### ♻ Changed
 
 * Updated deployment to NuGet.
 
 ## 4.0.0
 
-#### 🚨 Breaking
+### 🚨 Breaking
 
 * Removed `StreamDeckAction.Initialized` event, please use `StreamDeckAction.WillAppear`
 * Removed `StreamDeckAction<TSettings>.Settings` to prevent misuse.
 
-#### ⭐ Added
+### ⭐ Added
 
 * Added automatic manifest generation!
 * Added support for initializing actions with their `AppearancePayload`.
@@ -127,18 +126,18 @@
 * Added support for `FontFamilyType` and `FontStyleType`.
 * Improved deadlock prevention for all WebSocket requests.
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * Fixed `DeviceType`, `PlatformType`, and `TitleAlignmentType`.
 
 ## 3.0.0
 
-#### 🚨 Breaking
+### 🚨 Breaking
 
 * Relocated to `SharpDeck.Events.StreamDeckAction` to top level `SharpDeck.StreamDeckAction`.
 * Re-aligned namespaces of events (received) / messages (sent) to match Elgato SDK terminology.
 
-#### ⭐ Added
+### ⭐ Added
 
 * Support for SDK 4.1
   * [didReceiveGlobalSettings](https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#didreceiveglobalsettings)
@@ -156,44 +155,44 @@
 * `RequestId` to property inspector methods, allowing for responses to be identified more easily (e.g. with promises).
 * `StreamDeckXL` and `StreamDeckMobile` to `DeviceType`.
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * Fixed JSON serialization casing inconsistencies when using JObject (specifically action settings).
 * Fixed `openUrl` event.
 
 ## 2.0.0
 
-#### ⭐ Added
+### ⭐ Added
 
 * `PropertyInspectorMethodAttribute` decorator for interacting with Property Inspector.
 * Added unit testing, including AppVeyor integration.
 
-#### ♻ Changed
+### ♻ Changed
 
 * Updated `StreamDeckAction` overrides to require a task.
 * Streamlined publishing to NuGet with npm package scripts.
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * Fixed potential async/await issue within `StreamDeckClient`.
 
 ## 1.0.3
 
-#### ♻ Changed
+### ♻ Changed
 
 * Removed unnecessary parameters when calling `SendToPropertyInspectorAsync`.
 
-#### 🐞 Fixed
+### 🐞 Fixed
 
 * Fixed an issue with `sendToPlugin` event not triggering.
 
 ## 1.0.2
 
-#### ⭐ Added
+### ⭐ Added
 
 * Added missing event: `sendToPlugin`.
 
-#### ♻ Changded
+### ♻ Changded
 
 * `StreamDeckClient.RegisterAction` now supports a value factory.
 * Centralised all event related models to the `SharpDeck.Events` namespace.
@@ -201,7 +200,7 @@
 
 ## 1.0.1
 
-#### ⭐ Added
+### ⭐ Added
 
 * `StreamDeckClient`, allowing for connections to an Elgato Stream Deck.
 * Event listeners ([ref: "Events Received"](https://developer.elgato.com/documentation/stream-deck/sdk/events-received/)).

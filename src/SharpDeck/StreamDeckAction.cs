@@ -100,7 +100,7 @@ namespace SharpDeck
 
             // Listen for receiving events, and trigger a request.
             this.DidReceiveSettings += handler;
-            this.Connection.GetSettingsAsync(this.Context);
+            this.StreamDeck.GetSettingsAsync(this.Context);
 
             return taskSource.Task;
         }
@@ -114,7 +114,7 @@ namespace SharpDeck
         public Task SendToPropertyInspectorAsync(object payload, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload, cancellationToken);
+            return this.StreamDeck.SendToPropertyInspectorAsync(this.Context, this.ActionUUID, payload, cancellationToken);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SharpDeck
         public Task SetSettingsAsync(object settings, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
-            return this.Connection.SetSettingsAsync(this.Context, settings, cancellationToken);
+            return this.StreamDeck.SetSettingsAsync(this.Context, settings, cancellationToken);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace SharpDeck
             this.ActionUUID = args.Action;
             this.Context = args.Context;
             this.Device = args.Device;
-            this.Connection = connection;
+            this.StreamDeck = connection;
 
             this.DynamicProfileFactory = dynamicProfileFactory;
             this.OnInit(args);
@@ -258,7 +258,7 @@ namespace SharpDeck
         protected override void Dispose(bool disposing)
         {
             this.KeyPressStack.Clear();
-            this.Connection = null;
+            this.StreamDeck = null;
 
             this.IsDisposed = true;
         }
