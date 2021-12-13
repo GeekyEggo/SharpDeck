@@ -20,28 +20,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: '📥 Checkout'
       uses: actions/checkout@v1
 
-    - name: Setup .NET
+    - name: '📐 Setup .NET'
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
 
-    - name: Build
+    - name: '🛠️ Build'
       run: dotnet build ./src/SharpDeck/ -c Release
 
-    - name: Test
+    - name: '🚧 Test'
       run: dotnet test ./src/SharpDeck.Tests/ -c Release --no-build
 
-    - name: Version
+    - name: '📝 Version'
       id: branch_name
       run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/v}
 
-    - name: Pack
+    - name: '📦 Pack'
       run: dotnet pack ./src/SharpDeck/ -c Release -p:Version=${{ steps.branch_name.outputs.TAG }} -p:ContinuousIntegrationBuild=true
 
-    - name: Push to NuGet
+    - name: '📫 Push to NuGet'
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: dotnet nuget push **/dist/*.nupkg -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --no-symbols true --skip-duplicate

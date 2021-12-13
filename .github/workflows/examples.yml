@@ -22,22 +22,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout
+    - name: '📥 Checkout'
       uses: actions/checkout@v1
 
-    - name: Setup .NET
+    - name: '📐 Setup .NET'
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
 
-    - name: 'Build Counter (.NET Framework 4.8)'
+    - name: '🛠️ Build Counter (.NET Framework 4.8)'
       run: dotnet build ./examples/Counter/net48/ --configuration Release
 
-    - name: 'Build Counter (.NET 5.0)'
+    - name: '🛠️ Build Counter (.NET 5.0)'
       run: dotnet build ./examples/Counter/net50/ --configuration Release
 
-    - name: Build Dynamic Profiles
+    - name: '🛠️ Build Dynamic Profiles'
       run: dotnet build ./examples/DynamicProfiles/ --configuration Release
 
-    - name: Build Shared Counter
+    - name: '🛠️ Build Shared Counter'
       run: dotnet build ./examples/SharedCounter/ --configuration Release
