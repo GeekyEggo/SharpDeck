@@ -25,7 +25,7 @@ jobs:
     - name: '📥 Checkout'
       uses: actions/checkout@v1
 
-    - name: '📐 Setup .NET'
+    - name: '📐 Setup dotnet'
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
