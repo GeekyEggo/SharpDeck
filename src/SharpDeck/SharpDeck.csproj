@@ -1,20 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Richard Herman</Authors>
     <PackageOutputPath>$(TargetDir)..\..\dist</PackageOutputPath>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Title>SharpDeck</Title>
+    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Authors>Richard Herman</Authors>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryType>Git</RepositoryType>
-    <Copyright>Copyright (c) 2021 Richard Herman</Copyright>
+    <RepositoryUrl>https://github.com/GeekyEggo/SharpDeck</RepositoryUrl>
     <Description>A lightweight .NET wrapper for the official Elgato Stream Deck SDK, designed to assist with creating plugins that can be distributed on the Stream Deck store.</Description>
-    <PackageTags>Elgato Stream Deck ESDSDK</PackageTags>
-    <Version>6.0.0</Version>
-    <AssemblyVersion>6.0.0.0</AssemblyVersion>
-    <FileVersion>6.0.0.0</FileVersion>
+    <PackageTags>Elgato,Stream-Deck,Streaming,SDK</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,6 +32,10 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
@@ -42,13 +45,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ImagesManifest.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="Resources\ImagesManifest.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ImagesManifest.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" Visible="false" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 
 </Project>
