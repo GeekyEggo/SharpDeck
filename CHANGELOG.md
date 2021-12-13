@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.0.1
+
+### ♻ Changed
+
+* Updated third-party library dependencies.
+
 ## 6.0.0
 
 ### 🚨 Breaking
