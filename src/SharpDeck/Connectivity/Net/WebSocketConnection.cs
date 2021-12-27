@@ -157,11 +157,11 @@ namespace SharpDeck.Connectivity.Net
         }
 
         /// <summary>
-        /// Waits the underlying connection to disconnect asynchronously.
+        /// Waits for the underlying connection to disconnect asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task of the live connection.</returns>
-        public Task WaitDisconnectAsync(CancellationToken cancellationToken)
+        public Task WaitForDisconnectAsync(CancellationToken cancellationToken)
         {
             cancellationToken.Register(() => this.ConnectionTaskCompletionSource.TrySetCanceled(), useSynchronizationContext: false);
             return this.ConnectionTaskCompletionSource.Task;

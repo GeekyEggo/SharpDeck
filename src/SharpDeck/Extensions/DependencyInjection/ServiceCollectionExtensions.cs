@@ -46,7 +46,6 @@ namespace SharpDeck.Extensions.DependencyInjection
                     return actionRegistry;
                 })
                 .AddSingleton<IHostedService>(provider => provider.GetRequiredService<StreamDeckWebSocketConnection>());
-
         }
     }
 }

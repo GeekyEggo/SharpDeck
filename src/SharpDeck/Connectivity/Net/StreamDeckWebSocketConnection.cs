@@ -157,14 +157,20 @@ namespace SharpDeck.Connectivity.Net
 
             await this.WebSocket.SendJsonAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), cancellationToken);
             this.Registered?.Invoke(this, EventArgs.Empty);
-
             this.Logger?.LogTrace($"Plugin registrered.");
-            await this.WebSocket.WaitDisconnectAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken = default)
             => this.WebSocket.DisconnectAsync();
+
+        /// <summary>
+        /// Waits for the underlying connection to disconnect asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The task of waiting for the connection to disconnect.</returns>
+        public Task WaitForDisconnectAsync(CancellationToken cancellationToken = default)
+            => this.WebSocket.WaitForDisconnectAsync(cancellationToken);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
