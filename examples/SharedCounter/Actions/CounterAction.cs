@@ -4,47 +4,46 @@ namespace SharedCounter.Actions
     using System.Threading.Tasks;
     using SharpDeck;
     using SharpDeck.Events.Received;
-    using SharpDeck.Manifest;
 
     /// <summary>
     /// The shared counter action; displays the count, and increments the count each press.
     /// </summary>
-    [StreamDeckAction("Counter", "com.geekyeggo.sharedcounter.counter")]
+    [StreamDeckAction("com.geekyeggo.sharedcounter.counter")]
     public class CounterAction : StreamDeckAction
     {
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.WillAppear" /> is received for this instance.
+        /// Initializes a new instance of the <see cref="CounterAction"/> class.
         /// </summary>
-        /// <param name="args">The <see cref="ActionEventArgs{T}" /> instance containing the event data.</param>
-        /// <returns>The task of handling the event.</returns>
-        protected override Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
-        {
-            Count.Instance.CountChanged += this.Count_CountChanged;
-            this.SetTitleAsync(Count.Instance.Value.ToString());
-
-            return base.OnWillAppear(args);
-        }
+        /// <param name="counter">The counter.</param>
+        public CounterAction(Counter counter)
+            => this.Counter = counter;
 
         /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.WillDisappear" /> is received for this instance.
+        /// Gets the counter.
         /// </summary>
-        /// <param name="args">The <see cref="ActionEventArgs{T}" /> instance containing the event data.</param>
-        /// <returns>The task of handling the event.</returns>
-        protected override Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
+        private Counter Counter { get; }
+
+        /// <inheritdoc/>
+        protected override async Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
         {
-            Count.Instance.CountChanged -= this.Count_CountChanged;
-            return base.OnWillDisappear(args);
+            await base.OnWillAppear(args);
+
+            this.Counter.Changed += this.Count_CountChanged;
+            await this.SetTitleAsync((await this.Counter.GetValueAsync()).ToString());
         }
 
-        /// <summary>
-        /// Occurs when <see cref="IStreamDeckConnection.KeyDown" /> is received for this instance.
-        /// </summary>
-        /// <param name="args">The <see cref="ActionEventArgs{T}" /> instance containing the event data.</param>
-        /// <returns>The task of handling the event.</returns>
-        protected override Task OnKeyDown(ActionEventArgs<KeyPayload> args)
+        /// <inheritdoc/>
+        protected override async Task OnWillDisappear(ActionEventArgs<AppearancePayload> args)
         {
-            Count.Instance.Increment();
-            return base.OnKeyDown(args);
+            await base.OnWillDisappear(args);
+            this.Counter.Changed -= this.Count_CountChanged;
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnKeyDown(ActionEventArgs<KeyPayload> args)
+        {
+            await this.Counter.IncrementAsync();
+            await base.OnKeyDown(args);
         }
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace SharedCounter.Actions
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Count_CountChanged(object sender, EventArgs e)
-            => this.SetTitleAsync(Count.Instance.Value.ToString());
+        private void Count_CountChanged(object sender, int e)
+            => this.SetTitleAsync(e.ToString());
     }
 }

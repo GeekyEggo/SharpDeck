@@ -3,12 +3,11 @@ namespace Counter_net48.Actions
     using System.Threading.Tasks;
     using SharpDeck;
     using SharpDeck.Events.Received;
-    using SharpDeck.Manifest;
 
     /// <summary>
     /// The counter action; displays the count which is increment on each press.
     /// </summary>
-    [StreamDeckAction("Counter", "com.geekyeggo.counternet48.counter")]
+    [StreamDeckAction("com.geekyeggo.counternet48.counter")]
     public class CounterAction : StreamDeckAction<CounterSettings>
     {
         /// <summary>

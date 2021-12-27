@@ -1,7 +1,8 @@
 namespace SharedCounter
 {
-    using System.Threading.Tasks;
-    using SharpDeck;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using SharpDeck.Extensions.Hosting;
 
     /// <summary>
     /// The plugin.
@@ -17,23 +18,15 @@ namespace SharedCounter
 #if DEBUG
             System.Diagnostics.Debugger.Launch();
 #endif
-
-            StreamDeckPlugin.Create()
-                .OnRegistered(conn => _ = SetInitialCountAsync(conn))
-                .Run();
-        }
-
-        /// <summary>
-        /// Sets the initial count.
-        /// </summary>
-        /// <param name="conn">The Stream Deck connection.</param>
-        private static Task SetInitialCountAsync(IStreamDeckConnection conn)
-        {
-            return Task.Run(async () =>
-            {
-                var settings = await conn.GetGlobalSettingsAsync<GlobalSettings>();
-                Count.Instance.Set(settings.Count);
-            });
+            new HostBuilder()
+                .UseStreamDeck()
+                .ConfigureServices(services =>
+                {
+                    services
+                        .AddSingleton<Counter>()
+                        .AddSingleton<IHostedService>(provider => provider.GetRequiredService<Counter>());
+                })
+                .Start();
         }
     }
 }

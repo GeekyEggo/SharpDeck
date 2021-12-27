@@ -6,7 +6,7 @@
   "Actions": [
     {
       "Name": "Counter",
-      "UUID": "com.geekyeggo.counternet50.counter",
+      "UUID": "com.geekyeggo.counternet60.counter",
       "Icon": "Images/Counter/Icon",
       "Tooltip": "A counter action",
       "States": [
@@ -18,9 +18,9 @@
       ]
     }
   ],
-  "Category": "Counter (.NET 5.0)",
+  "Category": "Counter (.NET 6.0)",
   "CategoryIcon": "Images/Plugin/CategoryIcon",
-  "CodePath": "Counter_net50.exe",
+  "CodePath": "Counter_net60.exe",
   "Description": "A counter plugin example",
   "Icon": "Images/Plugin/Icon",
   "SDKVersion": 2,
