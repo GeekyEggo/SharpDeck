@@ -1,4 +1,4 @@
-﻿namespace SharpDeck.PropertyInspectors
+namespace SharpDeck.PropertyInspectors
 {
     using System;
     using System.Collections.Generic;
@@ -54,33 +54,22 @@
             var task = piMethodInfo.InvokeAsync(action, args);
             await task;
 
-            // When the method has a result, send it to the property inspector.
-            if (piMethodInfo.HasResult)
+            // When the method was sent with a request identifier, we can attempt a response.
+            if (args.Payload.TryGetString(nameof(PropertyInspectorPayload.RequestId), out var requestId))
             {
-                args.Payload.TryGetString(nameof(PropertyInspectorPayload.RequestId), out var requestId);
-                var result = this.TryGetResultWithContext(task.Result, piMethodInfo, requestId);
-                await action.SendToPropertyInspectorAsync(result);
-            }
-        }
+                var payload = new PropertyInspectorPayload
+                {
+                    Event = piMethodInfo.SendToPropertyInspectorEvent,
+                    RequestId = requestId
+                };
 
-        /// <summary>
-        /// Determines whether the specified result, as an object, inherits from <see cref="PropertyInspectorPayload"/> so that the event name can be set.
-        /// </summary>
-        /// <param name="result">The result.</param>
-        /// <param name="methodInfo">The property inspector method information.</param>
-        /// <param name="requestId">The request identifier from the original request.</param>
-        /// <returns>The result to be sent to the property inspector.</returns>
-        private object TryGetResultWithContext(object result, PropertyInspectorMethodInfo methodInfo, string requestId)
-        {
-            // Attempt to update the event name when the result is a payload.
-            if (result is PropertyInspectorPayload payload)
-            {
-                payload.Event = methodInfo.SendToPropertyInspectorEvent;
-                payload.RequestId = requestId;
-                return payload;
-            }
+                if (piMethodInfo.HasResult)
+                {
+                    payload.Data = task.Result;
+                }
 
-            return result;
+                await action.SendToPropertyInspectorAsync(payload);
+            }
         }
     }
 }

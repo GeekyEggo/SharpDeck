@@ -1,5 +1,6 @@
 namespace SharpDeck.PropertyInspectors
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace SharpDeck.PropertyInspectors
             this.SendToPropertyInspectorEvent = attr.SendToPropertyInspectorEvent.OrDefault(this.SendToPluginEvent);
 
             this.MethodInfo = methodInfo;
-            this.ParameterInfo = methodInfo.GetParameters().FirstOrDefault();
+            this.Parameters = methodInfo.GetParameters();
             this.HasResult = methodInfo.ReturnType != typeof(void) && methodInfo.ReturnType != typeof(Task);
 
             this.InternalInvokeAsync = this.GetInternalInvokeAsync();
@@ -66,7 +67,7 @@ namespace SharpDeck.PropertyInspectors
         /// <summary>
         /// Gets the information for the parameter that should be supplied to the method information.
         /// </summary>
-        private ParameterInfo ParameterInfo { get; }
+        private ParameterInfo[] Parameters { get; }
 
         /// <summary>
         /// Invokes the method asynchronously.
@@ -76,9 +77,37 @@ namespace SharpDeck.PropertyInspectors
         /// <returns>The result of invoking the <see cref="MethodInfo"/>.</returns>
         public Task<object> InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
         {
-            return this.ParameterInfo == null
+            return this.Parameters == null
                 ? this.InternalInvokeAsync(action, null)
-                : this.InternalInvokeAsync(action, new[] { args.Payload.ToObject(this.ParameterInfo.ParameterType) });
+                : this.InternalInvokeAsync(action, this.GetParameterValues(args.Payload));
+        }
+
+        /// <summary>
+        /// Gets the parameter values from the specified <paramref name="payload"/>.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <returns>The parsed parameter values.</returns>
+        private object[] GetParameterValues(JObject payload)
+        {
+            if (payload.TryGetValue("data", out var token)
+                && token is JObject values)
+            {
+                return this.Parameters.Select(parameter =>
+                {
+                    try
+                    {
+                        return values.TryGetValue(parameter.Name, StringComparison.OrdinalIgnoreCase, out var value)
+                            ? value.ToObject(parameter.ParameterType)
+                            : parameter.GetDefaultValue();
+                    }
+                    catch
+                    {
+                        return parameter.GetDefaultValue();
+                    }
+                }).ToArray();
+            }
+
+            return this.Parameters.Select(p => p.GetDefaultValue()).ToArray();
         }
 
         /// <summary>
