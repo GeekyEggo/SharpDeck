@@ -18,6 +18,18 @@ namespace SharpDeck.Connectivity.Net
     internal sealed class StreamDeckWebSocketConnection : IStreamDeckConnection
     {
         /// <summary>
+        /// Gets the default JSON settings.
+        /// </summary>
+        internal static readonly JsonSerializerSettings DefaultJsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            },
+            Formatting = Formatting.None
+        };
+
+        /// <summary>
         /// Occurs when the plugin registers itself.
         /// </summary>
         public event EventHandler Registered;
@@ -118,18 +130,6 @@ namespace SharpDeck.Connectivity.Net
         public RegistrationInfo Info => this.RegistrationParameters.Info;
 
         /// <summary>
-        /// Gets the default JSON settings.
-        /// </summary>
-        private JsonSerializerSettings JsonSettings { get; } = new JsonSerializerSettings
-        {
-            ContractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            },
-            Formatting = Formatting.None
-        };
-
-        /// <summary>
         /// Gets or sets the registration parameters.
         /// </summary>
         private RegistrationParameters RegistrationParameters { get; set; }
@@ -152,7 +152,7 @@ namespace SharpDeck.Connectivity.Net
         public async Task ConnectAsync(CancellationToken cancellationToken)
         {
             this.Logger?.LogTrace("Connecting to Stream Deck.");
-            this.WebSocket = new WebSocketConnection($"ws://localhost:{this.RegistrationParameters.Port}/", this.JsonSettings);
+            this.WebSocket = new WebSocketConnection($"ws://localhost:{this.RegistrationParameters.Port}/", StreamDeckWebSocketConnection.DefaultJsonSettings);
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
 
             await this.WebSocket.ConnectAsync();
@@ -268,7 +268,10 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the global settings.</returns>
         public Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, JObject.FromObject(settings, JsonSerializer.Create(this.JsonSettings))), cancellationToken);
+        {
+            settings = settings is JObject ? settings : JObject.FromObject(settings, JsonSerializer.Create(StreamDeckWebSocketConnection.DefaultJsonSettings));
+            return this.SendAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, settings), cancellationToken);
+        }
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
@@ -290,7 +293,7 @@ namespace SharpDeck.Connectivity.Net
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the settings.</returns>
         public Task SetSettingsAsync(string context, object settings, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings, JsonSerializer.Create(this.JsonSettings))), cancellationToken);
+            => this.SendAsync(new ContextMessage<object>("setSettings", context, JObject.FromObject(settings, JsonSerializer.Create(StreamDeckWebSocketConnection.DefaultJsonSettings))), cancellationToken);
 
         /// <summary>
         /// Change the state of the actions instance supporting multiple states.

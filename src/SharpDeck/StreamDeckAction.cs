@@ -6,8 +6,10 @@ namespace SharpDeck
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using SharpDeck.Connectivity;
+    using SharpDeck.Connectivity.Net;
     using SharpDeck.Events.Received;
     using SharpDeck.Interactivity;
     using SharpDeck.PropertyInspectors;
@@ -126,6 +128,10 @@ namespace SharpDeck
         public Task SetSettingsAsync(object settings, CancellationToken cancellationToken = default)
         {
             this.ThrowIfDisposed();
+
+            settings = JObject.FromObject(settings, JsonSerializer.Create(StreamDeckWebSocketConnection.DefaultJsonSettings));
+            ((JObject)settings)[StreamDeckActionCacheCollection.SHARP_DECK_UUID_KEY] = this.SharpDeckUUID;
+
             return this.StreamDeck.SetSettingsAsync(this.Context, settings, cancellationToken);
         }
 

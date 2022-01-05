@@ -16,7 +16,7 @@ namespace SharpDeck.Connectivity
         /// <summary>
         /// The key used to assigned a SharpDeck UUID to <see cref="SettingsPayload.Settings"/>.
         /// </summary>
-        private const string SHARP_DECK_UUID_KEY = "__sharpDeckUUID";
+        public const string SHARP_DECK_UUID_KEY = "__sharpDeckUUID";
 
         /// <summary>
         /// The synchronization root.
