@@ -26,7 +26,7 @@ namespace SharpDeck.PropertyInspectors
                 if (attr != null)
                 {
                     var piMethodInfo = new PropertyInspectorMethodInfo(methodInfo, attr);
-                    this.Methods.Add(piMethodInfo.SendToPluginEvent, piMethodInfo);
+                    this.Methods.Add(piMethodInfo.EventName, piMethodInfo);
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace SharpDeck.PropertyInspectors
             {
                 var payload = new PropertyInspectorPayload
                 {
-                    Event = piMethodInfo.SendToPropertyInspectorEvent,
+                    Event = piMethodInfo.EventName,
                     RequestId = requestId
                 };
 

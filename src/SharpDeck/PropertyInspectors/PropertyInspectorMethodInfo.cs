@@ -26,11 +26,10 @@ namespace SharpDeck.PropertyInspectors
         /// Initializes a new instance of the <see cref="PropertyInspectorMethodInfo"/> class.
         /// </summary>
         /// <param name="methodInfo">The method information.</param>
-        /// <param name="attr">The attribute used to decorated the method.</param>
+        /// <param name="attr">The attribute used to decorate the method.</param>
         public PropertyInspectorMethodInfo(MethodInfo methodInfo, PropertyInspectorMethodAttribute attr)
         {
-            this.SendToPluginEvent = attr.SendToPluginEvent.OrDefault(methodInfo.Name);
-            this.SendToPropertyInspectorEvent = attr.SendToPropertyInspectorEvent.OrDefault(this.SendToPluginEvent);
+            this.EventName = attr.EventName.OrDefault(methodInfo.Name);
 
             this.MethodInfo = methodInfo;
             this.Parameters = methodInfo.GetParameters();
@@ -40,19 +39,14 @@ namespace SharpDeck.PropertyInspectors
         }
 
         /// <summary>
+        /// Gets the name of the event used to identify the method within the Stream Deck action; this is returned to the Stream Deck property inspector following method invocation.
+        /// </summary>
+        public string EventName { get; }
+
+        /// <summary>
         /// Gets a value indicating whether <see cref="MethodInfo"/> has a result.
         /// </summary>
         public bool HasResult { get; private set; }
-
-        /// <summary>
-        /// Gets the `sendToPlugin` event name.
-        /// </summary>
-        public string SendToPluginEvent { get; }
-
-        /// <summary>
-        /// Gets the `sendToPropertyInspector` event name.
-        /// </summary>
-        public string SendToPropertyInspectorEvent { get; }
 
         /// <summary>
         /// Gets or sets the internal invoker used to asynchronously invoke <see cref="MethodInfo" />
@@ -89,7 +83,7 @@ namespace SharpDeck.PropertyInspectors
         /// <returns>The parsed parameter values.</returns>
         private object[] GetParameterValues(JObject payload)
         {
-            if (payload.TryGetValue("data", out var token)
+            if (payload.TryGetValue("parameters", out var token)
                 && token is JObject values)
             {
                 return this.Parameters.Select(parameter =>
