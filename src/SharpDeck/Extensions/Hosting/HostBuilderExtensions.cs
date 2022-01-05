@@ -22,7 +22,7 @@ namespace SharpDeck.Extensions.Hosting
             {
                 services
                     .AddStreamDeck(configurePlugin)
-                    .AddSingleton<IHost, StreamDeckPluginHost>();
+                    .AddSingleton<IHostLifetime, StreamDeckPluginHostLifetime>();
             });
     }
 }

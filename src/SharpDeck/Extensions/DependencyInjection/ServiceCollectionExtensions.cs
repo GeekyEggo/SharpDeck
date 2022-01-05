@@ -29,11 +29,9 @@ namespace SharpDeck.Extensions.DependencyInjection
                 .AddSingleton<IStreamDeckConnection>(provider => provider.GetRequiredService<StreamDeckWebSocketConnection>())
                 .AddSingleton<StreamDeckWebSocketConnection>()
 
-                // Action interactivity.
+                // Actions and interactivity.
                 .AddSingleton<IDynamicProfileFactory, DynamicProfileFactory>()
-
-                // Hosts
-                .AddSingleton<IHostedService>(provider =>
+                .AddSingleton(provider =>
                 {
                     // Construct the default action registry.
                     var actionRegistry = ActivatorUtilities.CreateInstance<StreamDeckActionRegistry>(provider);
@@ -44,8 +42,7 @@ namespace SharpDeck.Extensions.DependencyInjection
                     configurePlugin?.Invoke(context);
 
                     return actionRegistry;
-                })
-                .AddSingleton<IHostedService>(provider => provider.GetRequiredService<StreamDeckWebSocketConnection>());
+                });
         }
     }
 }

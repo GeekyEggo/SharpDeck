@@ -3,7 +3,6 @@ namespace SharpDeck.Connectivity.Net
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -16,7 +15,7 @@ namespace SharpDeck.Connectivity.Net
     /// <summary>
     /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.
     /// </summary>
-    internal sealed class StreamDeckWebSocketConnection : IHostedService, IStreamDeckConnection
+    internal sealed class StreamDeckWebSocketConnection : IStreamDeckConnection
     {
         /// <summary>
         /// Occurs when the plugin registers itself.
@@ -145,8 +144,12 @@ namespace SharpDeck.Connectivity.Net
         /// </summary>
         private WebSocketConnection WebSocket { get; set; }
 
-        /// <inheritdoc/>
-        public async Task StartAsync(CancellationToken cancellationToken)
+        /// <summary>
+        /// Connects to the Stream Deck asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The optioanl cancellation token.</param>
+        /// <returns>The task of connecting to the Stream Deck.</returns>
+        public async Task ConnectAsync(CancellationToken cancellationToken)
         {
             this.Logger?.LogTrace("Connecting to Stream Deck.");
             this.WebSocket = new WebSocketConnection($"ws://localhost:{this.RegistrationParameters.Port}/", this.JsonSettings);
@@ -160,17 +163,12 @@ namespace SharpDeck.Connectivity.Net
             this.Logger?.LogTrace($"Plugin registrered.");
         }
 
-        /// <inheritdoc/>
-        public Task StopAsync(CancellationToken cancellationToken = default)
-            => this.WebSocket.DisconnectAsync();
-
         /// <summary>
-        /// Waits for the underlying connection to disconnect asynchronously.
+        /// Disconnects from the Stream Deck asynchronously.
         /// </summary>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <returns>The task of waiting for the connection to disconnect.</returns>
-        public Task WaitForDisconnectAsync(CancellationToken cancellationToken = default)
-            => this.WebSocket.WaitForDisconnectAsync(cancellationToken);
+        /// <returns>The task of waiting of disconnecting.</returns>
+        public Task DisconnectAsync()
+            => this.WebSocket.DisconnectAsync();
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
