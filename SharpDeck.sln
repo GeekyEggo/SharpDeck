@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{65
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{91AE8732-D0CC-4618-968A-02EFDE46E4EF}"
 	ProjectSection(SolutionItems) = preProject
-		..\examples\README.md = ..\examples\README.md
+		examples\README.md = examples\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCounter", "examples\SharedCounter\SharedCounter.csproj", "{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}"
