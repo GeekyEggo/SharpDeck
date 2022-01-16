@@ -110,54 +110,21 @@ namespace SharpDeck.PropertyInspectors
         /// <returns>The <see cref="AsyncMethodInvoker"/> to invoke the <see cref="MethodInfo"/>, and get the result.</returns>
         private AsyncMethodInvoker GetInternalInvokeAsync()
         {
-            // return the synchronous invoker
+            // Return the synchronous invoker.
             if (!typeof(Task).IsAssignableFrom(this.MethodInfo.ReturnType))
             {
-                return this.InvokeSync;
+                return (sender, parameters) => Task.FromResult(this.MethodInfo.Invoke(sender, parameters));
             }
 
-            // otherwise return the asynchronous invoker, based on whether it contains a result
+            // Otherwise return the asynchronous invoker, based on whether it contains a result.
             var resultProp = this.MethodInfo.ReturnType.GetProperty(nameof(Task<object>.Result));
-            return resultProp == null ? this.InvokeVoidAsync : this.GetResultAsyncInvoker(resultProp);
-        }
-
-        /// <summary>
-        /// Gets the asynchronous invoker that will return the result of the resulted task.
-        /// </summary>
-        /// <param name="prop">The property detailing the <see cref="Task{TResult}.Result"/>.</param>
-        /// <returns>The invoker to be used to asynchronously invoke <see cref="MethodInfo"/>.</returns>
-        private AsyncMethodInvoker GetResultAsyncInvoker(PropertyInfo prop)
-        {
             return async (sender, parameters) =>
             {
-                var task = await this.InvokeVoidAsync(sender, parameters);
-                var result = prop.GetValue(task);
+                var task = this.MethodInfo.Invoke(sender, parameters);
+                await (Task)task;
 
-                return result;
+                return resultProp?.GetValue(task);
             };
-        }
-
-        /// <summary>
-        /// Invokes the <see cref="MethodInfo"/> synchronously, returning the result as a task.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>The result of the synchronous invokation.</returns>
-        private Task<object> InvokeSync(object sender, object[] parameters)
-            => Task.FromResult(this.MethodInfo.Invoke(sender, parameters));
-
-        /// <summary>
-        /// Invokes the <see cref="MethodInfo"/> asynchronously, where the result is void.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>The result of the asynchronous invokation.</returns>
-        private async Task<object> InvokeVoidAsync(object sender, object[] parameters)
-        {
-            var result = this.MethodInfo.Invoke(sender, parameters);
-            await (Task)result;
-
-            return result;
         }
     }
 }

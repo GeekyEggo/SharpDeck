@@ -15,55 +15,34 @@ namespace SharpDeck.Tests.PropertyInspectors
     public class PropertyInspectorMethodInfoTests
     {
         /// <summary>
-        /// Asserts the <see cref="PropertyInspectorMethodInfo.SendToPluginEvent"/> and <see cref="PropertyInspectorMethodInfo.SendToPropertyInspectorEvent"/> are set, when none are specified in <see cref="PropertyInspectorMethodAttribute"/>.
+        /// Asserts the <see cref="PropertyInspectorMethodInfo.EventName"/> is set when no value is specified in <see cref="PropertyInspectorMethodAttribute"/>.
         /// </summary>
         [Test]
         public void TestEventNames_None()
         {
-            // given, when
+            // Given, when.
             var attr = new PropertyInspectorMethodAttribute();
             var testCase = this.GetAnyMethodInfo(attr, out var methodInfo);
 
-            // then
-            Assert.That(testCase.SendToPluginEvent, Is.EqualTo(methodInfo.Name));
-            Assert.That(testCase.SendToPropertyInspectorEvent, Is.EqualTo(methodInfo.Name));
+            // Then.
+            Assert.AreEqual(methodInfo.Name, testCase.EventName);
         }
 
         /// <summary>
-        /// Asserts the <see cref="PropertyInspectorMethodInfo.SendToPluginEvent"/> and <see cref="PropertyInspectorMethodInfo.SendToPropertyInspectorEvent"/> are set, when only <see cref="PropertyInspectorMethodAttribute.SendToPluginEvent"/> is specified.
+        /// Asserts the <see cref="PropertyInspectorMethodInfo.EventName"/> are set correctly when defined explicitly.
         /// </summary>
         [Test]
         public void TestEventNames_SendToPluginEventOnly()
         {
-            // given
-            const string sendToPluginEvent = "toPlugin";
+            // Given.
+            const string eventName = "MyFooMethod";
 
-            // when
-            var attr = new PropertyInspectorMethodAttribute(sendToPluginEvent);
-            var testCase = this.GetAnyMethodInfo(attr, out var methodInfo);
+            // When.
+            var attr = new PropertyInspectorMethodAttribute(eventName);
+            var testCase = this.GetAnyMethodInfo(attr, out var _);
 
-            // then
-            Assert.That(testCase.SendToPluginEvent, Is.EqualTo(sendToPluginEvent));
-            Assert.That(testCase.SendToPropertyInspectorEvent, Is.EqualTo(sendToPluginEvent));
-        }
-
-        /// <summary>
-        /// Asserts the <see cref="PropertyInspectorMethodInfo.SendToPluginEvent"/> and <see cref="PropertyInspectorMethodInfo.SendToPropertyInspectorEvent"/> are set, when both are specified in <see cref="PropertyInspectorMethodAttribute"/>.
-        /// </summary>
-        [Test]
-        public void TestEventNames_Both()
-        {
-            // given
-            const string sendToPluginEvent = "toPlugin";
-            const string sendToPropertyInspectorEvent = "toPropertyInspector";
-
-            // when
-            var attr = new PropertyInspectorMethodAttribute(sendToPluginEvent, sendToPropertyInspectorEvent);
-            var testCase = this.GetAnyMethodInfo(attr, out var methodInfo);
-
-            // then
-            Assert.That(testCase.SendToPluginEvent, Is.EqualTo(sendToPluginEvent));
-            Assert.That(testCase.SendToPropertyInspectorEvent, Is.EqualTo(sendToPropertyInspectorEvent));
+            // Then.
+            Assert.AreEqual(eventName, testCase.EventName);
         }
 
         /// <summary>
@@ -77,37 +56,52 @@ namespace SharpDeck.Tests.PropertyInspectors
         [TestCase(nameof(FooStreamDeckAction.PropertyInspector_SyncVoid), ExpectedResult = false)]
         public bool TestHasResult(string methodName)
         {
-            // given, when
+            // Given, when.
             (var methodInfo, var attr) = this.GetParameters(methodName);
             var testCase = new PropertyInspectorMethodInfo(methodInfo, attr);
 
-            // then
+            // Then.
             return testCase.HasResult;
         }
 
         /// <summary>
         /// Asserts calling <see cref="PropertyInspectorMethodInfo.InvokeAsync(StreamDeckAction, ActionEventArgs{JObject})"/> invokes the correct method, returns the expected result.
         /// </summary>
-        /// <param name="methodName">The name of the method.</param>
+        /// <param name="eventName">The event name.</param>
         /// <returns>The result of invoking the method, via <see cref="PropertyInspectorMethodInfo.InvokeAsync(StreamDeckAction, ActionEventArgs{JObject})"/>.</returns>
         [TestCase(nameof(FooStreamDeckAction.PropertyInspector_AsyncResult), ExpectedResult = nameof(FooStreamDeckAction.PropertyInspector_AsyncResult))]
         [TestCase(nameof(FooStreamDeckAction.PropertyInspector_AsyncVoid), ExpectedResult = null)]
         [TestCase(nameof(FooStreamDeckAction.PropertyInspector_SyncResult), ExpectedResult = nameof(FooStreamDeckAction.PropertyInspector_SyncResult))]
         [TestCase(nameof(FooStreamDeckAction.PropertyInspector_SyncVoid), ExpectedResult = null)]
-        public async Task<string> TestInvoke(string methodName)
+        public async Task<object> TestInvoke(string eventName)
         {
-            // given
-            (var methodInfo, var attr) = this.GetParameters(methodName);
+            // Given.
+            (var methodInfo, var attr) = this.GetParameters(eventName);
             var testCase = new PropertyInspectorMethodInfo(methodInfo, attr);
 
-            // when
             var action = new FooStreamDeckAction();
-            var args = new ActionEventArgs<JObject>() { Payload = JObject.FromObject(new FooPropertyInspectorPayload()) };
-            var result = await testCase.InvokeAsync(action, args).ConfigureAwait(false);
+            var argsToPlugin = new ActionEventArgs<JObject>()
+            {
+                Payload = new JObject
+                {
+                    { "event", eventName },
+                    {
+                        "parameters",
+                        new JObject
+                        {
+                            { "foo", "bar" }
+                        }
+                    }
+                }
+            };
 
-            // then
-            Assert.That(action.MethodCallCount[methodName], Is.EqualTo(1));
-            return testCase.HasResult ? ((FooPropertyInspectorPayload)result).Source : null;
+            // When.
+            var result = await testCase.InvokeAsync(action, argsToPlugin)
+                .ConfigureAwait(false);
+
+            // Then.
+            Assert.That(action.MethodCallCount[eventName], Is.EqualTo(1));
+            return testCase.HasResult ? result : null;
         }
 
         /// <summary>
@@ -130,7 +124,7 @@ namespace SharpDeck.Tests.PropertyInspectors
         public (MethodInfo methodInfo, PropertyInspectorMethodAttribute attr) GetParameters(string methodName)
         {
             var methodInfo = typeof(FooStreamDeckAction).GetMethod(methodName);
-            return (methodInfo: methodInfo, attr: methodInfo.GetCustomAttribute<PropertyInspectorMethodAttribute>());
+            return (methodInfo, attr: methodInfo.GetCustomAttribute<PropertyInspectorMethodAttribute>());
         }
     }
 }

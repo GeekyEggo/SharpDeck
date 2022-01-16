@@ -9,6 +9,7 @@ namespace SharpDeck.Tests.PropertyInspectors
     using SharpDeck.Events.Received;
     using SharpDeck.Interactivity;
     using SharpDeck.PropertyInspectors;
+    using SharpDeck.PropertyInspectors.Payloads;
     using SharpDeck.Tests.Mocks;
 
     /// <summary>
@@ -38,9 +39,7 @@ namespace SharpDeck.Tests.PropertyInspectors
         /// </summary>
         [OneTimeSetUp]
         public void OneTimeSetUp()
-        {
-            this.Collection = new PropertyInspectorMethodCollection(typeof(FooStreamDeckAction));
-        }
+            => this.Collection = new PropertyInspectorMethodCollection(typeof(FooStreamDeckAction));
 
         /// <summary>
         /// Asserts that <see cref="PropertyInspectorMethodCollection.InvokeAsync(StreamDeckAction, ActionEventArgs{JObject})"/> correctly finds, and does not find, events base on their name.
@@ -52,56 +51,58 @@ namespace SharpDeck.Tests.PropertyInspectors
         [TestCase("fooEvent", ExpectedResult = false)]
         [TestCase(FooStreamDeckAction.ASYNC_RESULT_EVENT, ExpectedResult = true)]
         [TestCase(FooStreamDeckAction.ASYNC_VOID_EVENT, ExpectedResult = true)]
-        [TestCase(FooStreamDeckAction.SYNC_RESULT_EVENT_TO_PLUGIN, ExpectedResult = true)]
+        [TestCase(FooStreamDeckAction.SYNC_RESULT_EVENT, ExpectedResult = true)]
         [TestCase(FooStreamDeckAction.SYNC_VOID_EVENT, ExpectedResult = true)]
         public async Task<bool> TestInvokeAsync_FindsEvent(string @event)
         {
-            // given
+            // Given.
             var action = new FooStreamDeckAction();
             action.Initialize(CONTEXT, new Mock<IStreamDeckConnection>().Object, new Mock<IDynamicProfileFactory>().Object);
-            var args = this.GetArgs(@event);
+            var args = GetArgs(@event);
 
-            // when, then
+            // When, then.
             await this.Collection.InvokeAsync(action, args);
             return action.OverallMethodCallCount == 1;
         }
 
         /// <summary>
-        /// Asserts that if a method associated with a <see cref="PropertyInspectorMethodAttribute"/> returns a result, that <see cref="IStreamDeckSender.SendToPropertyInspectorAsync(string, string, object)"/> is invoked when calling <see cref="PropertyInspectorMethodCollection.InvokeAsync(StreamDeckAction, ActionEventArgs{JObject})"/>.
+        /// Asserts that if a method associated with a <see cref="PropertyInspectorMethodAttribute"/> is invoked, a response is send to the stream deck.
         /// </summary>
-        /// <param name="sendToPluginEvent">The `sendToPlugin` event name.</param>
-        /// <param name="sendToPropertyInspectorEvent">The `sendToPropertyInspector` event name.</param>
-        /// <returns><c>true</c> when <see cref="IStreamDeckSender.SendToPropertyInspectorAsync(string, string, object)"/> was invoked; otherwise <c>false</c>.</returns>
-        [TestCase(null, null, ExpectedResult = false)]
-        [TestCase("", null, ExpectedResult = false)]
-        [TestCase("fooEvent", null, ExpectedResult = false)]
-        [TestCase(FooStreamDeckAction.ASYNC_RESULT_EVENT, FooStreamDeckAction.ASYNC_RESULT_EVENT, ExpectedResult = true)]
-        [TestCase(FooStreamDeckAction.ASYNC_VOID_EVENT, null, ExpectedResult = false)]
-        [TestCase(FooStreamDeckAction.SYNC_RESULT_EVENT_TO_PLUGIN, FooStreamDeckAction.SYNC_RESULT_EVENT_TO_PROPERTY_INSPECTOR, ExpectedResult = true)]
-        [TestCase(FooStreamDeckAction.SYNC_VOID_EVENT, null, ExpectedResult = false)]
-        public async Task<bool> TestInvokeAsync_SendToPropertyInspector(string sendToPluginEvent, string sendToPropertyInspectorEvent)
+        /// <param name="eventName">The event name.</param>
+        /// <returns><c>true</c> when <see cref="IStreamDeckConnection.SendToPropertyInspectorAsync(string, string, object, CancellationToken)"/> was invoked; otherwise <c>false</c>.</returns>
+        [TestCase(null, ExpectedResult = false)]
+        [TestCase("", ExpectedResult = false)]
+        [TestCase("fooEvent", ExpectedResult = false)]
+        [TestCase(FooStreamDeckAction.ASYNC_RESULT_EVENT, ExpectedResult = true)]
+        [TestCase(FooStreamDeckAction.ASYNC_VOID_EVENT, ExpectedResult = true)]
+        [TestCase(FooStreamDeckAction.SYNC_RESULT_EVENT, ExpectedResult = true)]
+        [TestCase(FooStreamDeckAction.SYNC_VOID_EVENT, ExpectedResult = true)]
+        public async Task<bool> TestInvokeAsync_SendToPropertyInspector(string eventName)
         {
             int callCount = 0;
 
-            // given
-            var streamDeckSender = new Mock<IStreamDeckConnection>();
-            streamDeckSender.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            // Given.
+            var connection = new Mock<IStreamDeckConnection>();
+            connection.Setup(s => s.SendToPropertyInspectorAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Callback<string, string, object, CancellationToken>((contextUUID, actionUUID, payload, CancellationToken) =>
                 {
-                    if (actionUUID == CONTEXT.Action && contextUUID == CONTEXT.Context && ((FooPropertyInspectorPayload)payload).Event == sendToPropertyInspectorEvent)
+                    if (actionUUID == CONTEXT.Action
+                        && contextUUID == CONTEXT.Context
+                        && ((PropertyInspectorResponsePayload)payload).Event == eventName)
                     {
                         callCount++;
                     }
-                }).Returns(() => Task.CompletedTask);
+                })
+                .Returns(Task.CompletedTask);
 
             var action = new FooStreamDeckAction();
-            var args = this.GetArgs(sendToPluginEvent);
-            action.Initialize(CONTEXT, streamDeckSender.Object, new Mock<IDynamicProfileFactory>().Object);
+            var args = GetArgs(eventName);
+            action.Initialize(CONTEXT, connection.Object, new Mock<IDynamicProfileFactory>().Object);
 
-            // when
+            // When.
             await this.Collection.InvokeAsync(action, args);
 
-            // then
+            // Then.
             return callCount > 0;
         }
 
@@ -110,11 +111,11 @@ namespace SharpDeck.Tests.PropertyInspectors
         /// </summary>
         /// <param name="event">The `sendToPlugin` event name.</param>
         /// <returns>The arguments.</returns>
-        private ActionEventArgs<JObject> GetArgs(string @event)
+        private static ActionEventArgs<JObject> GetArgs(string @event)
         {
             return new ActionEventArgs<JObject>
             {
-                Payload = JObject.FromObject(new PropertyInspectorPayload
+                Payload = JObject.FromObject(new PropertyInspectorResponsePayload
                 {
                     Event = @event
                 })
