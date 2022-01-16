@@ -1,9 +1,9 @@
 namespace SharpDeck.PropertyInspectors.Payloads
 {
     /// <summary>
-    /// Provides the request payload for a method invoked from the property inspector.
+    /// Provides a base class for a payload used when requesting / responding to a property inspector method invocation.
     /// </summary>
-    internal class PropertyInspectorRequestPayload
+    internal class PropertyInspectorPayload
     {
         /// <summary>
         /// Gets or sets the event.

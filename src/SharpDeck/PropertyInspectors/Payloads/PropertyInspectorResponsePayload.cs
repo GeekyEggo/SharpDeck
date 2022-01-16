@@ -1,16 +1,13 @@
 namespace SharpDeck.PropertyInspectors.Payloads
 {
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Provides the response payload for a method invoked from the property inspector.
     /// </summary>
-    internal class PropertyInspectorResponsePayload : PropertyInspectorRequestPayload
+    internal class PropertyInspectorResponsePayload : PropertyInspectorPayload
     {
         /// <summary>
-        /// Gets or sets the response.
+        /// Gets or sets the content of the response.
         /// </summary>
-        [JsonProperty("data")]
-        public object Content { get; set; }
+        public object Data { get; set; }
     }
 }

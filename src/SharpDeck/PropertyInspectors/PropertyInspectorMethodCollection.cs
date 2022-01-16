@@ -45,7 +45,7 @@ namespace SharpDeck.PropertyInspectors
         public async Task InvokeAsync(StreamDeckAction action, ActionEventArgs<JObject> args)
         {
             // Attempt to get the method information.
-            args.Payload.TryGetString(nameof(PropertyInspectorRequestPayload.Event), out var @event);
+            args.Payload.TryGetString(nameof(PropertyInspectorPayload.Event), out var @event);
             if (string.IsNullOrWhiteSpace(@event) || !this.Methods.TryGetValue(@event, out var piMethodInfo))
             {
                 return;
@@ -56,7 +56,7 @@ namespace SharpDeck.PropertyInspectors
             await task;
 
             // When the method was sent with a request identifier, we can attempt a response.
-            if (args.Payload.TryGetString(nameof(PropertyInspectorRequestPayload.RequestId), out var requestId))
+            if (args.Payload.TryGetString(nameof(PropertyInspectorPayload.RequestId), out var requestId))
             {
                 var payload = new PropertyInspectorResponsePayload
                 {
@@ -66,7 +66,7 @@ namespace SharpDeck.PropertyInspectors
 
                 if (piMethodInfo.HasResult)
                 {
-                    payload.Content = task.Result;
+                    payload.Data = task.Result;
                 }
 
                 await action.SendToPropertyInspectorAsync(payload);
