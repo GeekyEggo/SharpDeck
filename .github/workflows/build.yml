@@ -31,8 +31,11 @@ jobs:
       with:
         dotnet-version: '6.0.x'
 
+    - name: '📥 Install dependencies'
+      run: dotnet restore
+
     - name: '🛠️ Build'
-      run: dotnet build ./src/SharpDeck/ -c Release
+      run: dotnet build --configuration Release --no-restore
 
     - name: '🚧 Test'
-      run: dotnet test ./src/SharpDeck.Tests/ -c Release --no-build
+      run: dotnet test --no-restore

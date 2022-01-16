@@ -6,6 +6,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <AssemblyName>Counter_net48</AssemblyName>
     <RootNamespace>Counter_net48</RootNamespace>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

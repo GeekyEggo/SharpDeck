@@ -27,18 +27,21 @@ jobs:
       with:
         dotnet-version: '6.0.x'
 
+    - name: '📥 Install dependencies'
+      run: dotnet restore
+
     - name: '🛠️ Build'
-      run: dotnet build ./src/SharpDeck/ -c Release
+      run: dotnet build --configuration Release --no-restore
 
     - name: '🚧 Test'
-      run: dotnet test ./src/SharpDeck.Tests/ -c Release --no-build
+      run: dotnet test --no-restore
 
     - name: '📝 Version'
       id: branch_name
       run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/v}
 
     - name: '📦 Pack'
-      run: dotnet pack ./src/SharpDeck/ -c Release -p:Version=${{ steps.branch_name.outputs.TAG }} -p:ContinuousIntegrationBuild=true
+      run: dotnet pack ./src/SharpDeck/ --configuration Release -p:Version=${{ steps.branch_name.outputs.TAG }} -p:ContinuousIntegrationBuild=true
 
     - name: '📫 Push to NuGet'
       env:
