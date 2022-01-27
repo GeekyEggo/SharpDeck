@@ -1,0 +1,27 @@
+<Project>
+
+    <PropertyGroup Condition="'$(IsPackable)'=='true'">
+        <PackageOutputPath>..\..\dist</PackageOutputPath>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Authors>Richard Herman</Authors>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/GeekyEggo/SharpDeck</RepositoryUrl>
+        <PackageTags>Elgato,Stream-Deck,Streaming,SDK</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(IsPackable)'=='true'">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" Visible="false" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
+    </ItemGroup>
+
+</Project>

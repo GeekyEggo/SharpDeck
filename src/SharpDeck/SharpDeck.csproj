@@ -1,51 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageOutputPath>$(TargetDir)..\..\dist</PackageOutputPath>
-    <IncludeSymbols>true</IncludeSymbols>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Authors>Richard Herman</Authors>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/GeekyEggo/SharpDeck</RepositoryUrl>
-    <Description>A lightweight .NET wrapper for the official Elgato Stream Deck SDK, designed to assist with creating plugins that can be distributed on the Stream Deck store.</Description>
-    <PackageTags>Elgato,Stream-Deck,Streaming,SDK</PackageTags>
-    <IsPackable>true</IsPackable>
-    <NoWarn>1701;1702;CS0067</NoWarn>
-    <DocumentationFile>$(TargetDir)bin\$(Configuration)\SharpDeck.xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Description>A lightweight .NET wrapper for the official Elgato Stream Deck SDK, designed to assist with creating plugins that can be distributed on the Stream Deck store.</Description>
+        <IsPackable>true</IsPackable>
+        <NoWarn>1701;1702;CS0067</NoWarn>
+        <DocumentationFile>$(TargetDir)bin\$(Configuration)\SharpDeck.xml</DocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resources\ImagesManifest.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ImagesManifest.resx</DependentUpon>
-    </Compile>
-    <EmbeddedResource Update="Resources\ImagesManifest.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ImagesManifest.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-
-    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" Visible="false" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Resources\ImagesManifest.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ImagesManifest.resx</DependentUpon>
+        </Compile>
+        <EmbeddedResource Update="Resources\ImagesManifest.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ImagesManifest.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 
 </Project>
