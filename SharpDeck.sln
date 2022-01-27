@@ -11,11 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		CHANGELOG.md = CHANGELOG.md
+		Directory.Build.props = Directory.Build.props
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Tests", "src\SharpDeck.Tests\SharpDeck.Tests.csproj", "{DA2E73D0-687E-4429-B481-5F5757743C32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Tests", "tests\SharpDeck.Tests\SharpDeck.Tests.csproj", "{DA2E73D0-687E-4429-B481-5F5757743C32}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8B7789F0-1319-473B-9DCA-05B94DCAE8D1}"
 EndProject
@@ -42,6 +43,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicProfiles", "examples\DynamicProfiles\DynamicProfiles.csproj", "{C878D62A-22AD-4359-8A3F-17508423E46F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Extensions.Hosting", "src\SharpDeck.Extensions.Hosting\SharpDeck.Extensions.Hosting.csproj", "{D9A7BDAE-4E5F-45AC-A80F-589200AD9882}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FB8E473E-E823-47AA-B854-3490E26DF126}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +85,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{DA2E73D0-687E-4429-B481-5F5757743C32} = {FB8E473E-E823-47AA-B854-3490E26DF126}
 		{8B7789F0-1319-473B-9DCA-05B94DCAE8D1} = {0F3CE559-40D7-4053-AF79-B3A1B3043A3A}
 		{650416DC-EBAB-4C97-BA6A-EA3C32A435E8} = {8B7789F0-1319-473B-9DCA-05B94DCAE8D1}
 		{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9} = {91AE8732-D0CC-4618-968A-02EFDE46E4EF}
