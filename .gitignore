@@ -335,3 +335,6 @@ ASALocalRun/
 
 # Environment variables
 .env
+
+# Package builds
+/dist

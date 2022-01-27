@@ -15,14 +15,6 @@
     <Description>A lightweight .NET wrapper for the official Elgato Stream Deck SDK, designed to assist with creating plugins that can be distributed on the Stream Deck store.</Description>
     <PackageTags>Elgato,Stream-Deck,Streaming,SDK</PackageTags>
     <IsPackable>true</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;CS0067</NoWarn>
-    <DocumentationFile>$(TargetDir)bin\$(Configuration)\SharpDeck.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn>1701;1702;CS0067</NoWarn>
     <DocumentationFile>$(TargetDir)bin\$(Configuration)\SharpDeck.xml</DocumentationFile>
   </PropertyGroup>
