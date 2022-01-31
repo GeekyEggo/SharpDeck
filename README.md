@@ -1,92 +1,98 @@
-[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/) [![Build status](https://github.com/GeekyEggo/SharpDeck/workflows/build/badge.svg)](https://github.com/GeekyEggo/SharpDeck/actions?query=workflow%3Abuild)
+[![SharpDeck verion on NuGet.org](https://img.shields.io/nuget/v/SharpDeck.svg)](https://www.nuget.org/packages/SharpDeck/)
+[![Build status](https://github.com/GeekyEggo/SharpDeck/workflows/build/badge.svg)](https://github.com/GeekyEggo/SharpDeck/actions?query=workflow%3Abuild)
 
 # SharpDeck
 
-A comprehensive .NET wrapper for creating Stream Deck plugins, using the official Elgato Stream Deck [SDK](https://developer.elgato.com/documentation/stream-deck/sdk/overview).
+A comprehensive .NET wrapper for creating Stream Deck plugins, using the official Stream Deck SDK documentation. SharpDeck takes the hassle out of communicating with the Stream Deck SDK, and handles action caching and event delegation.
 
-## ⚡ What does it do?
-
-SharpDeck takes the hassle out of communicating with the Stream Deck SDK, and handles caching and calling your actions! At a glance, SharpDeck handles...
-
-* Connecting to the Stream Deck.
-* Registering your custom actions.
-* Calling your custom actions when something happens (i.e. button press).
-
-## :package: Examples
+## 📦 Examples
 
 * [Counter](/examples/Counter) - Single action counter plugin.
 * [Shared Counter](/examples/SharedCounter) - Multiple action plugin with a shared counter and reset.
 
-## :page_facing_up: Getting started
+## ✏️ Creating a plugin
 
-We recommend taking a look at the official [Stream Deck SDK documentation](https://developer.elgato.com/documentation/stream-deck/sdk/overview/). Each plugin has a `manifest.json` file ([example](/examples/SharedCounter/manifest.json)) which tells Stream Deck everything about your plugin, and it's actions.
+SharpDeck enables console applications to easily communicate with Stream Deck; run `dotnet new console` to create a .NET console application, and follow these five steps to create your first Stream Deck plugin.
 
-## :pencil2: Writing your plugin
+### 🔗 1. Program.cs
 
-1. Create a .NET console app (Framework or Core supported).
-1. Add your `manifest.json` file.
-   * Set the `Copy to Output Directory` property to `Copy Always`.
-1. Add SharpDeck `dotnet add package SharpDeck`.
-1. Update `Program.cs` to initiate your plugin.
-   ```csharp
-   public static void Main(string[] args)
-   {
-   #if DEBUG
-       // optional, but recommended
-       System.Diagnostics.Debugger.Launch(); 
-   #endif
-       
-       // register actions and connect to the Stream Deck
-       SharpDeck.StreamDeckPlugin.Run();
-   }
-   ```
-1. Create your action as a class. Each action must,
-   * Have the attribute `[StreamDeckAction(UUID)]`, with a unique UUID.
-   * Inherit from either `StreamDeckAction`, or `StreamDeckAction{TSettings}`.
+```csharp
+public static void Main(string[] args)
+{
+#if DEBUG
+    System.Diagnostics.Debugger.Launch(); 
+#endif
 
-## :construction: Testing your plugin
+    // Connect to Stream Deck.
+    SharpDeck.StreamDeckPlugin.Run();
+}
+```
 
-1. Navigate to `%APPDATA%\Elgato\StreamDeck\Plugins`, this is where all Stream Deck plugins live.
-1. Create a folder for your plugin, typically `com.{author}.{plugin}.sdPlugin`.
-1. Copy your files from your `bin\Debug` folder to your plugin folder.
-1. Restart Stream Deck, and your plugin should be there! :thumbsup:
+### ⚡ 2. Create an action
+```csharp
+using SharpDeck;
+using SharpDeck.Events.Received; 
 
-## :hammer_and_wrench: Make testing quicker and easier (optional)
+[StreamDeckAction("com.geekyeggo.exampleplugin.firstaction")]
+public class MyFirstAction : StreamDeckAction
+{
+    // Methods can be overriden to intercept events received from the Stream Deck.
+    protected override Task OnKeyDown(ActionEventArgs<KeyPayload> args) => ...;
+    protected override Task OnKeyUp(ActionEventArgs<KeyPayload> args) => ...;
+}
+```
 
-Copying your plugin each time can be a bit tedious, but don't worry, there's a few steps to make it easier!
+### 📄 3. Create a manifest.json file
 
-1. Ensure your `Program.cs` calls `System.Diagnostics.Debugger.Launch();`.
-1. Add a pre-build task to terminate `StreamDeck.exe` process:
-   * `taskkill -f -t -im StreamDeck.exe -fi "status eq running"`
-1. Build to your plugin folder directly:
-   * e.g. `<OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.geekyeggo.counter.sdPlugin\</OutputPath>`
-1. Create a debug profile in `Properties/launchSettings.json` ([example](/examples/Counter/Properties/launchSettings.json)).
-   ```json
-   {
-     "profiles": {
-       "DebugWin": {
-         "commandName": "Executable",
-         "executablePath": "c:\\windows\\system32\\cmd.exe",
-         "commandLineArgs": "/S /C \"start \"title\" /B \"%ProgramW6432%\\Elgato\\StreamDeck\\StreamDeck exe\" \""
-       }
-      }
-   }
-   ```
-1. Voila, `F5` should now terminate Stream Deck, rebuild your plugin, and then re-launch Stream Deck!
+> For more information about creating a manifest file, please refer to the [SDK documentation](https://developer.elgato.com/documentation/stream-deck/sdk/manifest/).
 
+### ⚙️ 4. Configure .csproj
 
-## :rotating_light: Need help?
+```xml
+<!-- Install the plugin after each build - change authorName and pluginName accordingly. -->
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.{{authorName}}.{{pluginName}}.sdPlugin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+</PropertyGroup>
 
-1. If you can't see your plugin at all:
-   * Check your plugin folder contains your plugin's executable. 
-   * Check the `manifest.json` file exists, and the `codePath` points to your executable.
-1. If you can see your plugin but it isn't working:
-   * Check `%APPDATA%\Elgato\StreamDeck\logs` if there are any logs for your plugin.
-   * Update your `Program.cs` to call `Debugger.Launch()` ([example](/examples/SharedCounter/Program.cs)) which will allow you to debug your plugin.
+<ItemGroup>
+    <!-- The manifest file is required by Stream Deck and provides important information. -->
+    <None Update="manifest.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+</ItemGroup>
 
-*Still can't get it working? No problems, raise an [issue](https://github.com/GeekyEggo/SharpDeck/issues) and we'll try to help!*
+<!-- Kill the Stream Deck process before each build; this allows the copy to occur. -->
+<Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
+</Target>
+```
 
-## :page_with_curl: License
+### 🚧 5. Debug profile
+
+> Located at **Properties/launchSettings.json**; this debug profile will automatically launch StreamDeck.exe when debugging starts.
+```json
+{
+  "profiles": {
+    "DebugWin": {
+      "commandName": "Executable",
+      "executablePath": "c:\\windows\\system32\\cmd.exe",
+      "commandLineArgs": "/S /C \"start \"title\" /B \"%ProgramW6432%\\Elgato\\StreamDeck\\StreamDeck exe\" \""
+    }
+  }
+}
+```
+
+## 🏃 Running
+
+When debugging starts (default F5):
+1. The plugin will be built and installed.
+1. Stream Deck will then launch.
+1. You will be prompted to attach your plugin to a process; this allows for debugging.
+
+When your plugin is ready, consider [packaging](https://developer.elgato.com/documentation/stream-deck/sdk/packaging/) and [distributing](https://developer.elgato.com/documentation/stream-deck/sdk/distribution/) it on the Stream Deck store.
+
+## 📃 License
 
 [The MIT License (MIT)](LICENSE.md)
 Stream Deck is a trademark or registered trademark of Elgato Systems.
