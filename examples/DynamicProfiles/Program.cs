@@ -34,8 +34,7 @@ namespace DynamicProfiles
                         .AddConfiguration(hostingContext.Configuration.GetSection("Logging"))
                         .AddNLog(new NLogLoggingConfiguration(hostingContext.Configuration.GetSection("NLog")));
                 })
-                .UseStreamDeck()
-                .Start();
+                .RunStreamDeckPlugin();
         }
     }
 }

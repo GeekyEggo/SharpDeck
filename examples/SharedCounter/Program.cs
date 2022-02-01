@@ -19,14 +19,13 @@ namespace SharedCounter
             System.Diagnostics.Debugger.Launch();
 #endif
             new HostBuilder()
-                .UseStreamDeck()
                 .ConfigureServices(services =>
                 {
                     services
                         .AddSingleton<Counter>()
                         .AddSingleton<IHostedService>(provider => provider.GetRequiredService<Counter>());
                 })
-                .Start();
+                .RunStreamDeckPlugin();
         }
     }
 }

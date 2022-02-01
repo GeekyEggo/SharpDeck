@@ -11,22 +11,17 @@ namespace SharpDeck
     public static class StreamDeckPlugin
     {
         /// <summary>
-        /// Gets the host.
-        /// </summary>
-        private static IHost Host { get; } = new HostBuilder().UseStreamDeck().Build();
-
-        /// <summary>
         /// Runs the Stream Deck plugin.
         /// </summary>
         public static void Run()
-            => Host.Run();
+            => new HostBuilder().RunStreamDeckPlugin();
 
         /// <summary>
         /// Runs the Stream Deck plugin asynchronously.
         /// </summary>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token that can be used to stop the plugin.</param>
         /// <returns>The task of running the Stream Deck plugin.</returns>
         public static Task RunAsync(CancellationToken cancellationToken = default)
-            => Host.RunAsync(cancellationToken);
+            => new HostBuilder().RunStreamDeckPluginAsync(cancellationToken);
     }
 }

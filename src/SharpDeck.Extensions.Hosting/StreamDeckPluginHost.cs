@@ -34,23 +34,21 @@ namespace SharpDeck.Extensions.Hosting
                         .ClearProviders()
                         .AddConfiguration(hostingContext.Configuration.GetSection("Logging"))
                         .AddNLog(new NLogLoggingConfiguration(hostingContext.Configuration.GetSection("NLog")));
-                })
-                .UseStreamDeck();
+                });
         }
 
         /// <summary>
         /// Runs the Stream Deck plugin.
         /// </summary>
         public static void Run()
-            => CreateDefaultBuilder().Build().Run();
+            => CreateDefaultBuilder().RunStreamDeckPlugin();
 
         /// <summary>
         /// Runs the Stream Deck plugin asynchronously.
         /// </summary>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token that can be used to stop the plugin.</param>
         /// <returns>The task of running the Stream Deck plugin.</returns>
         public static Task RunAsync(CancellationToken cancellationToken = default)
-            => CreateDefaultBuilder().Build().RunAsync(cancellationToken);
-
+            => CreateDefaultBuilder().RunStreamDeckPluginAsync(cancellationToken);
     }
 }

@@ -8,8 +8,15 @@
   * `PropertyInspectorMethodAttribute` now supports a single `eventName`.
   * Parameters are now sent via the `payload.parameters` object.
   * Parameters are more intrinsic, see example below.
-* `IHostBuilder.UseStreamDeck(Action<PluginContext)` now uses a `IHostLifetime`.
+* `IHostedLifetime` is now used for plugin lifetime management.
   * Consider changing any `IHostLifetime` to `IHostedService` or `BackgroundService`.
+* Removed `IServiceCollection.AddStreamDeck` in favour of `IHostBuilder.RunStreamDeckPlugin` and `IHostBuilder.RunStreamDeckPluginAsync`.
+
+### ⭐ Added
+
+* Support for easily running plugins via a `IHostBuilder`.
+  * `IHostBuilder.RunStreamDeckPlugin()`.
+  * `IHostBuilder.RunStreamDeckPluginAsync(CancellationToken)`.
 
 ### ♻ Changed
 
@@ -20,8 +27,8 @@
 * Connecting to the Stream Deck no longer blocks other registered `IHostedService`.
 * `SetSettingsAsync(object, CancellationToken)` correctly persists the `__sharpDeckUUID` property _(hopefully one day Elgato adds better lifetime management, but until then, we do our best!)_ 🤞
 
-
 ### 📝 Property Inspector Example
+
 Stream Deck actions can expose methods that are accessible from the property inspector. With the following method in our action...
 ```csharp
 [PropertyInspectorMethod("customLog")]

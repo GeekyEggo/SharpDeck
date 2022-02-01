@@ -6,7 +6,7 @@
 ## How it works
 
 1. Each action class must
-   1. have a `[StreamDeckAction($name$, $UUID$)]` attribute.
+   1. have a `[StreamDeckAction($UUID$)]` attribute.
    1. inherit from `StreamDeckAction`, or `StreamDeckAction{TSettings}`.
 1. `Program.cs` calls `StreamDeckPlugin.Run()`, this will
    1. discover and register your actions.
