@@ -42,8 +42,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter_net60", "examples\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicProfiles", "examples\DynamicProfiles\DynamicProfiles.csproj", "{C878D62A-22AD-4359-8A3F-17508423E46F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Extensions.Hosting", "src\SharpDeck.Extensions.Hosting\SharpDeck.Extensions.Hosting.csproj", "{D9A7BDAE-4E5F-45AC-A80F-589200AD9882}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FB8E473E-E823-47AA-B854-3490E26DF126}"
 EndProject
 Global
@@ -76,10 +74,6 @@ Global
 		{C878D62A-22AD-4359-8A3F-17508423E46F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C878D62A-22AD-4359-8A3F-17508423E46F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C878D62A-22AD-4359-8A3F-17508423E46F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9A7BDAE-4E5F-45AC-A80F-589200AD9882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9A7BDAE-4E5F-45AC-A80F-589200AD9882}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9A7BDAE-4E5F-45AC-A80F-589200AD9882}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9A7BDAE-4E5F-45AC-A80F-589200AD9882}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

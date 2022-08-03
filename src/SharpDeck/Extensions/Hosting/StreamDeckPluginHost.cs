@@ -25,7 +25,7 @@ namespace SharpDeck.Extensions.Hosting
                 {
                     configBuilder
                         .SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("SharpDeck.Extensions.Hosting.appsettings.json"))
+                        .AddJsonStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("SharpDeck.appsettings.json"))
                         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
                 })
                 .ConfigureLogging((hostingContext, loggingBuilder) =>
