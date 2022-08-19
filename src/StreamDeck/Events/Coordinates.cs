@@ -1,6 +1,7 @@
 namespace StreamDeck.Events
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Provides coordinates as represented as <see cref="Column"/> and <see cref="Row"/>.
@@ -10,11 +11,12 @@ namespace StreamDeck.Events
         /// <summary>
         /// Gets the column.
         /// </summary>
+        [JsonInclude]
         public int? Column { get; internal set; }
 
         /// <summary>
         /// Gets the row.
-        /// </summary>
+        [JsonInclude]
         public int? Row { get; internal set; }
 
         /// <summary>

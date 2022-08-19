@@ -10,13 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		CHANGELOG.md = CHANGELOG.md
-		Directory.Build.targets = Directory.Build.targets
 		LICENSE.md = LICENSE.md
-		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck.Tests", "tests\SharpDeck.Tests\SharpDeck.Tests.csproj", "{DA2E73D0-687E-4429-B481-5F5757743C32}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8B7789F0-1319-473B-9DCA-05B94DCAE8D1}"
 EndProject
@@ -28,23 +23,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{65
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{91AE8732-D0CC-4618-968A-02EFDE46E4EF}"
-	ProjectSection(SolutionItems) = preProject
-		examples\README.md = examples\README.md
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCounter", "examples\SharedCounter\SharedCounter.csproj", "{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Counter", "Counter", "{33FA25F3-1583-458E-B86C-80EE90C6EE38}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter_net48", "examples\Counter\net48\Counter_net48.csproj", "{CD620C06-FD35-4A9E-936D-6B00C928ACB1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter_net60", "examples\Counter\net50\Counter_net60.csproj", "{7C66B2C5-F48E-4FF3-BE63-226F793163CC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicProfiles", "examples\DynamicProfiles\DynamicProfiles.csproj", "{C878D62A-22AD-4359-8A3F-17508423E46F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FB8E473E-E823-47AA-B854-3490E26DF126}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamDeck", "src\StreamDeck\StreamDeck.csproj", "{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter", "examples\Counter\Counter.csproj", "{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,43 +38,22 @@ Global
 		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA2E73D0-687E-4429-B481-5F5757743C32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA2E73D0-687E-4429-B481-5F5757743C32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA2E73D0-687E-4429-B481-5F5757743C32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA2E73D0-687E-4429-B481-5F5757743C32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD620C06-FD35-4A9E-936D-6B00C928ACB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD620C06-FD35-4A9E-936D-6B00C928ACB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD620C06-FD35-4A9E-936D-6B00C928ACB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD620C06-FD35-4A9E-936D-6B00C928ACB1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C66B2C5-F48E-4FF3-BE63-226F793163CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C66B2C5-F48E-4FF3-BE63-226F793163CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C66B2C5-F48E-4FF3-BE63-226F793163CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C66B2C5-F48E-4FF3-BE63-226F793163CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C878D62A-22AD-4359-8A3F-17508423E46F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C878D62A-22AD-4359-8A3F-17508423E46F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C878D62A-22AD-4359-8A3F-17508423E46F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C878D62A-22AD-4359-8A3F-17508423E46F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{DA2E73D0-687E-4429-B481-5F5757743C32} = {FB8E473E-E823-47AA-B854-3490E26DF126}
 		{8B7789F0-1319-473B-9DCA-05B94DCAE8D1} = {0F3CE559-40D7-4053-AF79-B3A1B3043A3A}
 		{650416DC-EBAB-4C97-BA6A-EA3C32A435E8} = {8B7789F0-1319-473B-9DCA-05B94DCAE8D1}
-		{39B46FDC-9D62-48C4-B7A1-B8DB423F25B9} = {91AE8732-D0CC-4618-968A-02EFDE46E4EF}
-		{33FA25F3-1583-458E-B86C-80EE90C6EE38} = {91AE8732-D0CC-4618-968A-02EFDE46E4EF}
-		{CD620C06-FD35-4A9E-936D-6B00C928ACB1} = {33FA25F3-1583-458E-B86C-80EE90C6EE38}
-		{7C66B2C5-F48E-4FF3-BE63-226F793163CC} = {33FA25F3-1583-458E-B86C-80EE90C6EE38}
-		{C878D62A-22AD-4359-8A3F-17508423E46F} = {91AE8732-D0CC-4618-968A-02EFDE46E4EF}
+		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E} = {91AE8732-D0CC-4618-968A-02EFDE46E4EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CE7DE09-893D-4603-807D-674413F38D73}

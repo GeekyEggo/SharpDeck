@@ -2,6 +2,7 @@ namespace StreamDeck.Events
 {
     using System.Text.Json;
     using System.Text.Json.Nodes;
+    using System.Text.Json.Serialization;
     using System.Text.Json.Serialization.Metadata;
     using StreamDeck.Serialization;
 
@@ -13,6 +14,7 @@ namespace StreamDeck.Events
         /// <summary>
         /// Gets the JSON containing data that you can set and are stored persistently.
         /// </summary>
+        [JsonInclude]
         public JsonObject? Settings { get; internal set; }
 
         /// <summary>

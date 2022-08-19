@@ -1,8 +1,8 @@
-﻿namespace StreamDeck.Serialization.Converters
+namespace StreamDeck.Serialization.Converters
 {
     using System;
     using System.Text.Json;
-    using StreamDeck.Events.Received;
+    using StreamDeck.Events;
 
     /// <summary>
     /// Provides a JSON converter for <see cref="FontStyle"/>.

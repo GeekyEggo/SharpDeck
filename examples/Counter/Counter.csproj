@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<LangVersion>latest</LangVersion>
+		<Description>A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.</Description>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.geekyeggo.counter-example.sdPlugin\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Using Include="StreamDeck" />
+		<Using Include="StreamDeck.Events" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Images\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<AdditionalFiles Include="manifest.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</AdditionalFiles>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\StreamDeck\StreamDeck.csproj" />
+	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
+	</Target>
+
+</Project>

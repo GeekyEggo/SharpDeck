@@ -1,5 +1,7 @@
 namespace StreamDeck.Events
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Provides information about the plugin.
     /// </summary>
@@ -8,6 +10,7 @@ namespace StreamDeck.Events
         /// <summary>
         /// Gets the version.
         /// </summary>
+        [JsonInclude]
         public string? Version { get; internal set; }
     }
 }

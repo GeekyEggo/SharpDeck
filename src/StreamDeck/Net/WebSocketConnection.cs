@@ -185,7 +185,8 @@ namespace StreamDeck.Net
                     }
 
                     // Stop listening, and return the close status.
-                    if (result.MessageType == WebSocketMessageType.Close || result.CloseStatus != WebSocketCloseStatus.Empty)
+                    if (result.MessageType == WebSocketMessageType.Close
+                        || (result.CloseStatus != null && result.CloseStatus != WebSocketCloseStatus.Empty))
                     {
                         return result.CloseStatus.GetValueOrDefault();
                     }

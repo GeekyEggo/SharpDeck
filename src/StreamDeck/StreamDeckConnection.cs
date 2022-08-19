@@ -87,7 +87,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets the information about the connection.
         /// </summary>
-        public RegistrationInfo? Info => this.RegistrationParameters.Info;
+        public RegistrationInfo Info => this.RegistrationParameters.Info;
 
         /// <summary>
         /// Gets or sets the registration parameters.
@@ -109,19 +109,8 @@ namespace StreamDeck
         /// </summary>
         /// <param name="cancellationToken">The optioanl cancellation token.</param>
         /// <returns>The task of connecting to the Stream Deck.</returns>
-        public async Task ConnectAsync(CancellationToken cancellationToken)
+        public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
-            if (this.RegistrationParameters == null
-                || this.RegistrationParameters.Port == null
-                || this.RegistrationParameters.Event == null
-                || this.RegistrationParameters.PluginUUID == null)
-            {
-                var ex = new ArgumentException("The registration parameters do not contain the required information to establish a connection with the Stream Deck; missing 'port', 'event', and 'pluginUUID'.");
-                ex.HelpLink = "https://developer.elgato.com/documentation/stream-deck/sdk/registration-procedure/";
-
-                throw ex;
-            }
-
             this.Logger?.LogTrace("Connecting to Stream Deck.");
             await this.WebSocket.ConnectAsync($"ws://localhost:{this.RegistrationParameters.Port}/", cancellationToken);
 
@@ -129,6 +118,16 @@ namespace StreamDeck
             await this.WebSocket.SendAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), StreamDeckJsonContext.Default.Options, cancellationToken);
 
             this.Logger?.LogTrace($"Successfully connected to Stream Deck.");
+        }
+
+        /// <summary>
+        /// Connects to the Stream Deck, and awaits disconnection asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        public async Task ConnectAndWaitAsync(CancellationToken cancellationToken = default)
+        {
+            await this.ConnectAsync(cancellationToken);
+            await this.WebSocket.WaitForDisconnectAsync(cancellationToken);
         }
 
         /// <summary>
@@ -234,7 +233,7 @@ namespace StreamDeck
         {
             try
             {
-                var args = JsonSerializer.Deserialize(e.Message, StreamDeckJsonContext.Default.StreamDeckEventArgs);
+                var args = JsonSerializer.Deserialize<StreamDeckEventArgs>(e.Message, StreamDeckJsonContext.Default.Options);
                 switch (args?.Event)
                 {
                     // Global.

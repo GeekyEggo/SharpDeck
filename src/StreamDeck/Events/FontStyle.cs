@@ -1,4 +1,4 @@
-namespace StreamDeck.Events.Received
+namespace StreamDeck.Events
 {
     using StreamDeck.Serialization;
 
