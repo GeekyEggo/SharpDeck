@@ -40,7 +40,7 @@ namespace StreamDeck.Net
         /// <summary>
         /// Gets or sets the web socket.
         /// </summary>
-        private ClientWebSocket WebSocket { get; set; }
+        private ClientWebSocket? WebSocket { get; set; }
 
         /// <summary>
         /// Connects the web socket to the specified <paramref name="uri" />.
