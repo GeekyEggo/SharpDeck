@@ -1,7 +1,5 @@
 namespace StreamDeck.Events.Sent
 {
-    using StreamDeck.Events;
-
     /// <summary>
     /// Provides payload information used to set the image.
     /// </summary>
