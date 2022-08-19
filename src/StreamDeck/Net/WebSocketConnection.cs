@@ -10,7 +10,7 @@ namespace StreamDeck.Net
     /// <summary>
     /// Provides a light-weight wrapper for <see cref="ClientWebSocket"/>.
     /// </summary>
-    public sealed class WebSocketConnection : IDisposable, IAsyncDisposable
+    public sealed class WebSocketConnection : IAsyncDisposable, IDisposable
     {
         /// <summary>
         /// The buffer size.
@@ -25,17 +25,17 @@ namespace StreamDeck.Net
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
-        public event EventHandler<WebSocketMessageEventArgs> MessageReceived;
-
-        /// <summary>
-        /// Gets or sets the encoding.
-        /// </summary>
-        public Encoding Encoding { get; set; } = Encoding.UTF8;
+        public event EventHandler<WebSocketMessageEventArgs>? MessageReceived;
 
         /// <summary>
         /// Gets the connection task completion source.
         /// </summary>
         private TaskCompletionSource<bool> ConnectionTaskCompletionSource { get; } = new TaskCompletionSource<bool>();
+
+        /// <summary>
+        /// Gets the encoding.
+        /// </summary>
+        private Encoding Encoding { get; } = Encoding.UTF8;
 
         /// <summary>
         /// Gets or sets the web socket.
@@ -47,17 +47,17 @@ namespace StreamDeck.Net
         /// </summary>
         /// <param name="uri">The URI to connect to.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
-        public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken = default)
+        public async Task ConnectAsync(string uri, CancellationToken cancellationToken = default)
         {
             try
             {
-                await this._syncRoot.WaitAsync();
+                await this._syncRoot.WaitAsync(cancellationToken);
 
                 if (this.WebSocket == null)
                 {
                     // Connect the web socket.
                     this.WebSocket = new ClientWebSocket();
-                    await this.WebSocket.ConnectAsync(uri, cancellationToken);
+                    await this.WebSocket.ConnectAsync(new Uri(uri), cancellationToken);
 
                     // Asynchronously listen for messages.
                     _ = Task.Factory.StartNew(
@@ -129,7 +129,7 @@ namespace StreamDeck.Net
         /// </summary>
         /// <param name="value">The value to send.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
-        public async Task SendAsync(object value, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
+        public async Task SendAsync(object value, JsonSerializerOptions? options = null, CancellationToken cancellationToken = default)
         {
             if (this.WebSocket?.State != WebSocketState.Open)
             {
@@ -138,7 +138,7 @@ namespace StreamDeck.Net
 
             try
             {
-                await this._syncRoot.WaitAsync();
+                await this._syncRoot.WaitAsync(cancellationToken);
 
                 var json = JsonSerializer.Serialize(value, options);
                 var buffer = this.Encoding.GetBytes(json);

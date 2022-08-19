@@ -1,9 +1,9 @@
-namespace StreamDeck.Events
+namespace StreamDeck
 {
     /// <summary>
     /// Provides an enumeration of targets.
     /// </summary>
-    public enum TargetType
+    public enum Target
     {
         /// <summary>
         /// Both <see cref="Hardware"/> and <see cref="Software"/>.

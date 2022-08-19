@@ -1,4 +1,4 @@
-namespace StreamDeck.Events.Sent
+namespace StreamDeck.Payloads
 {
     using System.Text.Json.Serialization;
 
@@ -12,7 +12,7 @@ namespace StreamDeck.Events.Sent
         /// </summary>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the target is set to all states.</param>
-        public TargetPayload(TargetType target = TargetType.Both, int? state = null)
+        public TargetPayload(Target target = Target.Both, int? state = null)
         {
             this.State = state;
             this.Target = target;
@@ -27,6 +27,6 @@ namespace StreamDeck.Events.Sent
         /// <summary>
         /// Gets the value indicating which display should be updated.
         /// </summary>
-        public TargetType Target { get; }
+        public Target Target { get; }
     }
 }

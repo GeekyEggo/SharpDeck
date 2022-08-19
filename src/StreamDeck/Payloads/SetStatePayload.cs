@@ -1,4 +1,4 @@
-namespace StreamDeck.Events.Sent
+namespace StreamDeck.Payloads
 {
     /// <summary>
     /// Provides payload information used to set the state.

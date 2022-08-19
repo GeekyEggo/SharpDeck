@@ -1,4 +1,4 @@
-namespace StreamDeck.Events.Sent
+namespace StreamDeck.Payloads
 {
     /// <summary>
     /// Provides information about a message being sent to an Elgato Stream Deck, that contains a payload.

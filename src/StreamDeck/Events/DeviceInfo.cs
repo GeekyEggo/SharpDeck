@@ -18,6 +18,6 @@ namespace StreamDeck.Events
         /// <summary>
         /// Gets the type of device.
         /// </summary>
-        public DeviceType? Type { get; internal set; }
+        public Device? Type { get; internal set; }
     }
 }

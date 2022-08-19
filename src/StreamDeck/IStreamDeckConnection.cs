@@ -1,6 +1,7 @@
 namespace StreamDeck
 {
     using System;
+    using System.Text.Json.Nodes;
     using System.Threading;
     using System.Threading.Tasks;
     using StreamDeck.Events;
@@ -8,13 +9,8 @@ namespace StreamDeck
     /// <summary>
     /// Provides a connection to a Stream Deck.
     /// </summary>
-    public interface IStreamDeckConnection : IDisposable
+    public interface IStreamDeckConnection : IAsyncDisposable, IDisposable
     {
-        /// <summary>
-        /// Occurs when the plugin registers itself.
-        /// </summary>
-        event EventHandler? Registered;
-
         /// <summary>
         /// Occurs when a monitored application is launched.
         /// </summary>
@@ -68,7 +64,7 @@ namespace StreamDeck
         /// <summary>
         /// Occurs when the property inspector sends a message to the plugin.
         /// </summary>
-        event EventHandler<ActionEventArgs<object>>? SendToPlugin;
+        event EventHandler<ActionEventArgs<JsonObject>>? SendToPlugin;
 
         /// <summary>
         /// Occurs when the computer is woken up.
@@ -100,14 +96,6 @@ namespace StreamDeck
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
         Task GetGlobalSettingsAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Requests the persistent global data stored for the plugin.
-        /// </summary>
-        /// <typeparam name="T">The type of the settings.</typeparam>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <returns>The task containing the global settings.</returns>
-        Task<T> GetGlobalSettingsAsync<T>(CancellationToken cancellationToken = default) where T : class;
 
         /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.
@@ -160,7 +148,7 @@ namespace StreamDeck
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the image is set to all states.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the image.</returns>
-        Task SetImageAsync(string context, string image = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default);
+        Task SetImageAsync(string context, string image = "", Target target = Target.Both, int? state = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Save persistent data for the actions instance.
@@ -180,7 +168,7 @@ namespace StreamDeck
         /// <param name="state">A 0-based integer value representing the state of an action with multiple states. This is an optional parameter. If not specified, the title is set to all states.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the title.</returns>
-        Task SetTitleAsync(string context, string title = "", TargetType target = TargetType.Both, int? state = null, CancellationToken cancellationToken = default);
+        Task SetTitleAsync(string context, string title = "", Target target = Target.Both, int? state = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         ///	Change the state of the actions instance supporting multiple states.

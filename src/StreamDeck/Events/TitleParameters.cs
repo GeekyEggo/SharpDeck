@@ -33,7 +33,7 @@ namespace StreamDeck.Events
         /// <summary>
         /// Gets the vertical alignment of the title. Possible values are "top", "bottom" and "middle".
         /// </summary>
-        public TitleAlignmentType? TitleAlignment { get; internal set; }
+        public TitleAlignment? TitleAlignment { get; internal set; }
 
         /// <summary>
         /// Gets the title color, as a hexidecimal, e.g. #ffffff.

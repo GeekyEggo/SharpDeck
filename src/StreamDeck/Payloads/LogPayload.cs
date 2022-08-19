@@ -1,4 +1,4 @@
-namespace StreamDeck.Events.Sent
+namespace StreamDeck.Payloads
 {
     /// <summary>
     /// Provides payload information relating to logging.

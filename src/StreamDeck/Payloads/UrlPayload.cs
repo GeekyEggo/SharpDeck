@@ -1,4 +1,4 @@
-namespace StreamDeck.Events.Sent
+namespace StreamDeck.Payloads
 {
     /// <summary>
     /// Provides URL payload information used to open a URL.

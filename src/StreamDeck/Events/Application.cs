@@ -16,7 +16,7 @@ namespace StreamDeck.Events
         /// <summary>
         /// Gets which platform the Stream Deck application is running
         /// </summary>
-        public PlatformType? Platform { get; internal set; }
+        public Platform? Platform { get; internal set; }
 
         /// <summary>
         /// Gets the Stream Deck application version.
