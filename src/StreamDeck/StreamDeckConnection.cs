@@ -7,6 +7,7 @@ namespace StreamDeck
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using StreamDeck.Events;
+    using StreamDeck.Extensions;
     using StreamDeck.Net;
     using StreamDeck.Payloads;
     using StreamDeck.Serialization;

@@ -1,6 +1,5 @@
 namespace StreamDeck.Tests.Net
 {
-    using System.Text.Json;
     using StreamDeck.Net;
 
     /// <summary>
@@ -102,19 +101,13 @@ namespace StreamDeck.Tests.Net
             });
 
             await this.Client.ConnectAsync(Uri);
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
 
             // When.
-            await this.Client.SendAsync(new FooObj {  Id = "ABC123" }, options);
+            await this.Client.SendAsync("Lorem ipsum");
             var msg = await tcs.Task;
 
             // Then.
-            Assert.That(msg, Is.EqualTo("""
-                {"id":"ABC123"}
-                """));
+            Assert.That(msg, Is.EqualTo("Lorem ipsum"));
         }
 
         /// <summary>
@@ -141,17 +134,6 @@ namespace StreamDeck.Tests.Net
             // Then.
             await this.Client.WaitForDisconnectAsync();
             Assert.That(didClose, Is.True);
-        }
-
-        /// <summary>
-        /// Mock object used for testing serialization and sending of messages.
-        /// </summary>
-        private struct FooObj
-        {
-            /// <summary>
-            /// Gets or sets the identifier.
-            /// </summary>
-            public string Id { get; set; }
         }
     }
 }

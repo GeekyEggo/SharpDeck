@@ -3,14 +3,13 @@ namespace StreamDeck.Net
     using System;
     using System.Net.WebSockets;
     using System.Text;
-    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a light-weight wrapper for <see cref="ClientWebSocket"/>.
     /// </summary>
-    public sealed class WebSocketConnection : IAsyncDisposable, IDisposable
+    internal sealed class WebSocketConnection : IWebSocketConnection
     {
         /// <summary>
         /// The buffer size.
@@ -42,11 +41,7 @@ namespace StreamDeck.Net
         /// </summary>
         private ClientWebSocket? WebSocket { get; set; }
 
-        /// <summary>
-        /// Connects the web socket to the specified <paramref name="uri" />.
-        /// </summary>
-        /// <param name="uri">The URI to connect to.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <inheritdoc/>
         public async Task ConnectAsync(string uri, CancellationToken cancellationToken = default)
         {
             try
@@ -77,9 +72,7 @@ namespace StreamDeck.Net
             }
         }
 
-        /// <summary>
-        /// Disconnects the web socket.
-        /// </summary>
+        /// <inheritdoc/>
         public async Task DisconnectAsync()
         {
             try
@@ -106,30 +99,22 @@ namespace StreamDeck.Net
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             _ = this.DisconnectAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
             await this.DisconnectAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Sends the specified <paramref name="value"/> as a JSON message.
-        /// </summary>
-        /// <param name="value">The value to send.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        public async Task SendAsync(object value, JsonSerializerOptions? options = null, CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public async Task SendAsync(string message, CancellationToken cancellationToken = default)
         {
             if (this.WebSocket?.State != WebSocketState.Open)
             {
@@ -140,9 +125,7 @@ namespace StreamDeck.Net
             {
                 await this._syncRoot.WaitAsync(cancellationToken);
 
-                var json = JsonSerializer.Serialize(value, options);
-                var buffer = this.Encoding.GetBytes(json);
-
+                var buffer = this.Encoding.GetBytes(message);
                 await this.WebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, cancellationToken).ConfigureAwait(false);
             }
             finally
@@ -151,11 +134,7 @@ namespace StreamDeck.Net
             }
         }
 
-        /// <summary>
-        /// Waits for the underlying connection to disconnect asynchronously.
-        /// </summary>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <returns>The task of the live connection.</returns>
+        /// <inheritdoc/>
         public Task WaitForDisconnectAsync(CancellationToken cancellationToken = default)
         {
             var tcs = new TaskCompletionSource<bool>();
