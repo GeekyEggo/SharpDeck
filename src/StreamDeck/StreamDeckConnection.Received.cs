@@ -3,9 +3,7 @@ namespace StreamDeck
     using System.Text.Json.Nodes;
     using StreamDeck.Events;
 
-    /// <summary>
-    /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.
-    /// </summary>
+    /// <inheritdoc/>
     public sealed partial class StreamDeckConnection
     {
         /// <inheritdoc/>
