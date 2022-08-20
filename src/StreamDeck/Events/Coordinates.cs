@@ -1,8 +1,5 @@
 namespace StreamDeck.Events
 {
-    using System;
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Provides coordinates as represented as <see cref="Column"/> and <see cref="Row"/>.
     /// </summary>

@@ -1,21 +1,10 @@
 namespace StreamDeck.Events
 {
-    using StreamDeck.Serialization;
-
     /// <summary>
-    /// Defines the possible font styles supported by the Elgato Stream Deck.
+    /// Defines the font styles supported by the Stream Deck.
     /// </summary>
-    public class FontStyle : EnumString<FontStyle>
+    public static class FontStyle
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FontStyle"/> class.
-        /// </summary>
-        /// <param name="style">The style.</param>
-        internal FontStyle(string? style)
-            : base(style ?? Regular)
-        {
-        }
-
         /// <summary>
         /// Regular font.
         /// </summary>

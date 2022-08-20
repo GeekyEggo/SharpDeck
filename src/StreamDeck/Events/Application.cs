@@ -1,8 +1,6 @@
 namespace StreamDeck.Events
 {
-    using System;
     using System.Globalization;
-    using System.Text.Json.Serialization;
     using StreamDeck.Serialization.Converters;
 
     /// <summary>
@@ -21,8 +19,7 @@ namespace StreamDeck.Events
         /// Gets which platform the Stream Deck application is running
         /// </summary>
         [JsonInclude]
-        [JsonConverter(typeof(PlatformJsonConverter))]
-        public Platform? Platform { get; internal set; }
+        public string? Platform { get; internal set; }
 
         /// <summary>
         /// Gets the Stream Deck application version.

@@ -1,6 +1,5 @@
 namespace StreamDeck
 {
-    using System;
     using System.Text.Json;
     using StreamDeck.Events;
     using StreamDeck.Serialization;

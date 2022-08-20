@@ -2,7 +2,6 @@ namespace StreamDeck.Events
 {
     using System.Text.Json;
     using System.Text.Json.Nodes;
-    using System.Text.Json.Serialization;
     using System.Text.Json.Serialization.Metadata;
     using StreamDeck.Serialization;
 

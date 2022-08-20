@@ -1,9 +1,6 @@
 namespace StreamDeck
 {
-    using System;
     using System.Text.Json.Nodes;
-    using System.Threading;
-    using System.Threading.Tasks;
     using StreamDeck.Events;
 
     /// <summary>
@@ -89,6 +86,11 @@ namespace StreamDeck
         /// Occurs when an instance of an action disappears.
         /// </summary>
         event EventHandler<ActionEventArgs<AppearancePayload>>? WillDisappear;
+
+        /// <summary>
+        /// Gets the information supplied by Stream Deck when establishing the connection.
+        /// </summary>
+        RegistrationInfo Info { get; }
 
         /// <summary>
         /// Requests the persistent global data stored for the plugin.

@@ -1,7 +1,5 @@
 namespace StreamDeck.Events
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Provides payload information relating to an action, and its appearance.
     /// </summary>

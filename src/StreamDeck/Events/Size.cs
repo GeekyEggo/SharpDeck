@@ -1,7 +1,5 @@
 namespace StreamDeck.Events
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Provides a size as represented by <see cref="Columns"/> and <see cref="Rows"/>.
     /// </summary>

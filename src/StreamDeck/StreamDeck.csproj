@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
         <LangVersion>preview</LangVersion>
+        <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 

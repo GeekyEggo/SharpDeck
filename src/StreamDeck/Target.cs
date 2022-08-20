@@ -1,7 +1,7 @@
 namespace StreamDeck
 {
     /// <summary>
-    /// Provides an enumeration of targets.
+    /// Provides an enumeration of targets used to identify the Stream Deck.
     /// </summary>
     public enum Target
     {

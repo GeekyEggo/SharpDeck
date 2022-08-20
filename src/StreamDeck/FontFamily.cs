@@ -1,21 +1,10 @@
-namespace StreamDeck.Events
+namespace StreamDeck
 {
-    using StreamDeck.Serialization;
-
     /// <summary>
-    /// An enumeration of fonts available to the Elgato Stream Deck.
+    /// Defines the font families supported by the Stream Deck.
     /// </summary>
-    public class FontFamily : EnumString<FontFamily>
+    public static class FontFamily
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FontFamily"/> class.
-        /// </summary>
-        /// <param name="name">The name of the font.</param>
-        internal FontFamily(string? name)
-            : base(name ?? FontFamily.Default)
-        {
-        }
-
         /// <summary>
         /// Default font.
         /// </summary>
@@ -95,13 +84,5 @@ namespace StreamDeck.Events
         /// Wingdings font.
         /// </summary>
         public const string Wingdings = nameof(Wingdings);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="string"/> to <see cref="FontFamily"/>.
-        /// </summary>
-        /// <param name="fontFamily">The font family.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator FontFamily(string fontFamily)
-            => new FontFamily(fontFamily);
     }
 }

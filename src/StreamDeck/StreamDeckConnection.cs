@@ -1,10 +1,6 @@
 namespace StreamDeck
 {
-    using System;
     using System.Text.Json;
-    using System.Text.Json.Nodes;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using StreamDeck.Events;
     using StreamDeck.Extensions;
@@ -15,53 +11,8 @@ namespace StreamDeck
     /// <summary>
     /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.
     /// </summary>
-    public sealed class StreamDeckConnection : IStreamDeckConnection
+    public sealed partial class StreamDeckConnection : IStreamDeckConnection
     {
-        /// <inheritdoc/>
-        public event EventHandler<StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidLaunch;
-
-        /// <inheritdoc/>
-        public event EventHandler<StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidTerminate;
-
-        /// <inheritdoc/>
-        public event EventHandler<DeviceConnectEventArgs>? DeviceDidConnect;
-
-        /// <inheritdoc/>
-        public event EventHandler<DeviceEventArgs>? DeviceDidDisconnect;
-
-        /// <inheritdoc/>
-        public event EventHandler<StreamDeckEventArgs<SettingsPayload>>? DidReceiveGlobalSettings;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<ActionPayload>>? DidReceiveSettings;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<KeyPayload>>? KeyDown;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<KeyPayload>>? KeyUp;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs>? PropertyInspectorDidAppear;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs>? PropertyInspectorDidDisappear;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<JsonObject>>? SendToPlugin;
-
-        /// <inheritdoc/>
-        public event EventHandler<StreamDeckEventArgs>? SystemDidWakeUp;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<TitlePayload>>? TitleParametersDidChange;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<AppearancePayload>>? WillAppear;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionEventArgs<AppearancePayload>>? WillDisappear;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckConnection"/> class.
         /// </summary>
@@ -85,9 +36,7 @@ namespace StreamDeck
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
         }
 
-        /// <summary>
-        /// Gets the information about the connection.
-        /// </summary>
+        /// <inheritdoc/>
         public RegistrationInfo Info => this.RegistrationParameters.Info;
 
         /// <summary>
@@ -148,72 +97,6 @@ namespace StreamDeck
             await this.WebSocket.DisconnectAsync();
             GC.SuppressFinalize(this);
         }
-
-        /// <inheritdoc/>
-        public Task GetGlobalSettingsAsync(CancellationToken cancellationToken = default)
-        {
-            if (this.RegistrationParameters?.PluginUUID == null)
-            {
-                throw new NullReferenceException("Unable to get global settings as the pluginUUID is null.");
-            }
-
-            return this.SendAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID), cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public Task GetSettingsAsync(string context, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage("getSettings", context), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task LogMessageAsync(string msg, CancellationToken cancellationToken = default)
-            => this.SendAsync(new Message<LogPayload>("logMessage", new LogPayload(msg)), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task OpenUrlAsync(string url, CancellationToken cancellationToken = default)
-            => this.SendAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task SendToPropertyInspectorAsync(string context, string action, object payload, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ActionMessage<object>("sendToPropertyInspector", context, action, payload), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default)
-        {
-            if (this.RegistrationParameters?.PluginUUID == null)
-            {
-                throw new NullReferenceException("Unable to set global settings as the pluginUUID is null.");
-            }
-
-            return this.SendAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, settings), cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public Task SetImageAsync(string context, string image = "", Target target = Target.Both, int? state = null, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage<SetImagePayload>("setImage", context, new SetImagePayload(image, target, state)), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task SetSettingsAsync(string context, object settings, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage<object>("setSettings", context, settings), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task SetStateAsync(string context, int state = 0, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage<SetStatePayload>("setState", context, new SetStatePayload(state)), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task SetTitleAsync(string context, string title = "", Target target = Target.Both, int? state = null, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage<SetTitlePayload>("setTitle", context, new SetTitlePayload(title, target, state)), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task ShowAlertAsync(string context, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage("showAlert", context), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task ShowOkAsync(string context, CancellationToken cancellationToken = default)
-            => this.SendAsync(new ContextMessage("showOk", context), cancellationToken);
-
-        /// <inheritdoc/>
-        public Task SwitchToProfileAsync(string context, string device, string profile = "", CancellationToken cancellationToken = default)
-            => this.SendAsync(new DeviceMessage<SwitchToProfilePayload>("switchToProfile", context, device, new SwitchToProfilePayload(profile)), cancellationToken);
 
         /// <summary>
         /// Sends the value to the Stream Deck asynchronously.
@@ -306,7 +189,7 @@ namespace StreamDeck
             }
             catch (Exception ex)
             {
-                this.Logger?.LogError(ex, "{message}", ex.Message);
+                this.Logger?.LogError(ex, "Exception encountered whilst handling Stream Deck event.");
             }
         }
     }

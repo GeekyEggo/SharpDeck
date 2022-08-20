@@ -1,8 +1,5 @@
 namespace StreamDeck.Events
 {
-    using System;
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Provides information about an event received from an Elgato Stream Deck.
     /// </summary>

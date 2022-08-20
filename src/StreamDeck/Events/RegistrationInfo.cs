@@ -1,7 +1,5 @@
 namespace StreamDeck.Events
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Provides information about registration; this is used when initialising a connection with the Stream.
     /// </summary>

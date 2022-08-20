@@ -1,9 +1,7 @@
-﻿namespace StreamDeck.Serialization.Converters
+namespace StreamDeck.Serialization.Converters
 {
-    using System;
     using System.Globalization;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Provides a JSON converter for <see cref="CultureInfo"/>.

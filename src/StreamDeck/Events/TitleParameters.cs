@@ -1,6 +1,5 @@
 namespace StreamDeck.Events
 {
-    using System.Text.Json.Serialization;
     using StreamDeck.Serialization.Converters;
 
     /// <summary>
@@ -12,8 +11,7 @@ namespace StreamDeck.Events
         /// Gets the font family for the title.
         /// </summary>
         [JsonInclude]
-        [JsonConverter(typeof(FontFamilyJsonConverter))]
-        public FontFamily? FontFamily { get; internal set; }
+        public string? FontFamily { get; internal set; }
 
         /// <summary>
         /// Gets the font size for the title.
@@ -25,8 +23,7 @@ namespace StreamDeck.Events
         /// Gets the font style for the title.
         /// </summary>
         [JsonInclude]
-        [JsonConverter(typeof(FontStyleJsonConverter))]
-        public FontStyle? FontStyle { get; internal set; }
+        public string? FontStyle { get; internal set; }
 
         /// <summary>
         /// Gets a value indicating whether the title is underlined.
@@ -44,8 +41,7 @@ namespace StreamDeck.Events
         /// Gets the vertical alignment of the title. Possible values are "top", "bottom" and "middle".
         /// </summary>
         [JsonInclude]
-        [JsonConverter(typeof(TitleAlignmentJsonConverter))]
-        public TitleAlignment? TitleAlignment { get; internal set; }
+        public string? TitleAlignment { get; internal set; }
 
         /// <summary>
         /// Gets the title color, as a hexidecimal, e.g. #ffffff.
