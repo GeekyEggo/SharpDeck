@@ -154,9 +154,9 @@ namespace StreamDeck.Net
         /// <summary>
         /// Waits for the underlying connection to disconnect asynchronously.
         /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of the live connection.</returns>
-        public Task WaitForDisconnectAsync(CancellationToken cancellationToken)
+        public Task WaitForDisconnectAsync(CancellationToken cancellationToken = default)
         {
             var tcs = new TaskCompletionSource<bool>();
             cancellationToken.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: false);

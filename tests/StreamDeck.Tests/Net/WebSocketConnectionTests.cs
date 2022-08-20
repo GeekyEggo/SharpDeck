@@ -1,0 +1,157 @@
+namespace StreamDeck.Tests.Net
+{
+    using System.Text.Json;
+    using StreamDeck.Net;
+
+    /// <summary>
+    /// Provides assertions for <see cref="WebSocketConnection"/>.
+    /// </summary>
+    [TestFixture]
+    public class WebSocketConnectionTests
+    {
+        /// <summary>
+        /// The URI of the web socket server.
+        /// </summary>
+        private const string Uri = "ws://127.0.0.1:8181";
+
+        /// <summary>
+        /// Gets or sets the web socket server.
+        /// </summary>
+        private Fleck.WebSocketServer Server { get; set; }
+
+        /// <summary>
+        /// Gets or sets the web socket client.
+        /// </summary>
+        private WebSocketConnection Client { get; set; }
+
+        /// <summary>
+        /// Provides per-test set-up.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+            this.Server = new Fleck.WebSocketServer(Uri);
+            this.Client = new WebSocketConnection();
+        }
+
+        /// <summary>
+        /// Provides per-test tear down.
+        /// </summary>
+        [TearDown]
+        public void TearDown()
+        {
+            this.Client.Dispose();
+            this.Server.Dispose();
+        }
+
+        /// <summary>
+        /// Asserts <see cref="WebSocketConnection.ConnectAsync(string, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task ConnectAsync()
+        {
+            // Given.
+            var tcs = new TaskCompletionSource<Fleck.IWebSocketConnection>();
+            this.Server.Start(conn =>
+            {
+                conn.OnOpen = () => tcs.TrySetResult(conn);
+            });
+
+            // When.
+            await this.Client.ConnectAsync(Uri);
+
+            // Then.
+            await tcs.Task;
+            Assert.Pass();
+        }
+
+        /// <summary>
+        /// Asserts <see cref="WebSocketConnection.DisconnectAsync()"/>.
+        /// </summary>
+        [Test]
+        public async Task DisconnectAsync()
+        {
+            // Given.
+            var tcs = new TaskCompletionSource<Fleck.IWebSocketConnection>();
+            this.Server.Start(conn =>
+            {
+                conn.OnClose = () => tcs.TrySetResult(conn);
+            });
+
+            await this.Client.ConnectAsync(Uri);
+
+            // When.
+            await this.Client.DisconnectAsync();
+
+            // Then.
+            await tcs.Task;
+            Assert.Pass();
+        }
+
+        /// <summary>
+        /// Asserts <see cref="WebSocketConnection.SendAsync(object, System.Text.Json.JsonSerializerOptions?, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task SendAsync()
+        {
+            // Given.
+            var tcs = new TaskCompletionSource<string>();
+            this.Server.Start(conn =>
+            {
+                conn.OnMessage = (msg) => tcs.TrySetResult(msg);
+            });
+
+            await this.Client.ConnectAsync(Uri);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            // When.
+            await this.Client.SendAsync(new FooObj {  Id = "ABC123" }, options);
+            var msg = await tcs.Task;
+
+            // Then.
+            Assert.That(msg, Is.EqualTo("""
+                {"id":"ABC123"}
+                """));
+        }
+
+        /// <summary>
+        /// Asserts <see cref="WebSocketConnection.WaitForDisconnectAsync(CancellationToken)()"/>.
+        /// </summary>
+        [Test]
+        public async Task WaitForDisconnectAsync()
+        {
+            // Given.
+            var didClose = false;
+            this.Server.Start(conn =>
+            {
+                conn.OnClose = () => didClose = true;
+            });
+
+            // When.
+            await this.Client.ConnectAsync(Uri);
+            _ = Task.Factory.StartNew(async () =>
+            {
+                await Task.Delay(500);
+                await this.Client.DisconnectAsync();
+            }, TaskCreationOptions.RunContinuationsAsynchronously);
+
+            // Then.
+            await this.Client.WaitForDisconnectAsync();
+            Assert.That(didClose, Is.True);
+        }
+
+        /// <summary>
+        /// Mock object used for testing serialization and sending of messages.
+        /// </summary>
+        private struct FooObj
+        {
+            /// <summary>
+            /// Gets or sets the identifier.
+            /// </summary>
+            public string Id { get; set; }
+        }
+    }
+}
