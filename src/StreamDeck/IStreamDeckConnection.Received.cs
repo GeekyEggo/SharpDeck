@@ -8,31 +8,37 @@ namespace StreamDeck
     {
         /// <summary>
         /// Occurs when a monitored application is launched.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#applicationdidlaunch"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidLaunch;
 
         /// <summary>
         /// Occurs when a monitored application is terminated.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#applicationdidterminate"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidTerminate;
 
         /// <summary>
         /// Occurs when a device is plugged to the computer.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#devicedidconnect"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, DeviceConnectEventArgs>? DeviceDidConnect;
 
         /// <summary>
         /// Occurs when a device is unplugged from the computer.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#devicediddisconnect"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, DeviceEventArgs>? DeviceDidDisconnect;
 
         /// <summary>
         /// Occurs when <see cref="GetGlobalSettingsAsync(CancellationToken)"/> has been called to retrieve the persistent global data stored for the plugin.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#didreceiveglobalsettings"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<SettingsPayload>>? DidReceiveGlobalSettings;
 
         /// <summary>
         /// Occurs when <see cref="GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#didreceivesettings"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? DidReceiveSettings;
 
