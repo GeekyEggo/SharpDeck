@@ -44,28 +44,33 @@ namespace StreamDeck
 
         /// <summary>
         /// Occurs when the user presses a key.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#keydown"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>>? KeyDown;
 
         /// <summary>
         /// Occurs when the user releases a key.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#keyup"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>>? KeyUp;
 
         /// <summary>
         /// Occurs when the Property Inspector appears.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#propertyinspectordidappear"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidAppear;
 
         /// <summary>
         /// Occurs when the Property Inspector disappears
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#propertyinspectordiddisappear"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidDisappear;
 
         /// <summary>
         /// Occurs when the property inspector sends a message to the plugin.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#sendtoplugin"/>.
         /// </summary>
-        event EventHandler<IStreamDeckConnection, ActionEventArgs<JsonObject>>? SendToPlugin;
+        event EventHandler<IStreamDeckConnection, PartialActionEventArgs<JsonObject?>>? SendToPlugin;
 
         /// <summary>
         /// Occurs when the computer is woken up.

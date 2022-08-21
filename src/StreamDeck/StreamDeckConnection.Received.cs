@@ -37,7 +37,7 @@ namespace StreamDeck
         public event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidDisappear;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<JsonObject>>? SendToPlugin;
+        public event EventHandler<IStreamDeckConnection, PartialActionEventArgs<JsonObject?>>? SendToPlugin;
 
         /// <inheritdoc/>
         public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs>? SystemDidWakeUp;
