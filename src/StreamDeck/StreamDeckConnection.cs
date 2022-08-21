@@ -5,7 +5,6 @@ namespace StreamDeck
     using StreamDeck.Events;
     using StreamDeck.Extensions;
     using StreamDeck.Net;
-    using StreamDeck.Payloads;
     using StreamDeck.Serialization;
 
     /// <summary>

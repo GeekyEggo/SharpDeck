@@ -1,7 +1,5 @@
 namespace StreamDeck.Events
 {
-    using StreamDeck.Serialization.Converters;
-
     /// <summary>
     /// Provides information about a title.
     /// </summary>
