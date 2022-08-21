@@ -16,9 +16,9 @@ namespace StreamDeck.Extensions
         /// </summary>
         /// <typeparam name="T">The desired type of the settings.</typeparam>
         /// <returns>The settings as <typeparamref name="T"/>.</returns>
-        public static T? GetPayload<T>(this StreamDeckEventArgs<JsonObject?> args)
+        public static T? GetPayload<T>(this StreamDeckEventArgs<JsonObject>? args)
             where T : class
-            => args.Payload?.Deserialize<T>(StreamDeckJsonContext.Default.Options);
+            => args?.Payload?.Deserialize<T>(StreamDeckJsonContext.Default.Options);
 
         /// <summary>
         /// Gets the payload as the specified <typeparamref name="T"/>.
@@ -26,8 +26,8 @@ namespace StreamDeck.Extensions
         /// <typeparam name="T">The desired type of the payload.</typeparam>
         /// <param name="jsonTypeInfo">The JSON type information.</param>
         /// <returns>The settings as <typeparamref name="T"/>.</returns>
-        public static T? GetPayload<T>(this StreamDeckEventArgs<JsonObject?> args, JsonTypeInfo<T> jsonTypeInfo)
+        public static T? GetPayload<T>(this StreamDeckEventArgs<JsonObject>? args, JsonTypeInfo<T> jsonTypeInfo)
             where T : class
-            => args.Payload?.Deserialize(jsonTypeInfo);
+            => args?.Payload?.Deserialize(jsonTypeInfo);
     }
 }

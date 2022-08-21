@@ -23,8 +23,8 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Event, Is.EqualTo("applicationDidLaunch"));
-                    Assert.That(args.Payload?.Application, Is.EqualTo("com.tests.example"));
+                    Assert.That(args?.Event, Is.EqualTo("applicationDidLaunch"));
+                    Assert.That(args?.Payload?.Application, Is.EqualTo("com.tests.example"));
                 });
 
                 didHandle = true;
@@ -59,8 +59,8 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Event, Is.EqualTo("applicationDidTerminate"));
-                    Assert.That(args.Payload?.Application, Is.EqualTo("com.tests.example"));
+                    Assert.That(args?.Event, Is.EqualTo("applicationDidTerminate"));
+                    Assert.That(args?.Payload?.Application, Is.EqualTo("com.tests.example"));
                 });
 
                 didHandle = true;
@@ -95,12 +95,12 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Event, Is.EqualTo("deviceDidConnect"));
-                    Assert.That(args.Device, Is.EqualTo("ABC123"));
-                    Assert.That(args.DeviceInfo?.Name, Is.EqualTo("Device Name"));
-                    Assert.That(args.DeviceInfo?.Type, Is.EqualTo(Device.StreamDeck));
-                    Assert.That(args.DeviceInfo?.Size?.Columns, Is.EqualTo(5));
-                    Assert.That(args.DeviceInfo?.Size?.Rows, Is.EqualTo(3));
+                    Assert.That(args?.Event, Is.EqualTo("deviceDidConnect"));
+                    Assert.That(args?.Device, Is.EqualTo("ABC123"));
+                    Assert.That(args?.DeviceInfo?.Name, Is.EqualTo("Device Name"));
+                    Assert.That(args?.DeviceInfo?.Type, Is.EqualTo(Device.StreamDeck));
+                    Assert.That(args?.DeviceInfo?.Size?.Columns, Is.EqualTo(5));
+                    Assert.That(args?.DeviceInfo?.Size?.Rows, Is.EqualTo(3));
                 });
 
                 didHandle = true;
@@ -141,8 +141,8 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Event, Is.EqualTo("deviceDidDisconnect"));
-                    Assert.That(args.Device, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Event, Is.EqualTo("deviceDidDisconnect"));
+                    Assert.That(args?.Device, Is.EqualTo("ABC123"));
                 });
 
                 didHandle = true;
@@ -175,9 +175,9 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Event, Is.EqualTo("didReceiveGlobalSettings"));
-                    Assert.That(args.Payload?.Settings, Is.Not.Null);
-                    Assert.That(args.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Event, Is.EqualTo("didReceiveGlobalSettings"));
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
                 });
 
                 didHandle = true;
@@ -214,15 +214,15 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
-                    Assert.That(args.Event, Is.EqualTo("didReceiveSettings"));
-                    Assert.That(args.Payload?.Settings, Is.Not.Null);
-                    Assert.That(args.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
-                    Assert.That(args.Payload?.Coordinates?.Column, Is.EqualTo(3));
-                    Assert.That(args.Payload?.Coordinates?.Row, Is.EqualTo(1));
-                    Assert.That(args.Payload?.IsInMultiAction, Is.False);
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("didReceiveSettings"));
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Payload?.Coordinates?.Column, Is.EqualTo(3));
+                    Assert.That(args?.Payload?.Coordinates?.Row, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.IsInMultiAction, Is.False);
                 });
 
                 didHandle = true;
@@ -267,17 +267,17 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
-                    Assert.That(args.Event, Is.EqualTo("keyDown"));
-                    Assert.That(args.Payload?.Settings, Is.Not.Null);
-                    Assert.That(args.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
-                    Assert.That(args.Payload?.Coordinates?.Column, Is.EqualTo(3));
-                    Assert.That(args.Payload?.Coordinates?.Row, Is.EqualTo(1));
-                    Assert.That(args.Payload?.IsInMultiAction, Is.True);
-                    Assert.That(args.Payload?.State, Is.EqualTo(0));
-                    Assert.That(args.Payload?.UserDesiredState, Is.EqualTo(1));
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("keyDown"));
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Payload?.Coordinates?.Column, Is.EqualTo(3));
+                    Assert.That(args?.Payload?.Coordinates?.Row, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.IsInMultiAction, Is.True);
+                    Assert.That(args?.Payload?.State, Is.EqualTo(0));
+                    Assert.That(args?.Payload?.UserDesiredState, Is.EqualTo(1));
                 });
 
                 didHandle = true;
@@ -324,17 +324,17 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
-                    Assert.That(args.Event, Is.EqualTo("keyUp"));
-                    Assert.That(args.Payload?.Settings, Is.Not.Null);
-                    Assert.That(args.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
-                    Assert.That(args.Payload?.Coordinates?.Column, Is.EqualTo(1));
-                    Assert.That(args.Payload?.Coordinates?.Row, Is.EqualTo(2));
-                    Assert.That(args.Payload?.IsInMultiAction, Is.True);
-                    Assert.That(args.Payload?.State, Is.EqualTo(1));
-                    Assert.That(args.Payload?.UserDesiredState, Is.EqualTo(0));
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("keyUp"));
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Payload?.Coordinates?.Column, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.Coordinates?.Row, Is.EqualTo(2));
+                    Assert.That(args?.Payload?.IsInMultiAction, Is.True);
+                    Assert.That(args?.Payload?.State, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.UserDesiredState, Is.EqualTo(0));
                 });
 
                 didHandle = true;
@@ -381,10 +381,10 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
-                    Assert.That(args.Event, Is.EqualTo("propertyInspectorDidAppear"));
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("propertyInspectorDidAppear"));
                 });
 
                 didHandle = true;
@@ -419,10 +419,10 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
-                    Assert.That(args.Event, Is.EqualTo("propertyInspectorDidDisappear"));
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("propertyInspectorDidDisappear"));
                 });
 
                 didHandle = true;
@@ -457,11 +457,11 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Event, Is.EqualTo("sendToPlugin"));
-                    Assert.That(args.Payload, Is.Not.Null);
-                    Assert.That(args.GetPayload<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Event, Is.EqualTo("sendToPlugin"));
+                    Assert.That(args?.Payload, Is.Not.Null);
+                    Assert.That(args?.GetPayload<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
                 });
 
                 didHandle = true;
@@ -497,7 +497,7 @@ namespace StreamDeck.Tests
                 Assert.Multiple(() =>
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
-                    Assert.That(args.Event, Is.EqualTo("systemDidWakeUp"));
+                    Assert.That(args?.Event, Is.EqualTo("systemDidWakeUp"));
                 });
 
                 didHandle = true;
@@ -529,23 +529,23 @@ namespace StreamDeck.Tests
                 {
                     Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
 
-                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
-                    Assert.That(args.Context, Is.EqualTo("ABC123"));
-                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
-                    Assert.That(args.Event, Is.EqualTo("titleParametersDidChange"));
-                    Assert.That(args.Payload?.Coordinates?.Column, Is.EqualTo(5));
-                    Assert.That(args.Payload?.Coordinates?.Row, Is.EqualTo(2));
-                    Assert.That(args.Payload?.Settings, Is.Not.Null);
-                    Assert.That(args.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
-                    Assert.That(args.Payload?.State, Is.EqualTo(1));
-                    Assert.That(args.Payload?.Title, Is.EqualTo("Hello World"));
-                    Assert.That(args.Payload?.TitleParameters?.FontFamily, Is.EqualTo("Calibri"));
-                    Assert.That(args.Payload?.TitleParameters?.FontSize, Is.EqualTo(12));
-                    Assert.That(args.Payload?.TitleParameters?.FontStyle, Is.EqualTo("Bold"));
-                    Assert.That(args.Payload?.TitleParameters?.FontUnderline, Is.EqualTo(false));
-                    Assert.That(args.Payload?.TitleParameters?.ShowTitle, Is.EqualTo(true));
-                    Assert.That(args.Payload?.TitleParameters?.TitleAlignment, Is.EqualTo("bottom"));
-                    Assert.That(args.Payload?.TitleParameters?.TitleColor, Is.EqualTo("#ffff00"));
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("titleParametersDidChange"));
+                    Assert.That(args?.Payload?.Coordinates?.Column, Is.EqualTo(5));
+                    Assert.That(args?.Payload?.Coordinates?.Row, Is.EqualTo(2));
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Payload?.State, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.Title, Is.EqualTo("Hello World"));
+                    Assert.That(args?.Payload?.TitleParameters?.FontFamily, Is.EqualTo("Calibri"));
+                    Assert.That(args?.Payload?.TitleParameters?.FontSize, Is.EqualTo(12));
+                    Assert.That(args?.Payload?.TitleParameters?.FontStyle, Is.EqualTo("Bold"));
+                    Assert.That(args?.Payload?.TitleParameters?.FontUnderline, Is.EqualTo(false));
+                    Assert.That(args?.Payload?.TitleParameters?.ShowTitle, Is.EqualTo(true));
+                    Assert.That(args?.Payload?.TitleParameters?.TitleAlignment, Is.EqualTo("bottom"));
+                    Assert.That(args?.Payload?.TitleParameters?.TitleColor, Is.EqualTo("#ffff00"));
                 });
 
                 didHandle = true;
@@ -577,6 +577,116 @@ namespace StreamDeck.Tests
                             "titleAlignment": "bottom",
                             "titleColor": "#ffff00"
                         }
+                    }
+                }
+                """);
+
+            // Assert.
+            Assert.That(didHandle, Is.True, "Event was not raised.");
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.WillAppear"/>.
+        /// </summary>
+        [Test]
+        public void WillAppear()
+        {
+            // Arrange.
+            var didHandle = false;
+            this.StreamDeckConnection.WillAppear += (sender, args) =>
+            {
+                // Assert
+                Assert.Multiple(() =>
+                {
+                    Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
+
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("willAppear"));
+                    Assert.That(args?.Payload?.Coordinates?.Column, Is.EqualTo(3));
+                    Assert.That(args?.Payload?.Coordinates?.Row, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.IsInMultiAction, Is.False);
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Payload?.State, Is.EqualTo(1));
+                });
+
+                didHandle = true;
+            };
+
+            // Act.
+            this.Raise("""
+                {
+                    "action": "com.tests.example.action",
+                    "context": "ABC123",
+                    "device": "ZYC789",
+                    "event": "willAppear",
+                    "payload": {
+                        "coordinates": {
+                            "column": 3,
+                            "row": 1
+                        },
+                        "isInMultiAction": false,
+                        "settings": {
+                            "name": "Bob Smith"
+                        },
+                        "state": 1
+                    }
+                }
+                """);
+
+            // Assert.
+            Assert.That(didHandle, Is.True, "Event was not raised.");
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.WillDisappear"/>.
+        /// </summary>
+        [Test]
+        public void WillDisappear()
+        {
+            // Arrange.
+            var didHandle = false;
+            this.StreamDeckConnection.WillAppear += (sender, args) =>
+            {
+                // Assert
+                Assert.Multiple(() =>
+                {
+                    Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
+
+                    Assert.That(args?.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args?.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args?.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args?.Event, Is.EqualTo("willAppear"));
+                    Assert.That(args?.Payload?.Coordinates?.Column, Is.EqualTo(1));
+                    Assert.That(args?.Payload?.Coordinates?.Row, Is.EqualTo(2));
+                    Assert.That(args?.Payload?.IsInMultiAction, Is.True);
+                    Assert.That(args?.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args?.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args?.Payload?.State, Is.EqualTo(0));
+                });
+
+                didHandle = true;
+            };
+
+            // Act.
+            this.Raise("""
+                {
+                    "action": "com.tests.example.action",
+                    "context": "ABC123",
+                    "device": "ZYC789",
+                    "event": "willAppear",
+                    "payload": {
+                        "coordinates": {
+                            "column": 1,
+                            "row": 2
+                        },
+                        "isInMultiAction": true,
+                        "settings": {
+                            "name": "Bob Smith"
+                        },
+                        "state": 0
                     }
                 }
                 """);
