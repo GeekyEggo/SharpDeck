@@ -33,30 +33,28 @@ namespace StreamDeck
             => this.WebSocket.SendAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)), StreamDeckJsonContext.Default.MessageUrlPayload, cancellationToken);
 
         /// <inheritdoc/>
-        public Task SendToPropertyInspectorAsync<T>(string context, string action, T payload, JsonTypeInfo<T>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+        public Task SendToPropertyInspectorAsync<TPayload>(string context, string action, TPayload payload, JsonTypeInfo<TPayload>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
         {
             const string @event = "sendToPropertyInspector";
 
-            if (jsonTypeInfo == null)
-            {
-                return this.WebSocket.SendAsync(new ActionMessage<T>(@event, context, action, payload), cancellationToken);
-            }
-            else
-            {
-                var payloadAsJson = JsonSerializer.SerializeToElement(payload, jsonTypeInfo);
-                return this.WebSocket.SendAsync(new ActionMessage<JsonElement>(@event, context, action, payloadAsJson), StreamDeckJsonContext.Default.ActionMessageJsonElement, cancellationToken);
-            }
+            return jsonTypeInfo == null
+                ? this.WebSocket.SendAsync(new ActionMessage<TPayload>(@event, context, action, payload), cancellationToken)
+                : this.WebSocket.SendAsync(new ActionMessage<JsonElement>(@event, context, action, JsonSerializer.SerializeToElement(payload, jsonTypeInfo)), StreamDeckJsonContext.Default.ActionMessageJsonElement, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default)
+        public Task SetGlobalSettingsAsync<TSettings>(TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
         {
             if (this.RegistrationParameters?.PluginUUID == null)
             {
                 throw new NullReferenceException("Unable to set global settings as the pluginUUID is null.");
             }
 
-            return this.WebSocket.SendAsync(new ContextMessage<object>("setGlobalSettings", this.RegistrationParameters.PluginUUID, settings), StreamDeckJsonContext.Default.ContextMessageObject, cancellationToken);
+            const string @event = "setGlobalSettings";
+
+            return jsonTypeInfo == null
+            ? this.WebSocket.SendAsync(new ContextMessage<TSettings>(@event, this.RegistrationParameters.PluginUUID, settings), cancellationToken)
+                : this.WebSocket.SendAsync(new ContextMessage<JsonElement>(@event, this.RegistrationParameters.PluginUUID, JsonSerializer.SerializeToElement(settings, jsonTypeInfo)), StreamDeckJsonContext.Default.ContextMessageJsonElement, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -64,8 +62,14 @@ namespace StreamDeck
             => this.WebSocket.SendAsync(new ContextMessage<SetImagePayload>("setImage", context, new SetImagePayload(image, target, state)), StreamDeckJsonContext.Default.ContextMessageSetImagePayload, cancellationToken);
 
         /// <inheritdoc/>
-        public Task SetSettingsAsync(string context, object settings, CancellationToken cancellationToken = default)
-            => this.WebSocket.SendAsync(new ContextMessage<object>("setSettings", context, settings), StreamDeckJsonContext.Default.ContextMessageObject, cancellationToken);
+        public Task SetSettingsAsync<TSettings>(string context, TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+        {
+            const string @event = "setSettings";
+
+            return jsonTypeInfo == null
+                ? this.WebSocket.SendAsync(new ContextMessage<TSettings>(@event, context, settings), cancellationToken)
+                : this.WebSocket.SendAsync(new ContextMessage<JsonElement>(@event, context, JsonSerializer.SerializeToElement(settings, jsonTypeInfo)), StreamDeckJsonContext.Default.ContextMessageJsonElement, cancellationToken);
+        }
 
         /// <inheritdoc/>
         public Task SetStateAsync(string context, int state, CancellationToken cancellationToken = default)

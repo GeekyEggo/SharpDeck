@@ -6,7 +6,6 @@ namespace StreamDeck.Tests.Serialization
     /// <summary>
     /// Provides a JSON context that contains information to assist with the serialization and deserialization of JSON objects.
     /// </summary>
-    [JsonSourceGenerationOptions(WriteIndented = false)]
     [JsonSerializable(typeof(FooSettings))]
     internal partial class TestJsonContext : JsonSerializerContext
     {

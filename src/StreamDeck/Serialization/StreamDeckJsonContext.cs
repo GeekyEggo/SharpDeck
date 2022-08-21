@@ -37,7 +37,7 @@ namespace StreamDeck.Serialization
     // Sending.
     [JsonSerializable(typeof(ActionMessage<JsonElement>))]
     [JsonSerializable(typeof(ContextMessage))]
-    [JsonSerializable(typeof(ContextMessage<object>))]
+    [JsonSerializable(typeof(ContextMessage<JsonElement>))]
     [JsonSerializable(typeof(ContextMessage<SetImagePayload>))]
     [JsonSerializable(typeof(ContextMessage<SetStatePayload>))]
     [JsonSerializable(typeof(ContextMessage<SetTitlePayload>))]

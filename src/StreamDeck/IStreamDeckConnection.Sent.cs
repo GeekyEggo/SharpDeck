@@ -24,6 +24,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Write a debug log to the logs file.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#logmessage"/>.
         /// </summary>
         /// <param name="msg">The message to log.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -41,23 +42,27 @@ namespace StreamDeck
 
         /// <summary>
         /// Send a payload to the Property Inspector.
-        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#sendtopropertyinspector"/>.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#sendtopropertyinspector" />.
         /// </summary>
+        /// <typeparam name="TPayload">The type of the payload.</typeparam>
         /// <param name="context">An opaque value identifying the instances action.</param>
         /// <param name="action">The action unique identifier.</param>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
-        /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="payload"/>.</param>
+        /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="payload" />.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending payload to the property inspector.</returns>
         Task SendToPropertyInspectorAsync<TPayload>(string context, string action, TPayload payload, JsonTypeInfo<TPayload>? jsonTypeInfo = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Save persistent data for the plugin.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#setglobalsettings"/>.
         /// </summary>
+        /// <typeparam name="TSettings">The type of the settings.</typeparam>
         /// <param name="settings">An object which persistently saved globally.</param>
+        /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="settings" />.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the global settings.</returns>
-        Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default);
+        Task SetGlobalSettingsAsync<TSettings>(TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
@@ -73,15 +78,19 @@ namespace StreamDeck
 
         /// <summary>
         /// Save persistent data for the actions instance.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#setsettings" />.
         /// </summary>
+        /// <typeparam name="TSettings">The type of the settings.</typeparam>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="settings">A JSON object which is persistently saved for the action's instance.</param>
+        /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="settings" />.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the settings.</returns>
-        Task SetSettingsAsync(string context, object settings, CancellationToken cancellationToken = default);
+        Task SetSettingsAsync<TSettings>(string context, TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Dynamically change the title of an instance of an action.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#settitle"/>.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action you want to modify.</param>
         /// <param name="title">The title to display. If no title is passed, the title is reset to the default title from the manifest.</param>
