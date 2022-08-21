@@ -9,6 +9,12 @@ namespace StreamDeck.Events
     public class Application
     {
         /// <summary>
+        /// Gets the font used by the Stream Deck.
+        /// </summary>
+        [JsonInclude]
+        public string? Font { get; internal set; }
+
+        /// <summary>
         /// Gets the language in which the Stream Deck application is running. Possible values are en, fr, de, es, ja, zh_CN.
         /// </summary>
         [JsonInclude]
@@ -20,6 +26,12 @@ namespace StreamDeck.Events
         /// </summary>
         [JsonInclude]
         public string? Platform { get; internal set; }
+
+        /// <summary>
+        /// Gets the platform version.
+        /// </summary>
+        [JsonInclude]
+        public Version? PlatformVersion { get; internal set; }
 
         /// <summary>
         /// Gets the Stream Deck application version.

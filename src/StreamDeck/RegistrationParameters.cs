@@ -14,7 +14,7 @@ namespace StreamDeck
         /// </summary>
         /// <param name="args">The command line arguments.</param>
         /// <exception cref="ArgumentException">{option} was not defined in the command line arguments.</exception>
-        public RegistrationParameters(string[] args)
+        public RegistrationParameters(params string[] args)
         {
             for (var i = 0; i < args.Length - 1; i++)
             {
@@ -33,7 +33,7 @@ namespace StreamDeck
                         this.Event = value;
                         break;
                     case "-info":
-                        this.Info = JsonSerializer.Deserialize(args[++i], StreamDeckJsonContext.Default.RegistrationInfo)!;
+                        this.Info = JsonSerializer.Deserialize(value, StreamDeckJsonContext.Default.RegistrationInfo)!;
                         break;
 
                     default:
@@ -67,22 +67,27 @@ namespace StreamDeck
 
         /// <summary>
         /// Gets the event type that should be used to register the plugin once the WebSocket is opened.
-        /// </summary>
+        /// </summary
+        [JsonInclude]
         public string Event { get; }
 
         /// <summary>
         /// Gets the information about the Stream Deck application and devices information.
         /// </summary>
+        [JsonIgnore]
         public RegistrationInfo Info { get; }
 
         /// <summary>
         /// Gets the port.
         /// </summary>
+        [JsonIgnore]
         public int? Port { get; }
 
         /// <summary>
         /// Gets a unique identifier string that should be used to register the plugin once the WebSocket is opened.
         /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("uuid")]
         public string PluginUUID { get; }
     }
 }

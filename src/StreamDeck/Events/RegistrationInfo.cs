@@ -12,6 +12,12 @@ namespace StreamDeck.Events
         public Application? Application { get; internal set; }
 
         /// <summary>
+        /// Gets the preferred user colors.
+        /// </summary>
+        [JsonInclude]
+        public Colors? Colors { get; internal set; }
+
+        /// <summary>
         /// Gets the device pixel ratio.
         /// </summary>
         [JsonInclude]

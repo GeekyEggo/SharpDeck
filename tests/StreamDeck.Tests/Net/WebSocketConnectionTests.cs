@@ -6,6 +6,7 @@ namespace StreamDeck.Tests.Net
     /// Provides assertions for <see cref="WebSocketConnection"/>.
     /// </summary>
     [TestFixture]
+    [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class WebSocketConnectionTests
     {
         /// <summary>
@@ -14,24 +15,14 @@ namespace StreamDeck.Tests.Net
         private const string Uri = "ws://127.0.0.1:8181";
 
         /// <summary>
-        /// Gets or sets the web socket server.
+        /// Gets the web socket server.
         /// </summary>
-        private Fleck.WebSocketServer Server { get; set; }
+        private Fleck.WebSocketServer Server { get; } = new Fleck.WebSocketServer(Uri);
 
         /// <summary>
-        /// Gets or sets the web socket client.
+        /// Gets the web socket client.
         /// </summary>
-        private WebSocketConnection Client { get; set; }
-
-        /// <summary>
-        /// Provides per-test set-up.
-        /// </summary>
-        [SetUp]
-        public void SetUp()
-        {
-            this.Server = new Fleck.WebSocketServer(Uri);
-            this.Client = new WebSocketConnection();
-        }
+        private WebSocketConnection Client { get; } = new WebSocketConnection();
 
         /// <summary>
         /// Provides per-test tear down.

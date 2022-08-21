@@ -40,6 +40,11 @@ namespace StreamDeck
         public RegistrationInfo Info => this.RegistrationParameters.Info;
 
         /// <summary>
+        /// Gets the web socket.
+        /// </summary>
+        internal IWebSocketConnection WebSocket { get; } = new WebSocketConnection();
+
+        /// <summary>
         /// Gets or sets the registration parameters.
         /// </summary>
         private RegistrationParameters RegistrationParameters { get; set; }
@@ -48,11 +53,6 @@ namespace StreamDeck
         /// Gets the logger.
         /// </summary>
         private ILogger<StreamDeckConnection>? Logger { get; }
-
-        /// <summary>
-        /// Gets the web socket.
-        /// </summary>
-        private WebSocketConnection WebSocket { get; } = new WebSocketConnection();
 
         /// <summary>
         /// Connects to the Stream Deck asynchronously.
@@ -65,7 +65,7 @@ namespace StreamDeck
             await this.WebSocket.ConnectAsync($"ws://localhost:{this.RegistrationParameters.Port}/", cancellationToken);
 
             this.Logger?.LogTrace($"Registering plugin.");
-            await this.WebSocket.SendAsync(new RegistrationMessage(this.RegistrationParameters.Event, this.RegistrationParameters.PluginUUID), StreamDeckJsonContext.Default.Options, cancellationToken);
+            await this.WebSocket.SendAsync(this.RegistrationParameters, StreamDeckJsonContext.Default.Options, cancellationToken);
 
             this.Logger?.LogTrace($"Successfully connected to Stream Deck.");
         }

@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Serialization
+namespace StreamDeck.Serialization
 {
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;

@@ -21,9 +21,7 @@ namespace StreamDeck.Net
         /// </summary>
         private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
 
-        /// <summary>
-        /// Occurs when a message is received.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<WebSocketMessageEventArgs>? MessageReceived;
 
         /// <summary>

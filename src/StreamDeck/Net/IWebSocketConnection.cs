@@ -11,6 +11,11 @@ namespace StreamDeck.Net
     internal interface IWebSocketConnection : IAsyncDisposable, IDisposable
     {
         /// <summary>
+        /// Occurs when a message is received.
+        /// </summary>
+        event EventHandler<WebSocketMessageEventArgs>? MessageReceived;
+
+        /// <summary>
         /// Connects the web socket to the specified <paramref name="uri" />.
         /// </summary>
         /// <param name="uri">The URI to connect to.</param>
