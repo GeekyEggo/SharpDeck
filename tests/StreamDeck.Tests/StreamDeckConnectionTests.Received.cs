@@ -1,6 +1,5 @@
 namespace StreamDeck.Tests
 {
-    using System.Drawing;
     using StreamDeck.Events;
     using StreamDeck.Extensions;
     using StreamDeck.Net;
@@ -12,7 +11,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.ApplicationDidLaunch"/>.
         /// </summary>
         [Test]
-        public void ApplicationDidLaunch()
+        public void Receive_ApplicationDidLaunch()
         {
             // Arrange.
             var didHandle = false;
@@ -48,7 +47,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.ApplicationDidTerminate"/>.
         /// </summary>
         [Test]
-        public void ApplicationDidTerminate()
+        public void Receive_ApplicationDidTerminate()
         {
             // Arrange.
             var didHandle = false;
@@ -84,7 +83,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.DeviceDidConnect"/>.
         /// </summary>
         [Test]
-        public void DeviceDidConnect()
+        public void Receive_DeviceDidConnect()
         {
             // Arrange.
             var didHandle = false;
@@ -130,7 +129,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.DeviceDidDisconnect"/>.
         /// </summary>
         [Test]
-        public void DeviceDidDisconnect()
+        public void Receive_DeviceDidDisconnect()
         {
             // Arrange.
             var didHandle = false;
@@ -164,7 +163,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.DidReceiveGlobalSettings"/>.
         /// </summary>
         [Test]
-        public void DidReceiveGlobalSettings()
+        public void Receive_DidReceiveGlobalSettings()
         {
             // Arrange.
             var didHandle = false;
@@ -203,7 +202,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.DidReceiveSettings"/>.
         /// </summary>
         [Test]
-        public void DidReceiveSettings()
+        public void Receive_DidReceiveSettings()
         {
             // Arrange.
             var didHandle = false;
@@ -256,7 +255,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.KeyDown"/>.
         /// </summary>
         [Test]
-        public void KeyDown()
+        public void Receive_KeyDown()
         {
             // Arrange.
             var didHandle = false;
@@ -313,7 +312,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.KeyUp"/>.
         /// </summary>
         [Test]
-        public void KeyUp()
+        public void Receive_KeyUp()
         {
             // Arrange.
             var didHandle = false;
@@ -370,7 +369,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.PropertyInspectorDidAppear"/>.
         /// </summary>
         [Test]
-        public void PropertyInspectorDidAppear()
+        public void Receive_PropertyInspectorDidAppear()
         {
             // Arrange.
             var didHandle = false;
@@ -408,7 +407,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.PropertyInspectorDidDisappear"/>.
         /// </summary>
         [Test]
-        public void PropertyInspectorDidDisappear()
+        public void Receive_PropertyInspectorDidDisappear()
         {
             // Arrange.
             var didHandle = false;
@@ -446,7 +445,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.SendToPlugin"/>.
         /// </summary>
         [Test]
-        public void SendToPlugin()
+        public void Receive_SendToPlugin()
         {
             // Arrange.
             var didHandle = false;
@@ -487,7 +486,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.SystemDidWakeUp"/>.
         /// </summary>
         [Test]
-        public void SystemDidWakeUp()
+        public void Receive_SystemDidWakeUp()
         {
             // Arrange.
             var didHandle = false;
@@ -518,7 +517,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.TitleParametersDidChange"/>.
         /// </summary>
         [Test]
-        public void TitleParametersDidChange()
+        public void Receive_TitleParametersDidChange()
         {
             // Arrange.
             var didHandle = false;
@@ -589,7 +588,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.WillAppear"/>.
         /// </summary>
         [Test]
-        public void WillAppear()
+        public void Receive_WillAppear()
         {
             // Arrange.
             var didHandle = false;
@@ -644,7 +643,7 @@ namespace StreamDeck.Tests
         /// Asserts <see cref="StreamDeckConnection.WillDisappear"/>.
         /// </summary>
         [Test]
-        public void WillDisappear()
+        public void Receive_WillDisappear()
         {
             // Arrange.
             var didHandle = false;

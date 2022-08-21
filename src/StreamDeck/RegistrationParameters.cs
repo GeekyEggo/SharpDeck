@@ -68,7 +68,6 @@ namespace StreamDeck
         /// <summary>
         /// Gets the event type that should be used to register the plugin once the WebSocket is opened.
         /// </summary
-        [JsonInclude]
         public string Event { get; }
 
         /// <summary>
@@ -86,7 +85,6 @@ namespace StreamDeck
         /// <summary>
         /// Gets a unique identifier string that should be used to register the plugin once the WebSocket is opened.
         /// </summary>
-        [JsonInclude]
         [JsonPropertyName("uuid")]
         public string PluginUUID { get; }
     }

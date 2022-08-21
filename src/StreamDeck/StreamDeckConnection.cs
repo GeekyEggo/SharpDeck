@@ -1,6 +1,7 @@
 namespace StreamDeck
 {
     using System.Text.Json;
+    using System.Text.Json.Serialization.Metadata;
     using Microsoft.Extensions.Logging;
     using StreamDeck.Events;
     using StreamDeck.Extensions;
@@ -66,7 +67,7 @@ namespace StreamDeck
             await this.WebSocket.ConnectAsync($"ws://localhost:{this.RegistrationParameters.Port}/", cancellationToken);
 
             this.Logger?.LogTrace($"Registering plugin.");
-            await this.WebSocket.SendAsync(this.RegistrationParameters, StreamDeckJsonContext.Default.Options, cancellationToken);
+            await this.WebSocket.SendAsync(this.RegistrationParameters, StreamDeckJsonContext.Default.RegistrationParameters, cancellationToken);
 
             this.Logger?.LogTrace($"Successfully connected to Stream Deck.");
         }
@@ -98,16 +99,6 @@ namespace StreamDeck
             await this.WebSocket.DisconnectAsync();
             GC.SuppressFinalize(this);
         }
-
-        /// <summary>
-        /// Sends the value to the Stream Deck asynchronously.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task of sending the value.</returns>
-        private Task SendAsync(object value, CancellationToken cancellationToken)
-            // TODO: Add JsonContext to sending.
-            => this.WebSocket.SendAsync(value, StreamDeckJsonContext.Default.Options, cancellationToken);
 
         /// <summary>
         /// Handles the <see cref="WebSocketConnection.MessageReceived"/> public event of <see cref="WebSocket"/>.

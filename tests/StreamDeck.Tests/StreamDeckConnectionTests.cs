@@ -11,9 +11,15 @@ namespace StreamDeck.Tests
     public partial class StreamDeckConnectionTests
     {
         /// <summary>
-        /// Gets the mock web socket connection.
+        /// Initializes a new instance of the <see cref="StreamDeckConnectionTests"/> class.
         /// </summary>
-        private Mock<IWebSocketConnection> WebSocketConnection { get; } = new Mock<IWebSocketConnection>();
+        public StreamDeckConnectionTests()
+            => this.StreamDeckConnection = new StreamDeckConnection(this.RegistrationParameters, this.WebSocketConnection.Object);
+
+        /// <summary>
+        /// Gets or sets the registration parameters.
+        /// </summary>
+        private RegistrationParameters RegistrationParameters { get; } = new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", "{}");
 
         /// <summary>
         /// Gets or sets the Stream Deck connection used to assert tests.
@@ -21,10 +27,8 @@ namespace StreamDeck.Tests
         private StreamDeckConnection StreamDeckConnection { get; set; }
 
         /// <summary>
-        /// Provides per-test set-up.
+        /// Gets the mock web socket connection.
         /// </summary>
-        [SetUp]
-        public void SetUp()
-            => this.StreamDeckConnection = new StreamDeckConnection(new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", "{}"), this.WebSocketConnection.Object);
+        private Mock<IWebSocketConnection> WebSocketConnection { get; } = new Mock<IWebSocketConnection>();
     }
 }

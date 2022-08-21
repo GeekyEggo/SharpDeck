@@ -5,6 +5,7 @@ namespace StreamDeck
     {
         /// <summary>
         /// Requests the persistent global data stored for the plugin.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#getglobalsettings"/>.
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending the message; this result does not contain the settings.</returns>
@@ -28,6 +29,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Open a URL in the default browser.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#openurl"/>.
         /// </summary>
         /// <param name="url">A URL to open in the default browser.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>

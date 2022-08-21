@@ -1,6 +1,7 @@
 namespace StreamDeck.Extensions
 {
     using System.Text.Json;
+    using System.Text.Json.Serialization.Metadata;
     using System.Threading;
     using System.Threading.Tasks;
     using StreamDeck.Net;
@@ -15,9 +16,9 @@ namespace StreamDeck.Extensions
         /// </summary>
         /// <param name="value">The value to send.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
-        public static async Task SendAsync(this IWebSocketConnection connection, object value, JsonSerializerOptions? options = null, CancellationToken cancellationToken = default)
+        internal static async Task SendAsync<T>(this IWebSocketConnection connection, T value, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancellationToken = default)
         {
-            var json = JsonSerializer.Serialize(value, options);
+            var json = JsonSerializer.Serialize(value, jsonTypeInfo);
             await connection.SendAsync(json, cancellationToken);
         }
     }

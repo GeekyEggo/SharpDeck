@@ -3,6 +3,7 @@ namespace StreamDeck.Serialization
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
     using StreamDeck.Events;
+    using StreamDeck.Payloads;
 
     /// <summary>
     /// Provides a JSON context that contains information to assist with the serialization and deserialization of JSON objects.
@@ -11,14 +12,14 @@ namespace StreamDeck.Serialization
         PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
         WriteIndented = false)]
 
-    // Global
+    // Receiving - Global.
     [JsonSerializable(typeof(StreamDeckEventArgs<ApplicationPayload>))]
     [JsonSerializable(typeof(DeviceConnectEventArgs))]
     [JsonSerializable(typeof(DeviceEventArgs))]
     [JsonSerializable(typeof(StreamDeckEventArgs))]
     [JsonSerializable(typeof(StreamDeckEventArgs<SettingsPayload>))]
 
-    // Action Specific
+    // Receiving - Action Specific.
     [JsonSerializable(typeof(ActionEventArgs<ActionPayload>))]
     [JsonSerializable(typeof(ActionEventArgs<KeyPayload>))]
     [JsonSerializable(typeof(ActionEventArgs<KeyPayload>))]
@@ -29,8 +30,20 @@ namespace StreamDeck.Serialization
     [JsonSerializable(typeof(ActionEventArgs<ActionPayload>))]
     [JsonSerializable(typeof(ActionEventArgs<ActionPayload>))]
 
-    // Misc
+    // Receiving - Plugin.
     [JsonSerializable(typeof(RegistrationInfo))]
+
+    // Sending.
+    [JsonSerializable(typeof(ActionMessage<object>))]
+    [JsonSerializable(typeof(ContextMessage))]
+    [JsonSerializable(typeof(ContextMessage<object>))]
+    [JsonSerializable(typeof(ContextMessage<SetImagePayload>))]
+    [JsonSerializable(typeof(ContextMessage<SetStatePayload>))]
+    [JsonSerializable(typeof(ContextMessage<SetTitlePayload>))]
+    [JsonSerializable(typeof(DeviceMessage<SwitchToProfilePayload>))]
+    [JsonSerializable(typeof(Message<LogPayload>))]
+    [JsonSerializable(typeof(Message<UrlPayload>))]
+    [JsonSerializable(typeof(RegistrationParameters))]
     internal partial class StreamDeckJsonContext : JsonSerializerContext
     {
     }
