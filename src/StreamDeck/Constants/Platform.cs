@@ -1,4 +1,4 @@
-namespace StreamDeck.Events
+namespace StreamDeck.Constants
 {
     /// <summary>
     /// Defines the platform identifiers recognised by the Elgato Stream Deck.

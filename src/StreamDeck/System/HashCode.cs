@@ -1,5 +1,5 @@
 #if NETSTANDARD2_0
-namespace StreamDeck
+namespace System
 {
     using System.Linq;
 

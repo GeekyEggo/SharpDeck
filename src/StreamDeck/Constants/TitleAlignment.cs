@@ -1,4 +1,4 @@
-namespace StreamDeck.Events
+namespace StreamDeck.Constants
 {
     /// <summary>
     /// Defines the title alignments supported by the Stream Deck.

@@ -1,15 +1,10 @@
-namespace StreamDeck
+namespace StreamDeck.Constants
 {
     /// <summary>
     /// Defines the font families supported by the Stream Deck.
     /// </summary>
     public static class FontFamily
     {
-        /// <summary>
-        /// Default font.
-        /// </summary>
-        public const string Default = "";
-
         /// <summary>
         /// Arial font.
         /// </summary>

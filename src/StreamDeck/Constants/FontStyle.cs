@@ -1,4 +1,4 @@
-namespace StreamDeck.Events
+namespace StreamDeck.Constants
 {
     /// <summary>
     /// Defines the font styles supported by the Stream Deck.
