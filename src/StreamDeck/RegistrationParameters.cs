@@ -7,14 +7,14 @@ namespace StreamDeck
     /// <summary>
     /// Provides information about registration parameters supplied by an Elgato Stream Deck when initialising a client.
     /// </summary>
-    public class RegistrationParameters
+    internal class RegistrationParameters
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistrationParameters"/> class.
         /// </summary>
         /// <param name="args">The command line arguments.</param>
         /// <exception cref="ArgumentException">{option} was not defined in the command line arguments.</exception>
-        public RegistrationParameters(params string[] args)
+        internal RegistrationParameters(params string[] args)
         {
             for (var i = 0; i < args.Length - 1; i++)
             {

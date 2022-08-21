@@ -9,57 +9,57 @@ namespace StreamDeck
         /// <summary>
         /// Occurs when a monitored application is launched.
         /// </summary>
-        event EventHandler<StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidLaunch;
+        event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidLaunch;
 
         /// <summary>
         /// Occurs when a monitored application is terminated.
         /// </summary>
-        event EventHandler<StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidTerminate;
+        event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidTerminate;
 
         /// <summary>
         /// Occurs when a device is plugged to the computer.
         /// </summary>
-        event EventHandler<DeviceConnectEventArgs>? DeviceDidConnect;
+        event EventHandler<IStreamDeckConnection, DeviceConnectEventArgs>? DeviceDidConnect;
 
         /// <summary>
         /// Occurs when a device is unplugged from the computer.
         /// </summary>
-        event EventHandler<DeviceEventArgs>? DeviceDidDisconnect;
+        event EventHandler<IStreamDeckConnection, DeviceEventArgs>? DeviceDidDisconnect;
 
         /// <summary>
         /// Occurs when <see cref="GetGlobalSettingsAsync(CancellationToken)"/> has been called to retrieve the persistent global data stored for the plugin.
         /// </summary>
-        event EventHandler<StreamDeckEventArgs<SettingsPayload>>? DidReceiveGlobalSettings;
+        event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<SettingsPayload>>? DidReceiveGlobalSettings;
 
         /// <summary>
         /// Occurs when <see cref="GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.
         /// </summary>
-        event EventHandler<ActionEventArgs<ActionPayload>>? DidReceiveSettings;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? DidReceiveSettings;
 
         /// <summary>
         /// Occurs when the user presses a key.
         /// </summary>
-        event EventHandler<ActionEventArgs<KeyPayload>>? KeyDown;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>>? KeyDown;
 
         /// <summary>
         /// Occurs when the user releases a key.
         /// </summary>
-        event EventHandler<ActionEventArgs<KeyPayload>>? KeyUp;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>>? KeyUp;
 
         /// <summary>
         /// Occurs when the Property Inspector appears.
         /// </summary>
-        event EventHandler<ActionEventArgs>? PropertyInspectorDidAppear;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidAppear;
 
         /// <summary>
         /// Occurs when the Property Inspector disappears
         /// </summary>
-        event EventHandler<ActionEventArgs>? PropertyInspectorDidDisappear;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidDisappear;
 
         /// <summary>
         /// Occurs when the property inspector sends a message to the plugin.
         /// </summary>
-        event EventHandler<ActionEventArgs<JsonObject>>? SendToPlugin;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<JsonObject>>? SendToPlugin;
 
         /// <summary>
         /// Occurs when the computer is woken up.
@@ -68,21 +68,21 @@ namespace StreamDeck
         /// A plugin may receive multiple <see cref="SystemDidWakeUp"/> events when waking up the computer.
         /// When the plugin receives the <see cref="SystemDidWakeUp"/> event, there is no garantee that the devices are available.
         /// </remarks>
-        event EventHandler<StreamDeckEventArgs>? SystemDidWakeUp;
+        event EventHandler<IStreamDeckConnection, StreamDeckEventArgs>? SystemDidWakeUp;
 
         /// <summary>
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
-        event EventHandler<ActionEventArgs<TitlePayload>>? TitleParametersDidChange;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<TitlePayload>>? TitleParametersDidChange;
 
         /// <summary>
         /// Occurs when an instance of an action appears.
         /// </summary>
-        event EventHandler<ActionEventArgs<AppearancePayload>>? WillAppear;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<AppearancePayload>>? WillAppear;
 
         /// <summary>
         /// Occurs when an instance of an action disappears.
         /// </summary>
-        event EventHandler<ActionEventArgs<AppearancePayload>>? WillDisappear;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<AppearancePayload>>? WillDisappear;
     }
 }

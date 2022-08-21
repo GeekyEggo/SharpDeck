@@ -40,17 +40,14 @@ namespace StreamDeck.Tests.Net
         [Test]
         public async Task ConnectAsync()
         {
-            // Given.
+            // Arrange.
             var tcs = new TaskCompletionSource<Fleck.IWebSocketConnection>();
-            this.Server.Start(conn =>
-            {
-                conn.OnOpen = () => tcs.TrySetResult(conn);
-            });
+            this.Server.Start(conn => conn.OnOpen = () => tcs.TrySetResult(conn));
 
-            // When.
+            // Act.
             await this.Client.ConnectAsync(Uri);
 
-            // Then.
+            // Assert.
             await tcs.Task;
             Assert.Pass();
         }
@@ -61,19 +58,16 @@ namespace StreamDeck.Tests.Net
         [Test]
         public async Task DisconnectAsync()
         {
-            // Given.
+            // Arrange.
             var tcs = new TaskCompletionSource<Fleck.IWebSocketConnection>();
-            this.Server.Start(conn =>
-            {
-                conn.OnClose = () => tcs.TrySetResult(conn);
-            });
+            this.Server.Start(conn => conn.OnClose = () => tcs.TrySetResult(conn));
 
             await this.Client.ConnectAsync(Uri);
 
-            // When.
+            // Act.
             await this.Client.DisconnectAsync();
 
-            // Then.
+            // Assert.
             await tcs.Task;
             Assert.Pass();
         }
@@ -84,20 +78,17 @@ namespace StreamDeck.Tests.Net
         [Test]
         public async Task SendAsync()
         {
-            // Given.
+            // Arrange.
             var tcs = new TaskCompletionSource<string>();
-            this.Server.Start(conn =>
-            {
-                conn.OnMessage = (msg) => tcs.TrySetResult(msg);
-            });
+            this.Server.Start(conn => conn.OnMessage = (msg) => tcs.TrySetResult(msg));
 
             await this.Client.ConnectAsync(Uri);
 
-            // When.
+            // Act.
             await this.Client.SendAsync("Lorem ipsum");
             var msg = await tcs.Task;
 
-            // Then.
+            // Assert.
             Assert.That(msg, Is.EqualTo("Lorem ipsum"));
         }
 
@@ -107,14 +98,11 @@ namespace StreamDeck.Tests.Net
         [Test]
         public async Task WaitForDisconnectAsync()
         {
-            // Given.
+            // Arrange.
             var didClose = false;
-            this.Server.Start(conn =>
-            {
-                conn.OnClose = () => didClose = true;
-            });
+            this.Server.Start(conn => conn.OnClose = () => didClose = true);
 
-            // When.
+            // Act.
             await this.Client.ConnectAsync(Uri);
             _ = Task.Factory.StartNew(async () =>
             {
@@ -122,7 +110,7 @@ namespace StreamDeck.Tests.Net
                 await this.Client.DisconnectAsync();
             }, TaskCreationOptions.RunContinuationsAsynchronously);
 
-            // Then.
+            // Assert.
             await this.Client.WaitForDisconnectAsync();
             Assert.That(didClose, Is.True);
         }

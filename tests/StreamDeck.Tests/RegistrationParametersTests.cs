@@ -16,7 +16,7 @@ namespace StreamDeck.Tests
         [Test]
         public void Construct()
         {
-            // Given
+            // Arrange.
             const string infoJson = """
                 {
                     "application": {
@@ -52,10 +52,10 @@ namespace StreamDeck.Tests
                 }
                 """;
 
-            // When.
+            // Act.
             var parameters = new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", infoJson);
 
-            // Then.
+            // Assert.
             Assert.Multiple(() =>
             {
                 // Basic parameters.

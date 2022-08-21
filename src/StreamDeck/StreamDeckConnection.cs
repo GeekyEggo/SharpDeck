@@ -18,7 +18,7 @@ namespace StreamDeck
         /// <param name="args">The command line arguments.</param>
         /// <param name="logger">The logger.</param>
         public StreamDeckConnection(string[]? args = null, ILogger<StreamDeckConnection>? logger = null)
-            : this(new RegistrationParameters(args ?? Environment.GetCommandLineArgs()), logger)
+            : this(new RegistrationParameters(args ?? Environment.GetCommandLineArgs()), new WebSocketConnection(), logger)
         {
         }
 
@@ -26,12 +26,14 @@ namespace StreamDeck
         /// Initializes a new instance of the <see cref="StreamDeckConnection"/> class.
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
+        /// <param name="webSocket">The web socket connection.</param>
         /// <param name="logger">The logger.</param>
-        internal StreamDeckConnection(RegistrationParameters registrationParameters, ILogger<StreamDeckConnection>? logger = null)
+        internal StreamDeckConnection(RegistrationParameters registrationParameters, IWebSocketConnection? webSocket = null, ILogger<StreamDeckConnection>? logger = null)
         {
             this.Logger = logger;
             this.RegistrationParameters = registrationParameters;
 
+            this.WebSocket = webSocket ?? new WebSocketConnection();
             this.WebSocket.MessageReceived += this.WebSocket_MessageReceived;
         }
 
@@ -39,9 +41,9 @@ namespace StreamDeck
         public RegistrationInfo Info => this.RegistrationParameters.Info;
 
         /// <summary>
-        /// Gets the web socket.
+        /// Gets the underlying the web socket.
         /// </summary>
-        internal IWebSocketConnection WebSocket { get; } = new WebSocketConnection();
+        internal IWebSocketConnection WebSocket { get; }
 
         /// <summary>
         /// Gets or sets the registration parameters.
