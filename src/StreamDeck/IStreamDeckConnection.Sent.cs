@@ -1,5 +1,7 @@
 namespace StreamDeck
 {
+    using System.Text.Json.Serialization.Metadata;
+
     /// <inheritdoc/>
     public partial interface IStreamDeckConnection
     {
@@ -13,6 +15,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Requests the persistent data stored for the specified context's action instance.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#getsettings"/>.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -38,13 +41,15 @@ namespace StreamDeck
 
         /// <summary>
         /// Send a payload to the Property Inspector.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#sendtopropertyinspector"/>.
         /// </summary>
         /// <param name="context">An opaque value identifying the instances action.</param>
         /// <param name="action">The action unique identifier.</param>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
+        /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="payload"/>.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of sending payload to the property inspector.</returns>
-        Task SendToPropertyInspectorAsync(string context, string action, object payload, CancellationToken cancellationToken = default);
+        Task SendToPropertyInspectorAsync<TPayload>(string context, string action, TPayload payload, JsonTypeInfo<TPayload>? jsonTypeInfo = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Save persistent data for the plugin.
@@ -56,6 +61,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#setimage"/>.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). svg is also supported. If no image is passed, the image is reset to the default image from the manifest.</param>
@@ -87,15 +93,17 @@ namespace StreamDeck
 
         /// <summary>
         ///	Change the state of the actions instance supporting multiple states.
+        ///	<see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#setstate"/>.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="state">A 0-based integer value representing the state requested.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the state.</returns>
-        Task SetStateAsync(string context, int state = 0, CancellationToken cancellationToken = default);
+        Task SetStateAsync(string context, int state, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Temporarily show an alert icon on the image displayed by an instance of an action.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#showalert"/>.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -104,6 +112,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Temporarily show an OK checkmark icon on the image displayed by an instance of an action.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#showok"/>.
         /// </summary>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -112,12 +121,12 @@ namespace StreamDeck
 
         /// <summary>
         /// Switch to one of the preconfigured read-only profiles.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#switchtoprofile"/>.
         /// </summary>
-        /// <param name="context">An opaque value identifying the plugin. This value should be set to the PluginUUID received during the registration procedure.</param>
         /// <param name="device">An opaque value identifying the device. Note that this opaque value will change each time you relaunch the Stream Deck application.</param>
         /// <param name="profile">The optional name of the profile to switch to. The name should be identical to the name provided in the manifest.json file; when empty, the Stream Deck will switch to the previous profile.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of switching profiles.</returns>
-        Task SwitchToProfileAsync(string context, string device, string profile = "", CancellationToken cancellationToken = default);
+        Task SwitchToProfileAsync(string device, string profile = "", CancellationToken cancellationToken = default);
     }
 }

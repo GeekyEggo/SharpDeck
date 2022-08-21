@@ -1,5 +1,7 @@
 namespace StreamDeck
 {
+    using System.Text.Json;
+    using System.Text.Json.Serialization.Metadata;
     using StreamDeck.Extensions;
     using StreamDeck.Payloads;
     using StreamDeck.Serialization;
@@ -31,8 +33,20 @@ namespace StreamDeck
             => this.WebSocket.SendAsync(new Message<UrlPayload>("openUrl", new UrlPayload(url)), StreamDeckJsonContext.Default.MessageUrlPayload, cancellationToken);
 
         /// <inheritdoc/>
-        public Task SendToPropertyInspectorAsync(string context, string action, object payload, CancellationToken cancellationToken = default)
-            => this.WebSocket.SendAsync(new ActionMessage<object>("sendToPropertyInspector", context, action, payload), StreamDeckJsonContext.Default.ActionMessageObject, cancellationToken);
+        public Task SendToPropertyInspectorAsync<T>(string context, string action, T payload, JsonTypeInfo<T>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+        {
+            const string @event = "sendToPropertyInspector";
+
+            if (jsonTypeInfo == null)
+            {
+                return this.WebSocket.SendAsync(new ActionMessage<T>(@event, context, action, payload), cancellationToken);
+            }
+            else
+            {
+                var payloadAsJson = JsonSerializer.SerializeToElement(payload, jsonTypeInfo);
+                return this.WebSocket.SendAsync(new ActionMessage<JsonElement>(@event, context, action, payloadAsJson), StreamDeckJsonContext.Default.ActionMessageJsonElement, cancellationToken);
+            }
+        }
 
         /// <inheritdoc/>
         public Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default)
@@ -54,7 +68,7 @@ namespace StreamDeck
             => this.WebSocket.SendAsync(new ContextMessage<object>("setSettings", context, settings), StreamDeckJsonContext.Default.ContextMessageObject, cancellationToken);
 
         /// <inheritdoc/>
-        public Task SetStateAsync(string context, int state = 0, CancellationToken cancellationToken = default)
+        public Task SetStateAsync(string context, int state, CancellationToken cancellationToken = default)
             => this.WebSocket.SendAsync(new ContextMessage<SetStatePayload>("setState", context, new SetStatePayload(state)), StreamDeckJsonContext.Default.ContextMessageSetStatePayload, cancellationToken);
 
         /// <inheritdoc/>
@@ -70,7 +84,7 @@ namespace StreamDeck
             => this.WebSocket.SendAsync(new ContextMessage("showOk", context), StreamDeckJsonContext.Default.ContextMessage, cancellationToken);
 
         /// <inheritdoc/>
-        public Task SwitchToProfileAsync(string context, string device, string profile = "", CancellationToken cancellationToken = default)
-            => this.WebSocket.SendAsync(new DeviceMessage<SwitchToProfilePayload>("switchToProfile", context, device, new SwitchToProfilePayload(profile)), StreamDeckJsonContext.Default.DeviceMessageSwitchToProfilePayload, cancellationToken);
+        public Task SwitchToProfileAsync(string device, string? profile = null, CancellationToken cancellationToken = default)
+            => this.WebSocket.SendAsync(new DeviceMessage<SwitchToProfilePayload>("switchToProfile", this.RegistrationParameters.PluginUUID, device, new SwitchToProfilePayload(profile)), StreamDeckJsonContext.Default.DeviceMessageSwitchToProfilePayload, cancellationToken);
     }
 }

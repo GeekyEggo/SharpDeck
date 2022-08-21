@@ -3,6 +3,7 @@ namespace StreamDeck.Tests
     using StreamDeck.Events;
     using StreamDeck.Extensions;
     using StreamDeck.Net;
+    using StreamDeck.Tests.Helpers;
 
     /// <inheritdoc/>
     public partial class StreamDeckConnectionTests
@@ -700,16 +701,5 @@ namespace StreamDeck.Tests
         /// <param name="json">The JSON message..</param>
         private void Raise(string json)
             => this.WebSocketConnection.Raise(ws => ws.MessageReceived += null, new WebSocketMessageEventArgs(json));
-
-        /// <summary>
-        /// Provides a mock object used for testing.
-        /// </summary>
-        private class FooSettings
-        {
-            /// <summary>
-            /// Gets or sets the name.
-            /// </summary>
-            public string? Name { get; set; }
-        }
     }
 }

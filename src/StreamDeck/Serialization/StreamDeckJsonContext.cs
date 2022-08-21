@@ -1,5 +1,6 @@
 namespace StreamDeck.Serialization
 {
+    using System.Text.Json;
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
     using StreamDeck.Events;
@@ -34,7 +35,7 @@ namespace StreamDeck.Serialization
     [JsonSerializable(typeof(RegistrationInfo))]
 
     // Sending.
-    [JsonSerializable(typeof(ActionMessage<object>))]
+    [JsonSerializable(typeof(ActionMessage<JsonElement>))]
     [JsonSerializable(typeof(ContextMessage))]
     [JsonSerializable(typeof(ContextMessage<object>))]
     [JsonSerializable(typeof(ContextMessage<SetImagePayload>))]

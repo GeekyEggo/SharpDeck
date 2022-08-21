@@ -1,6 +1,10 @@
 namespace StreamDeck.Tests
 {
+    using System.Text.Json.Serialization.Metadata;
     using Moq;
+    using StreamDeck.Payloads;
+    using StreamDeck.Tests.Helpers;
+    using StreamDeck.Tests.Serialization;
 
     /// <inheritdoc/>
     public partial class StreamDeckConnectionTests
@@ -19,6 +23,24 @@ namespace StreamDeck.Tests
             this.WebSocketConnection.Verify(
                 ws => ws.SendAsync($$"""
                     {"context":"{{this.RegistrationParameters.PluginUUID}}","event":"getGlobalSettings"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.GetSettingsAsync(string, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task Send_GetSettingsAsync()
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.GetSettingsAsync("ABC123", token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"context":"ABC123","event":"getSettings"}
                     """, token),
                 Times.Once);
         }
@@ -60,6 +82,48 @@ namespace StreamDeck.Tests
         }
 
         /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.SendToPropertyInspectorAsync(string, string, object, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task Send_SendToPropertyInspectorAsync()
+        {
+            // Arrange
+            var payload = new FooSettings { Name = "Bob Smith" };
+            var token = new CancellationToken();
+
+            // Act.
+            await this.StreamDeckConnection.SendToPropertyInspectorAsync("ABC123", "com.tests.example.action", payload, cancellationToken: token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"action":"com.tests.example.action","context":"ABC123","payload":{"name":"Bob Smith"},"event":"sendToPropertyInspector"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.SendToPropertyInspectorAsync(string, string, object, CancellationToken)"/> with a custom <see cref="JsonTypeInfo{T}"/>.
+        /// </summary>
+        [Test]
+        public async Task Send_SendToPropertyInspectorAsync_WithJsonTypeInfo()
+        {
+            // Arrange
+            var payload = new FooSettings { Name = "Bob Smith" };
+            var token = new CancellationToken();
+
+            // Act.
+            await this.StreamDeckConnection.SendToPropertyInspectorAsync("ABC123", "com.tests.example.action", payload, TestJsonContext.Default.FooSettings, token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"action":"com.tests.example.action","context":"ABC123","payload":{"Name":"Bob Smith"},"event":"sendToPropertyInspector"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
         /// Asserts <see cref="StreamDeckConnection.SetImageAsync(string, string, Target, int?, CancellationToken)"/>.
         /// </summary>
         [Test]
@@ -84,7 +148,7 @@ namespace StreamDeck.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="StreamDeckConnection.SetImageAsync(string, string, Target, int?, CancellationToken)"/>.
+        /// Asserts <see cref="StreamDeckConnection.SetImageAsync(string, string, Target, int?, CancellationToken)"/> ignores <see cref="TargetPayload.State"/> when <c>null</c>.
         /// </summary>
         [Test]
         public async Task Send_SetImageAsync_NoState()
@@ -100,6 +164,98 @@ namespace StreamDeck.Tests
             this.WebSocketConnection.Verify(
                 ws => ws.SendAsync($$"""
                     {"context":"ABC123","payload":{"image":"{{img}}","target":0},"event":"setImage"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.SetStateAsync(string, int, CancellationToken).
+        /// </summary>
+        [Test]
+        [TestCase(0)]
+        [TestCase(1)]
+        public async Task Send_SetStateAsync(int state)
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.SetStateAsync("ABC123", state, token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"context":"ABC123","payload":{"state":{{state}}},"event":"setState"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.ShowAlertAsync(string, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task Send_ShowAlertAsync()
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.ShowAlertAsync("ABC123", token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"context":"ABC123","event":"showAlert"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.ShowOkAsync(string, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task Send_ShowOkAsync()
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.ShowOkAsync("ABC123", token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"context":"ABC123","event":"showOk"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.SwitchToProfileAsync(string, string, string, CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task Send_SwitchToProfileAsync()
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.SwitchToProfileAsync("ABC123", "Main Profile", token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"device":"ABC123","context":"{{this.RegistrationParameters.PluginUUID}}","payload":{"profile":"Main Profile"},"event":"switchToProfile"}
+                    """, token),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.SwitchToProfileAsync(string, string, string, CancellationToken)"/> ignore <see cref="SwitchToProfilePayload.Profile"/> when <c>null</c>.
+        /// </summary>
+        [Test]
+        public async Task Send_SwitchToProfileAsync_NoProfile()
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.SwitchToProfileAsync("ABC123", cancellationToken: token);
+
+            // Assert
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"device":"ABC123","context":"{{this.RegistrationParameters.PluginUUID}}","payload":{},"event":"switchToProfile"}
                     """, token),
                 Times.Once);
         }
