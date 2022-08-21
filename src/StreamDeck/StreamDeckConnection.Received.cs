@@ -46,9 +46,9 @@ namespace StreamDeck
         public event EventHandler<IStreamDeckConnection, ActionEventArgs<TitlePayload>>? TitleParametersDidChange;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<AppearancePayload>>? WillAppear;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? WillAppear;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<AppearancePayload>>? WillDisappear;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? WillDisappear;
     }
 }

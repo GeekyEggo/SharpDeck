@@ -71,11 +71,11 @@ namespace StreamDeck.Tests
                 Assert.That(parameters?.Info?.Application?.Version, Is.EqualTo(new Version(5, 3, 0, 15179)));
 
                 // Info - Colors
-                Assert.That(parameters?.Info?.Colors?.ButtonMouseOverBackgroundColor, Is.EqualTo(Color.FromArgb(255, 70, 70, 70)));
-                Assert.That(parameters?.Info?.Colors?.ButtonPressedBackgroundColor, Is.EqualTo(Color.FromArgb(255, 48, 48, 48)));
-                Assert.That(parameters?.Info?.Colors?.ButtonPressedBorderColor, Is.EqualTo(Color.FromArgb(255, 100, 100, 100)));
-                Assert.That(parameters?.Info?.Colors?.ButtonPressedTextColor, Is.EqualTo(Color.FromArgb(255, 150, 150, 150)));
-                Assert.That(parameters?.Info?.Colors?.HighlightColor, Is.EqualTo(Color.FromArgb(255, 0, 120, 255)));
+                Assert.That(parameters?.Info?.Colors?.ButtonMouseOverBackgroundColor, Is.EqualTo("#464646FF"));
+                Assert.That(parameters?.Info?.Colors?.ButtonPressedBackgroundColor, Is.EqualTo("#303030FF"));
+                Assert.That(parameters?.Info?.Colors?.ButtonPressedBorderColor, Is.EqualTo("#646464FF"));
+                Assert.That(parameters?.Info?.Colors?.ButtonPressedTextColor, Is.EqualTo("#969696FF"));
+                Assert.That(parameters?.Info?.Colors?.HighlightColor, Is.EqualTo("#0078FFFF"));
 
                 // Info - Devices.
                 Assert.That(parameters?.Info?.DevicePixelRatio, Is.EqualTo(2));

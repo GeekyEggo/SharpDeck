@@ -16,5 +16,11 @@ namespace StreamDeck.Events
         /// </summary>
         [JsonInclude]
         public bool? IsInMultiAction { get; internal set; }
+
+        /// <summary>
+        /// Gets the state; this is a parameter that is only set when the action has multiple states defined in its manifest.json. The 0-based value contains the current state of the action.
+        /// </summary>
+        [JsonInclude]
+        public int? State { get; internal set; }
     }
 }

@@ -1,5 +1,6 @@
 namespace StreamDeck.Tests
 {
+    using System.Drawing;
     using StreamDeck.Events;
     using StreamDeck.Extensions;
     using StreamDeck.Net;
@@ -235,12 +236,12 @@ namespace StreamDeck.Tests
                     "device": "ZYC789",
                     "event": "didReceiveSettings",
                     "payload": {
-                        "settings": {
-                            "name": "Bob Smith"
-                        },
                         "coordinates": {
                             "column": 3,
                             "row": 1
+                        },
+                        "settings": {
+                            "name": "Bob Smith"
                         },
                         "isInMultiAction": false
                     }
@@ -290,14 +291,14 @@ namespace StreamDeck.Tests
                     "device": "ZYC789",
                     "event": "keyDown",
                     "payload": {
-                        "settings": {
-                            "name": "Bob Smith"
-                        },
                         "coordinates": {
                             "column": 3,
                             "row": 1
                         },
                         "isInMultiAction": true,
+                        "settings": {
+                            "name": "Bob Smith"
+                        },
                         "state": 0,
                         "userDesiredState": 1
                     }
@@ -347,14 +348,14 @@ namespace StreamDeck.Tests
                     "device": "ZYC789",
                     "event": "keyUp",
                     "payload": {
-                        "settings": {
-                            "name": "Bob Smith"
-                        },
                         "coordinates": {
                             "column": 1,
                             "row": 2
                         },
                         "isInMultiAction": true,
+                        "settings": {
+                            "name": "Bob Smith"
+                        },
                         "state": 1,
                         "userDesiredState": 0
                     }
@@ -474,6 +475,108 @@ namespace StreamDeck.Tests
                     "event": "sendToPlugin",
                     "payload": {
                         "name": "Bob Smith"
+                    }
+                }
+                """);
+
+            // Assert.
+            Assert.That(didHandle, Is.True, "Event was not raised.");
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.SystemDidWakeUp"/>.
+        /// </summary>
+        [Test]
+        public void SystemDidWakeUp()
+        {
+            // Arrange.
+            var didHandle = false;
+            this.StreamDeckConnection.SystemDidWakeUp += (sender, args) =>
+            {
+                // Assert
+                Assert.Multiple(() =>
+                {
+                    Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
+                    Assert.That(args.Event, Is.EqualTo("systemDidWakeUp"));
+                });
+
+                didHandle = true;
+            };
+
+            // Act.
+            this.Raise("""
+                {
+                    "event": "systemDidWakeUp"
+                }
+                """);
+
+            // Assert.
+            Assert.That(didHandle, Is.True, "Event was not raised.");
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.TitleParametersDidChange"/>.
+        /// </summary>
+        [Test]
+        public void TitleParametersDidChange()
+        {
+            // Arrange.
+            var didHandle = false;
+            this.StreamDeckConnection.TitleParametersDidChange += (sender, args) =>
+            {
+                // Assert
+                Assert.Multiple(() =>
+                {
+                    Assert.That(sender, Is.EqualTo(this.StreamDeckConnection));
+
+                    Assert.That(args.Action, Is.EqualTo("com.tests.example.action"));
+                    Assert.That(args.Context, Is.EqualTo("ABC123"));
+                    Assert.That(args.Device, Is.EqualTo("ZYC789"));
+                    Assert.That(args.Event, Is.EqualTo("titleParametersDidChange"));
+                    Assert.That(args.Payload?.Coordinates?.Column, Is.EqualTo(5));
+                    Assert.That(args.Payload?.Coordinates?.Row, Is.EqualTo(2));
+                    Assert.That(args.Payload?.Settings, Is.Not.Null);
+                    Assert.That(args.Payload?.GetSettings<FooSettings>()?.Name, Is.EqualTo("Bob Smith"));
+                    Assert.That(args.Payload?.State, Is.EqualTo(1));
+                    Assert.That(args.Payload?.Title, Is.EqualTo("Hello World"));
+                    Assert.That(args.Payload?.TitleParameters?.FontFamily, Is.EqualTo("Calibri"));
+                    Assert.That(args.Payload?.TitleParameters?.FontSize, Is.EqualTo(12));
+                    Assert.That(args.Payload?.TitleParameters?.FontStyle, Is.EqualTo("Bold"));
+                    Assert.That(args.Payload?.TitleParameters?.FontUnderline, Is.EqualTo(false));
+                    Assert.That(args.Payload?.TitleParameters?.ShowTitle, Is.EqualTo(true));
+                    Assert.That(args.Payload?.TitleParameters?.TitleAlignment, Is.EqualTo("bottom"));
+                    Assert.That(args.Payload?.TitleParameters?.TitleColor, Is.EqualTo("#ffff00"));
+                });
+
+                didHandle = true;
+            };
+
+            // Act.
+            this.Raise("""
+                {
+                    "action": "com.tests.example.action",
+                    "context": "ABC123",
+                    "device": "ZYC789",
+                    "event": "titleParametersDidChange",
+                    "payload": {
+                        "coordinates": {
+                            "column": 5,
+                            "row": 2
+                        },
+                        "settings": {
+                            "name": "Bob Smith"
+                        },
+                        "state": 1,
+                        "title": "Hello World",
+                        "titleParameters": {
+                            "fontFamily": "Calibri",
+                            "fontSize": 12,
+                            "fontStyle": "Bold",
+                            "fontUnderline": false,
+                            "showTitle": true,
+                            "titleAlignment": "bottom",
+                            "titleColor": "#ffff00"
+                        }
                     }
                 }
                 """);

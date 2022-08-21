@@ -176,11 +176,11 @@ namespace StreamDeck
                         break;
 
                     case "willAppear":
-                        this.WillAppear?.Invoke(this, JsonSerializer.Deserialize(e.Message, StreamDeckJsonContext.Default.ActionEventArgsAppearancePayload)!);
+                        this.WillAppear?.Invoke(this, JsonSerializer.Deserialize(e.Message, StreamDeckJsonContext.Default.ActionEventArgsActionPayload)!);
                         break;
 
                     case "willDisappear":
-                        this.WillDisappear?.Invoke(this, JsonSerializer.Deserialize(e.Message, StreamDeckJsonContext.Default.ActionEventArgsAppearancePayload)!);
+                        this.WillDisappear?.Invoke(this, JsonSerializer.Deserialize(e.Message, StreamDeckJsonContext.Default.ActionEventArgsActionPayload)!);
                         break;
 
                     // Unrecognised

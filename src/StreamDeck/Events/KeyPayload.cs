@@ -3,7 +3,7 @@ namespace StreamDeck.Events
     /// <summary>
     /// Provides payload information relating to a key.
     /// </summary>
-    public class KeyPayload : AppearancePayload
+    public class KeyPayload : ActionPayload
     {
         /// <summary>
         /// Gets a value that is set when the action is triggered with a specific value from a Multi Action.

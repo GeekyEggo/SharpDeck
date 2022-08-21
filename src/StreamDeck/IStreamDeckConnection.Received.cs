@@ -74,6 +74,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Occurs when the computer is woken up.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#systemdidwakeup"/>.
         /// </summary>
         /// <remarks>
         /// A plugin may receive multiple <see cref="SystemDidWakeUp"/> events when waking up the computer.
@@ -83,17 +84,18 @@ namespace StreamDeck
 
         /// <summary>
         /// Occurs when the user changes the title or title parameters.
+        /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#titleparametersdidchange"/>.
         /// </summary>
         event EventHandler<IStreamDeckConnection, ActionEventArgs<TitlePayload>>? TitleParametersDidChange;
 
         /// <summary>
         /// Occurs when an instance of an action appears.
         /// </summary>
-        event EventHandler<IStreamDeckConnection, ActionEventArgs<AppearancePayload>>? WillAppear;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? WillAppear;
 
         /// <summary>
         /// Occurs when an instance of an action disappears.
         /// </summary>
-        event EventHandler<IStreamDeckConnection, ActionEventArgs<AppearancePayload>>? WillDisappear;
+        event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? WillDisappear;
     }
 }

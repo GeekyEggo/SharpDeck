@@ -26,8 +26,8 @@ namespace StreamDeck.Serialization
     [JsonSerializable(typeof(ActionEventArgs))]
     [JsonSerializable(typeof(ActionEventArgs<JsonObject>))]
     [JsonSerializable(typeof(ActionEventArgs<TitlePayload>))]
-    [JsonSerializable(typeof(ActionEventArgs<AppearancePayload>))]
-    [JsonSerializable(typeof(ActionEventArgs<AppearancePayload>))]
+    [JsonSerializable(typeof(ActionEventArgs<ActionPayload>))]
+    [JsonSerializable(typeof(ActionEventArgs<ActionPayload>))]
 
     // Misc
     [JsonSerializable(typeof(RegistrationInfo))]
