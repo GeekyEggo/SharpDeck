@@ -30,5 +30,31 @@ namespace StreamDeck.Tests
         /// Gets the mock web socket connection.
         /// </summary>
         private Mock<IWebSocketConnection> WebSocketConnection { get; } = new Mock<IWebSocketConnection>();
+
+        /// <summary>
+        /// Asserts <see cref="StreamDeckConnection.StreamDeckConnection(RegistrationParameters, IWebSocketConnection?, Microsoft.Extensions.Logging.ILogger{StreamDeckConnection}?)"/>.
+        /// </summary>
+        [Test]
+        public void Construct()
+            => Assert.That(this.StreamDeckConnection.Info, Is.EqualTo(this.RegistrationParameters.Info));
+
+        /// <summary>
+        /// Connects <see cref="StreamDeckConnection.ConnectAsync(CancellationToken)"/>.
+        /// </summary>
+        [Test]
+        public async Task ConnectAsync()
+        {
+            // Arrange, act.
+            var token = new CancellationToken();
+            await this.StreamDeckConnection.ConnectAsync(token);
+
+            // Assert.
+            this.WebSocketConnection.Verify(ws => ws.ConnectAsync($"ws://localhost:{this.RegistrationParameters.Port}/", token), Times.Once);
+            this.WebSocketConnection.Verify(
+                ws => ws.SendAsync($$"""
+                    {"event":"{{this.RegistrationParameters.Event}}","uuid":"{{this.RegistrationParameters.PluginUUID}}"}
+                    """, token),
+                Times.Once);
+        }
     }
 }

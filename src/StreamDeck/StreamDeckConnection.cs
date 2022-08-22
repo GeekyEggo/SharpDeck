@@ -1,7 +1,6 @@
 namespace StreamDeck
 {
     using System.Text.Json;
-    using System.Text.Json.Serialization.Metadata;
     using Microsoft.Extensions.Logging;
     using StreamDeck.Events;
     using StreamDeck.Extensions;
@@ -17,9 +16,9 @@ namespace StreamDeck
         /// Initializes a new instance of the <see cref="StreamDeckConnection"/> class.
         /// </summary>
         /// <param name="args">The command line arguments.</param>
-        /// <param name="logger">The logger.</param>
-        public StreamDeckConnection(string[]? args = null, ILogger<StreamDeckConnection>? logger = null)
-            : this(new RegistrationParameters(args ?? Environment.GetCommandLineArgs()), new WebSocketConnection(), logger)
+        /// <param name="loggerFactory">The optional logger factory.</param>
+        public StreamDeckConnection(string[]? args = null, ILoggerFactory? loggerFactory = null)
+            : this(new RegistrationParameters(args ?? Environment.GetCommandLineArgs()), new WebSocketConnection(), loggerFactory)
         {
         }
 
@@ -28,10 +27,10 @@ namespace StreamDeck
         /// </summary>
         /// <param name="registrationParameters">The registration parameters.</param>
         /// <param name="webSocket">The web socket connection.</param>
-        /// <param name="logger">The logger.</param>
-        internal StreamDeckConnection(RegistrationParameters registrationParameters, IWebSocketConnection? webSocket = null, ILogger<StreamDeckConnection>? logger = null)
+        /// <param name="loggerFactory">The optional logger factory.</param>
+        internal StreamDeckConnection(RegistrationParameters registrationParameters, IWebSocketConnection? webSocket = null, ILoggerFactory? loggerFactory = null)
         {
-            this.Logger = logger;
+            this.Logger = loggerFactory?.CreateLogger<StreamDeckConnection>();
             this.RegistrationParameters = registrationParameters;
 
             this.WebSocket = webSocket ?? new WebSocketConnection();
@@ -42,11 +41,6 @@ namespace StreamDeck
         public RegistrationInfo Info => this.RegistrationParameters.Info;
 
         /// <summary>
-        /// Gets the underlying the web socket.
-        /// </summary>
-        internal IWebSocketConnection WebSocket { get; }
-
-        /// <summary>
         /// Gets or sets the registration parameters.
         /// </summary>
         private RegistrationParameters RegistrationParameters { get; set; }
@@ -55,6 +49,11 @@ namespace StreamDeck
         /// Gets the logger.
         /// </summary>
         private ILogger<StreamDeckConnection>? Logger { get; }
+
+        /// <summary>
+        /// Gets the underlying the web socket.
+        /// </summary>
+        private IWebSocketConnection WebSocket { get; }
 
         /// <summary>
         /// Connects to the Stream Deck asynchronously.

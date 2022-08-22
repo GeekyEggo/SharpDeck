@@ -73,6 +73,48 @@ namespace StreamDeck.Tests.Net
         }
 
         /// <summary>
+        /// Asserts <see cref="WebSocketConnection.DisposeAsync()"/>.
+        /// </summary>
+        [Test]
+        public async Task DisposeAsync()
+        {
+            // Arrange.
+            var tcs = new TaskCompletionSource<Fleck.IWebSocketConnection>();
+            this.Server.Start(conn => conn.OnClose = () => tcs.TrySetResult(conn));
+
+            await this.Client.ConnectAsync(Uri);
+
+            // Act.
+            await this.Client.DisposeAsync();
+
+            // Assert.
+            await tcs.Task;
+            Assert.Pass();
+        }
+
+        /// <summary>
+        /// Asserts <see cref="WebSocketConnection.MessageReceived"/>.
+        /// </summary>
+        [Test]
+        public async Task MessageReceived()
+        {
+            // Arrange.
+            var tcs = new TaskCompletionSource<string>();
+
+            this.Server.Start(conn => conn.OnMessage = _ => conn.Send("Pong"));
+            await this.Client.ConnectAsync(Uri);
+
+            this.Client.MessageReceived += (sender, args) => tcs.TrySetResult(args.Message);
+
+            // Act
+            await this.Client.SendAsync("Ping");
+
+            // Assert.
+            var response = await tcs.Task;
+            Assert.That(response, Is.EqualTo("Pong"));
+        }
+
+        /// <summary>
         /// Asserts <see cref="WebSocketConnection.SendAsync(object, System.Text.Json.JsonSerializerOptions?, CancellationToken)"/>.
         /// </summary>
         [Test]

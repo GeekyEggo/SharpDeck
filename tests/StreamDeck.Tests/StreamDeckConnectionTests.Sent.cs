@@ -39,7 +39,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"context":"ABC123","event":"getSettings"}
                     """, token),
                 Times.Once);
@@ -57,7 +57,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"payload":{"message":"Hello world"},"event":"logMessage"}
                     """, token),
                 Times.Once);
@@ -75,7 +75,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"payload":{"url":"https://example.com"},"event":"openUrl"}
                     """, token),
                 Times.Once);
@@ -96,7 +96,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"action":"com.tests.example.action","context":"ABC123","payload":{"name":"Bob Smith"},"event":"sendToPropertyInspector"}
                     """, token),
                 Times.Once);
@@ -117,7 +117,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"action":"com.tests.example.action","context":"ABC123","payload":{"Name":"Bob Smith"},"event":"sendToPropertyInspector"}
                     """, token),
                 Times.Once);
@@ -231,7 +231,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"context":"ABC123","payload":{"name":"Bob Smith"},"event":"setSettings"}
                     """, token),
                 Times.Once);
@@ -252,7 +252,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"context":"ABC123","payload":{"Name":"Bob Smith"},"event":"setSettings"}
                     """, token),
                 Times.Once);
@@ -335,7 +335,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"context":"ABC123","event":"showAlert"}
                     """, token),
                 Times.Once);
@@ -353,7 +353,7 @@ namespace StreamDeck.Tests
 
             // Assert
             this.WebSocketConnection.Verify(
-                ws => ws.SendAsync($$"""
+                ws => ws.SendAsync("""
                     {"context":"ABC123","event":"showOk"}
                     """, token),
                 Times.Once);

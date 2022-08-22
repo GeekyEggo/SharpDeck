@@ -10,49 +10,51 @@ namespace StreamDeck.Tests
     public class RegistrationParametersTests
     {
         /// <summary>
+        /// A JSON representation of <see cref="RegistrationParameters.Info"/>.
+        /// </summary>
+        private const string INFO_JSON = """
+            {
+                "application": {
+                    "font": "Calibri",
+                    "language": "en",
+                    "platform": "windows",
+                    "platformVersion": "10.0.22000",
+                    "version": "5.3.0.15179"
+                },
+                "colors": {
+                    "buttonMouseOverBackgroundColor": "#464646FF",
+                    "buttonPressedBackgroundColor": "#303030FF",
+                    "buttonPressedBorderColor": "#646464FF",
+                    "buttonPressedTextColor": "#969696FF",
+                    "highlightColor": "#0078FFFF"
+                },
+                "devicePixelRatio": 2,
+                "devices": [
+                    {
+                        "id": "B3F7C6D19695AF13B95578F2C29EB037",
+                        "name": "Stream Deck XL",
+                        "size": {
+                            "columns": 8,
+                            "rows": 4
+                        },
+                        "type": 2
+                    }
+                ],
+                "plugin": {
+                    "uuid": "com.sample.counter",
+                    "version": "1.2.0"
+                }
+            }
+            """;
+
+        /// <summary>
         /// Asserts <see cref="RegistrationParameters(string[])"/> correctly sets and deserializes all arguments.
         /// </summary>
         [Test]
         public void Construct()
         {
-            // Arrange.
-            const string infoJson = """
-                {
-                    "application": {
-                        "font": "Calibri",
-                        "language": "en",
-                        "platform": "windows",
-                        "platformVersion": "10.0.22000",
-                        "version": "5.3.0.15179"
-                    },
-                    "colors": {
-                        "buttonMouseOverBackgroundColor": "#464646FF",
-                        "buttonPressedBackgroundColor": "#303030FF",
-                        "buttonPressedBorderColor": "#646464FF",
-                        "buttonPressedTextColor": "#969696FF",
-                        "highlightColor": "#0078FFFF"
-                    },
-                    "devicePixelRatio": 2,
-                    "devices": [
-                        {
-                            "id": "B3F7C6D19695AF13B95578F2C29EB037",
-                            "name": "Stream Deck XL",
-                            "size": {
-                                "columns": 8,
-                                "rows": 4
-                            },
-                            "type": 2
-                        }
-                    ],
-                    "plugin": {
-                        "uuid": "com.sample.counter",
-                        "version": "1.2.0"
-                    }
-                }
-                """;
-
-            // Act.
-            var parameters = new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", infoJson);
+            // Arrange, act
+            var parameters = new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", INFO_JSON);
 
             // Assert.
             Assert.Multiple(() =>
@@ -78,7 +80,7 @@ namespace StreamDeck.Tests
 
                 // Info - Devices.
                 Assert.That(parameters.Info.DevicePixelRatio, Is.EqualTo(2));
-                Assert.That(parameters.Info.Devices.Length, Is.EqualTo(1));
+                Assert.That(parameters.Info.Devices, Has.Length.EqualTo(1));
                 Assert.That(parameters.Info.Devices[0].Id, Is.EqualTo("B3F7C6D19695AF13B95578F2C29EB037"));
                 Assert.That(parameters.Info.Devices[0].Name, Is.EqualTo("Stream Deck XL"));
                 Assert.That(parameters.Info.Devices[0].Size.Columns, Is.EqualTo(8));
@@ -90,5 +92,33 @@ namespace StreamDeck.Tests
                 Assert.That(parameters.Info.Plugin.Version, Is.EqualTo(new Version(1, 2, 0)));
             });
         }
+
+        /// <summary>
+        /// Asserts <see cref="RegistrationParameters(string[])"/> throws <see cref="ArgumentException"/> when <see cref="RegistrationParameters.Event"/> is not defined.
+        /// </summary>
+        [Test]
+        public void Construct_Fail_Event()
+            => Assert.Throws<ArgumentException>(() => new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456"/*, "-registerEvent", "registerPlugin"*/, "-info", INFO_JSON));
+
+        /// <summary>
+        /// Asserts <see cref="RegistrationParameters(string[])"/> throws <see cref="ArgumentException"/> when <see cref="RegistrationParameters.Info"/> is not defined.
+        /// </summary>
+        [Test]
+        public void Construct_Fail_Info()
+            => Assert.Throws<ArgumentException>(() => new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin"/*, "-info", INFO_JSON*/));
+
+        /// <summary>
+        /// Asserts <see cref="RegistrationParameters(string[])"/> throws <see cref="ArgumentException"/> when <see cref="RegistrationParameters.Port"/> is not defined.
+        /// </summary>
+        [Test]
+        public void Construct_Fail_Port()
+            => Assert.Throws<ArgumentException>(() => new RegistrationParameters(/*"-port", "13", */"-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", INFO_JSON));
+
+        /// <summary>
+        /// Asserts <see cref="RegistrationParameters(string[])"/> throws <see cref="ArgumentException"/> when <see cref="RegistrationParameters.PluginUUID"/> is not defined.
+        /// </summary>
+        [Test]
+        public void Construct_Fail_PluginUUID()
+            => Assert.Throws<ArgumentException>(() => new RegistrationParameters("-port", "13"/*, "-pluginUUID", "ABCDEF123456"*/, "-registerEvent", "registerPlugin", "-info", INFO_JSON));
     }
 }

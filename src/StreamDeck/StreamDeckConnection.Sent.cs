@@ -11,14 +11,7 @@ namespace StreamDeck
     {
         /// <inheritdoc/>
         public Task GetGlobalSettingsAsync(CancellationToken cancellationToken = default)
-        {
-            if (this.RegistrationParameters?.PluginUUID == null)
-            {
-                throw new NullReferenceException("Unable to get global settings as the pluginUUID is null.");
-            }
-
-            return this.WebSocket.SendAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID), StreamDeckJsonContext.Default.ContextMessage, cancellationToken);
-        }
+            => this.WebSocket.SendAsync(new ContextMessage("getGlobalSettings", this.RegistrationParameters.PluginUUID), StreamDeckJsonContext.Default.ContextMessage, cancellationToken);
 
         /// <inheritdoc/>
         public Task GetSettingsAsync(string context, CancellationToken cancellationToken = default)
@@ -45,11 +38,6 @@ namespace StreamDeck
         /// <inheritdoc/>
         public Task SetGlobalSettingsAsync<TSettings>(TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
         {
-            if (this.RegistrationParameters?.PluginUUID == null)
-            {
-                throw new NullReferenceException("Unable to set global settings as the pluginUUID is null.");
-            }
-
             const string @event = "setGlobalSettings";
 
             return jsonTypeInfo == null
