@@ -7,48 +7,48 @@ namespace StreamDeck
     public sealed partial class StreamDeckConnection : IStreamDeckConnection
     {
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>?>? ApplicationDidLaunch;
+        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidLaunch;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>?>? ApplicationDidTerminate;
+        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<ApplicationPayload>>? ApplicationDidTerminate;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, DeviceConnectEventArgs?>? DeviceDidConnect;
+        public event EventHandler<IStreamDeckConnection, DeviceConnectEventArgs>? DeviceDidConnect;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, DeviceEventArgs?>? DeviceDidDisconnect;
+        public event EventHandler<IStreamDeckConnection, DeviceEventArgs>? DeviceDidDisconnect;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<SettingsPayload>?>? DidReceiveGlobalSettings;
+        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs<SettingsPayload>>? DidReceiveGlobalSettings;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>?>? DidReceiveSettings;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? DidReceiveSettings;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>?>? KeyDown;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>>? KeyDown;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>?>? KeyUp;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<KeyPayload>>? KeyUp;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs?>? PropertyInspectorDidAppear;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidAppear;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs?>? PropertyInspectorDidDisappear;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs>? PropertyInspectorDidDisappear;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, PartialActionEventArgs<JsonObject>?>? SendToPlugin;
+        public event EventHandler<IStreamDeckConnection, PartialActionEventArgs<JsonObject>>? SendToPlugin;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs?>? SystemDidWakeUp;
+        public event EventHandler<IStreamDeckConnection, StreamDeckEventArgs>? SystemDidWakeUp;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<TitlePayload>?>? TitleParametersDidChange;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<TitlePayload>>? TitleParametersDidChange;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>?>? WillAppear;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? WillAppear;
 
         /// <inheritdoc/>
-        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>?>? WillDisappear;
+        public event EventHandler<IStreamDeckConnection, ActionEventArgs<ActionPayload>>? WillDisappear;
     }
 }

@@ -6,33 +6,45 @@ namespace StreamDeck.Events
     public class Colors
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Colors"/> class.
+        /// </summary>
+        /// <param name="buttonMouseOverBackgroundColor">The button background color, when hovered over.</param>
+        /// <param name="buttonPressedBackgroundColor">The button background color, when pressed.</param>
+        /// <param name="buttonPressedBorderColor">The button border color, when pressed.</param>
+        /// <param name="buttonPressedTextColor">The button text color, when pressed.</param>
+        /// <param name="highlightColor">The highlight color.</param>
+        public Colors(string buttonMouseOverBackgroundColor, string buttonPressedBackgroundColor, string buttonPressedBorderColor, string buttonPressedTextColor, string highlightColor)
+        {
+            this.ButtonMouseOverBackgroundColor = buttonMouseOverBackgroundColor;
+            this.ButtonPressedBackgroundColor = buttonPressedBackgroundColor;
+            this.ButtonPressedBorderColor = buttonPressedBorderColor;
+            this.ButtonPressedTextColor = buttonPressedTextColor;
+            this.HighlightColor = highlightColor;
+        }
+
+        /// <summary>
         /// Gets the button background color, when hovered over.
         /// </summary>
-        [JsonInclude]
-        public string? ButtonMouseOverBackgroundColor { get; internal set; }
+        public string ButtonMouseOverBackgroundColor { get; }
 
         /// <summary>
         /// Gets the button background color, when pressed.
         /// </summary>
-        [JsonInclude]
-        public string? ButtonPressedBackgroundColor { get; internal set; }
+        public string ButtonPressedBackgroundColor { get; }
 
         /// <summary>
         /// Gets the button border color, when pressed.
         /// </summary>
-        [JsonInclude]
-        public string? ButtonPressedBorderColor { get; internal set; }
+        public string ButtonPressedBorderColor { get; }
 
         /// <summary>
         /// Gets the button text color, when pressed.
         /// </summary>
-        [JsonInclude]
-        public string? ButtonPressedTextColor { get; internal set; }
+        public string ButtonPressedTextColor { get; }
 
         /// <summary>
         /// Gets the highlight color.
         /// </summary>
-        [JsonInclude]
-        public string? HighlightColor { get; internal set; }
+        public string HighlightColor { get; }
     }
 }

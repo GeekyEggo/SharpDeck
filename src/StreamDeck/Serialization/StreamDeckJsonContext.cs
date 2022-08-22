@@ -1,5 +1,6 @@
 namespace StreamDeck.Serialization
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
@@ -45,6 +46,8 @@ namespace StreamDeck.Serialization
     [JsonSerializable(typeof(Message<LogPayload>))]
     [JsonSerializable(typeof(Message<UrlPayload>))]
     [JsonSerializable(typeof(RegistrationParameters))]
+
+    [ExcludeFromCodeCoverage]
     internal partial class StreamDeckJsonContext : JsonSerializerContext
     {
     }

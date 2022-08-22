@@ -3,18 +3,28 @@ namespace StreamDeck.Events
     /// <summary>
     /// Provides coordinates as represented as <see cref="Column"/> and <see cref="Row"/>.
     /// </summary>
-    public class Coordinates
+    public struct Coordinates
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Coordinates"/> struct.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <param name="row">The row.</param>
+        [JsonConstructor]
+        public Coordinates(int column, int row)
+        {
+            this.Column = column;
+            this.Row = row;
+        }
+
         /// <summary>
         /// Gets the column.
         /// </summary>
-        [JsonInclude]
-        public int? Column { get; internal set; }
+        public int Column { get; }
 
         /// <summary>
         /// Gets the row.
-        [JsonInclude]
-        public int? Row { get; internal set; }
+        public int Row { get; }
 
         /// <summary>
         /// Determines whether the specified <see cref="object" />, is equal to this instance.

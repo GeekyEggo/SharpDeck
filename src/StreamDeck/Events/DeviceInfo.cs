@@ -6,21 +6,31 @@ namespace StreamDeck.Events
     public class DeviceInfo
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceInfo"/> class.
+        /// </summary>
+        /// <param name="name">The device name.</param>
+        /// <param name="size">The number of columns and rows of keys that the device owns.</param>
+        /// <param name="type">The type of device.</param>
+        public DeviceInfo(string name,  Size size, Device type)
+        {
+            this.Name = name;
+            this.Size = size;
+            this.Type = type;
+        }
+
+        /// <summary>
         /// Gets the device name.
         /// </summary>
-        [JsonInclude]
-        public string? Name { get; internal set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the number of columns and rows of keys that the device owns.
         /// </summary>
-        [JsonInclude]
-        public Size? Size { get; internal set; }
+        public Size Size { get; }
 
         /// <summary>
         /// Gets the type of device.
         /// </summary>
-        [JsonInclude]
-        public Device? Type { get; internal set; }
+        public Device Type { get; }
     }
 }

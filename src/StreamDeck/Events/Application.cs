@@ -9,34 +9,46 @@ namespace StreamDeck.Events
     public class Application
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Application"/> class.
+        /// </summary>
+        /// <param name="font">The font used by Stream Deck.</param>
+        /// <param name="language">The language in which the Stream Deck application is running. Possible values are en, fr, de, es, ja, zh_CN..</param>
+        /// <param name="platform">The platform the Stream Deck application is running.</param>
+        /// <param name="platformVersion">The platform version.</param>
+        /// <param name="version">The Stream Deck application version.</param>
+        public Application(string font, CultureInfo language, string platform, Version platformVersion, Version version)
+        {
+            this.Font = font;
+            this.Language = language;
+            this.Platform = platform;
+            this.PlatformVersion = platformVersion;
+            this.Version = version;
+        }
+
+        /// <summary>
         /// Gets the font used by the Stream Deck.
         /// </summary>
-        [JsonInclude]
-        public string? Font { get; internal set; }
+        public string Font { get; }
 
         /// <summary>
         /// Gets the language in which the Stream Deck application is running. Possible values are en, fr, de, es, ja, zh_CN.
         /// </summary>
-        [JsonInclude]
         [JsonConverter(typeof(CultureInfoJsonConverter))]
-        public CultureInfo? Language { get; internal set; }
+        public CultureInfo Language { get; }
 
         /// <summary>
-        /// Gets which platform the Stream Deck application is running
+        /// Gets the platform the Stream Deck application is running
         /// </summary>
-        [JsonInclude]
-        public string? Platform { get; internal set; }
+        public string Platform { get; }
 
         /// <summary>
         /// Gets the platform version.
         /// </summary>
-        [JsonInclude]
-        public Version? PlatformVersion { get; internal set; }
+        public Version PlatformVersion { get; }
 
         /// <summary>
         /// Gets the Stream Deck application version.
         /// </summary>
-        [JsonInclude]
-        public Version? Version { get; internal set; }
+        public Version Version { get; }
     }
 }

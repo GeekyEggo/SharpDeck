@@ -6,9 +6,15 @@ namespace StreamDeck.Events
     public class StreamDeckEventArgs : EventArgs
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="StreamDeckEventArgs"/> class.
+        /// </summary>
+        /// <param name="event">The name of the event.</param>
+        public StreamDeckEventArgs(string @event)
+            : base() => this.Event = @event;
+
+        /// <summary>
         /// Gets the name of the event.
         /// </summary>
-        [JsonInclude]
-        public string? Event { get; internal set; }
+        public string Event { get; }
     }
 }

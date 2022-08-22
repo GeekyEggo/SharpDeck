@@ -6,9 +6,16 @@ namespace StreamDeck.Events
     public class StreamDeckEventArgs<TPayload> : StreamDeckEventArgs
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="StreamDeckEventArgs{TPayload}"/> class.
+        /// </summary>
+        /// <param name="event">The name of the event.</param>
+        /// <param name="payload">The main payload associated with the event.</param>
+        public StreamDeckEventArgs(string @event, TPayload payload)
+            : base(@event) => this.Payload = payload;
+
+        /// <summary>
         /// Gets the main payload associated with the event.
         /// </summary>
-        [JsonInclude]
-        public TPayload? Payload { get; internal set; }
+        public TPayload Payload { get; }
     }
 }

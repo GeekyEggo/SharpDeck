@@ -6,15 +6,24 @@ namespace StreamDeck.Events
     public class PluginInfo
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="PluginInfo"/> class.
+        /// </summary>
+        /// <param name="uuid">The plugin UUID; this matches the one defined within the manifest.json file.</param>
+        /// <param name="version">The version.</param>
+        public PluginInfo(string uuid, Version version)
+        {
+            this.UUID = uuid;
+            this.Version = version;
+        }
+
+        /// <summary>
         /// Gets the plugin UUID; this matches the one defined within the manifest.json file.
         /// </summary>
-        [JsonInclude]
-        public string? UUID { get; internal set; }
+        public string UUID { get; }
 
         /// <summary>
         /// Gets the version.
         /// </summary>
-        [JsonInclude]
-        public Version? Version { get; internal set; }
+        public Version Version { get; }
     }
 }

@@ -1,6 +1,5 @@
 namespace StreamDeck.Tests
 {
-    using System.Drawing;
     using System.Globalization;
     using StreamDeck.Events;
 
@@ -64,31 +63,31 @@ namespace StreamDeck.Tests
                 Assert.That(parameters.Event, Is.EqualTo("registerPlugin"));
 
                 // Info - Application.
-                Assert.That(parameters?.Info?.Application?.Font, Is.EqualTo("Calibri"));
-                Assert.That(parameters?.Info?.Application?.Language, Is.EqualTo(CultureInfo.GetCultureInfo("en")));
-                Assert.That(parameters?.Info?.Application?.Platform, Is.EqualTo("windows"));
-                Assert.That(parameters?.Info?.Application?.PlatformVersion, Is.EqualTo(new Version(10, 0, 22000)));
-                Assert.That(parameters?.Info?.Application?.Version, Is.EqualTo(new Version(5, 3, 0, 15179)));
+                Assert.That(parameters.Info.Application.Font, Is.EqualTo("Calibri"));
+                Assert.That(parameters.Info.Application.Language, Is.EqualTo(CultureInfo.GetCultureInfo("en")));
+                Assert.That(parameters.Info.Application.Platform, Is.EqualTo("windows"));
+                Assert.That(parameters.Info.Application.PlatformVersion, Is.EqualTo(new Version(10, 0, 22000)));
+                Assert.That(parameters.Info.Application.Version, Is.EqualTo(new Version(5, 3, 0, 15179)));
 
                 // Info - Colors
-                Assert.That(parameters?.Info?.Colors?.ButtonMouseOverBackgroundColor, Is.EqualTo("#464646FF"));
-                Assert.That(parameters?.Info?.Colors?.ButtonPressedBackgroundColor, Is.EqualTo("#303030FF"));
-                Assert.That(parameters?.Info?.Colors?.ButtonPressedBorderColor, Is.EqualTo("#646464FF"));
-                Assert.That(parameters?.Info?.Colors?.ButtonPressedTextColor, Is.EqualTo("#969696FF"));
-                Assert.That(parameters?.Info?.Colors?.HighlightColor, Is.EqualTo("#0078FFFF"));
+                Assert.That(parameters.Info.Colors.ButtonMouseOverBackgroundColor, Is.EqualTo("#464646FF"));
+                Assert.That(parameters.Info.Colors.ButtonPressedBackgroundColor, Is.EqualTo("#303030FF"));
+                Assert.That(parameters.Info.Colors.ButtonPressedBorderColor, Is.EqualTo("#646464FF"));
+                Assert.That(parameters.Info.Colors.ButtonPressedTextColor, Is.EqualTo("#969696FF"));
+                Assert.That(parameters.Info.Colors.HighlightColor, Is.EqualTo("#0078FFFF"));
 
                 // Info - Devices.
-                Assert.That(parameters?.Info?.DevicePixelRatio, Is.EqualTo(2));
-                Assert.That(parameters?.Info?.Devices?.Length, Is.EqualTo(1));
-                Assert.That(parameters?.Info?.Devices?[0].Id, Is.EqualTo("B3F7C6D19695AF13B95578F2C29EB037"));
-                Assert.That(parameters?.Info?.Devices?[0].Name, Is.EqualTo("Stream Deck XL"));
-                Assert.That(parameters?.Info?.Devices?[0].Size?.Columns, Is.EqualTo(8));
-                Assert.That(parameters?.Info?.Devices?[0].Size?.Rows, Is.EqualTo(4));
-                Assert.That(parameters?.Info?.Devices?[0].Type, Is.EqualTo(Device.StreamDeckXL));
+                Assert.That(parameters.Info.DevicePixelRatio, Is.EqualTo(2));
+                Assert.That(parameters.Info.Devices.Length, Is.EqualTo(1));
+                Assert.That(parameters.Info.Devices[0].Id, Is.EqualTo("B3F7C6D19695AF13B95578F2C29EB037"));
+                Assert.That(parameters.Info.Devices[0].Name, Is.EqualTo("Stream Deck XL"));
+                Assert.That(parameters.Info.Devices[0].Size.Columns, Is.EqualTo(8));
+                Assert.That(parameters.Info.Devices[0].Size.Rows, Is.EqualTo(4));
+                Assert.That(parameters.Info.Devices[0].Type, Is.EqualTo(Device.StreamDeckXL));
 
                 // Info - Plugin.
-                Assert.That(parameters?.Info.Plugin?.UUID, Is.EqualTo("com.sample.counter"));
-                Assert.That(parameters?.Info.Plugin?.Version, Is.EqualTo(new Version(1, 2, 0)));
+                Assert.That(parameters.Info.Plugin.UUID, Is.EqualTo("com.sample.counter"));
+                Assert.That(parameters.Info.Plugin.Version, Is.EqualTo(new Version(1, 2, 0)));
             });
         }
     }
