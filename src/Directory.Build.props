@@ -1,31 +1,39 @@
 <Project>
 
-    <PropertyGroup Condition="'$(IsPackable)'=='true'">
-        <!--
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+
         <PackageOutputPath>..\..\dist</PackageOutputPath>
+        <Authors>Richard Herman</Authors>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <Authors>Richard Herman</Authors>
-        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <!--
+            <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+            <PackageReadmeFile>README.md</PackageReadmeFile>
+        -->
         <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
         <RepositoryUrl>https://github.com/GeekyEggo/SharpDeck</RepositoryUrl>
-        <PackageTags>Elgato,Stream-Deck,Streaming,SDK</PackageTags>
-        -->
+        <PackageTags>Elgato,Stream-Deck,Plugin,Streaming,SDK</PackageTags>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(IsPackable)'=='true'">
+        <!--
+        This might need to be within the Directory.Build.targets
+        This might need to be within the Directory.Build.targets
+        <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" Visible="false" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
+        -->
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-
-        <!--
-        <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" Visible="false" />
-        <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
-        -->
     </ItemGroup>
 
     <ItemGroup>

@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "src\SharpDeck\SharpDeck.csproj", "{F2F0202D-630A-429C-86E6-F9D900CB7E74}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{91AE8732-D0CC-4618-968A-02EFDE46E4EF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck", "src\StreamDeck\StreamDeck.csproj", "{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{91AE8732-D0CC-4618-968A-02EFDE46E4EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter", "examples\Counter\Counter.csproj", "{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Tests", "tests\StreamDeck.Tests\StreamDeck.Tests.csproj", "{37B13CFA-DC0C-4C69-AFF4-BA0E77DB3FB3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{449D22B4-147A-4F84-B4C3-9587D313F0E3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{449D22B4-147A-4F84-B4C3-9587D313F0E3}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{96D17EC6-DE4E-4E66-825C-6537171DCD6E}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,9 +23,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.filenesting.json = .filenesting.json
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		Directory.Build.targets = Directory.Build.targets
 		LICENSE.md = LICENSE.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Core", "src\StreamDeck.Core\StreamDeck.Core.csproj", "{8354FA9D-0A61-4EA0-B41B-D3D10BC67B90}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Core.Tests", "tests\StreamDeck.Core.Tests\StreamDeck.Core.Tests.csproj", "{C4FAFD32-15F8-4EF5-AEC9-33F175496DD4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck", "src\StreamDeck\StreamDeck.csproj", "{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,30 +38,31 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2F0202D-630A-429C-86E6-F9D900CB7E74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37B13CFA-DC0C-4C69-AFF4-BA0E77DB3FB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37B13CFA-DC0C-4C69-AFF4-BA0E77DB3FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37B13CFA-DC0C-4C69-AFF4-BA0E77DB3FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37B13CFA-DC0C-4C69-AFF4-BA0E77DB3FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8354FA9D-0A61-4EA0-B41B-D3D10BC67B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8354FA9D-0A61-4EA0-B41B-D3D10BC67B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8354FA9D-0A61-4EA0-B41B-D3D10BC67B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8354FA9D-0A61-4EA0-B41B-D3D10BC67B90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4FAFD32-15F8-4EF5-AEC9-33F175496DD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4FAFD32-15F8-4EF5-AEC9-33F175496DD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4FAFD32-15F8-4EF5-AEC9-33F175496DD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4FAFD32-15F8-4EF5-AEC9-33F175496DD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{CD331A0E-1E01-4C6A-9B3D-B4C78D46D934} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
 		{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E} = {91AE8732-D0CC-4618-968A-02EFDE46E4EF}
-		{37B13CFA-DC0C-4C69-AFF4-BA0E77DB3FB3} = {0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}
+		{8354FA9D-0A61-4EA0-B41B-D3D10BC67B90} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
+		{C4FAFD32-15F8-4EF5-AEC9-33F175496DD4} = {0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}
+		{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CE7DE09-893D-4603-807D-674413F38D73}
