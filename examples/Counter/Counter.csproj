@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Extensions.Hosting\StreamDeck.Extensions.Hosting.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

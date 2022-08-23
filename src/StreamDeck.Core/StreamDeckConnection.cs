@@ -55,11 +55,7 @@ namespace StreamDeck
         /// </summary>
         private IWebSocketConnection WebSocket { get; }
 
-        /// <summary>
-        /// Connects to the Stream Deck asynchronously.
-        /// </summary>
-        /// <param name="cancellationToken">The optioanl cancellation token.</param>
-        /// <returns>The task of connecting to the Stream Deck.</returns>
+        /// <inheritdoc/>
         public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
             this.Logger?.LogTrace("Connecting to Stream Deck.");
@@ -81,18 +77,14 @@ namespace StreamDeck
             await this.WebSocket.WaitForDisconnectAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.WebSocket?.Dispose();
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
             await this.WebSocket.DisconnectAsync();
