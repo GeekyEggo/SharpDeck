@@ -1,6 +1,7 @@
 namespace StreamDeck.Tests.Extensions
 {
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Threading.Tasks;
     using Moq;
     using StreamDeck.Extensions;
@@ -12,9 +13,42 @@ namespace StreamDeck.Tests.Extensions
     public class StreamDeckConnectionExtensionsTests
     {
         /// <summary>
+        /// Gets the <see cref="StreamDeckConnectionExtensions.SetImageFromColorAsync(IStreamDeckConnection, string, Color, Target, int?, CancellationToken)"/> test cases.
+        /// </summary>
+        public static IEnumerable<TestCaseData> ImageFromColorTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(Color.FromArgb(0, 0, 0))
+                    .SetName("Black")
+                    .Returns(@"data:image/svg+xml;charset=utf8,<svg height=""1"" width=""1""><rect width=""1"" height=""1"" fill=""#000000""/></svg>");
+
+                yield return new TestCaseData(Color.FromArgb(255, 255, 255))
+                    .SetName("White")
+                    .Returns(@"data:image/svg+xml;charset=utf8,<svg height=""1"" width=""1""><rect width=""1"" height=""1"" fill=""#FFFFFF""/></svg>");
+
+                yield return new TestCaseData(Color.FromArgb(255, 0, 0))
+                    .SetName("Red")
+                    .Returns(@"data:image/svg+xml;charset=utf8,<svg height=""1"" width=""1""><rect width=""1"" height=""1"" fill=""#FF0000""/></svg>");
+
+                yield return new TestCaseData(Color.FromArgb(0, 255, 0))
+                    .SetName("Green")
+                    .Returns(@"data:image/svg+xml;charset=utf8,<svg height=""1"" width=""1""><rect width=""1"" height=""1"" fill=""#00FF00""/></svg>");
+
+                yield return new TestCaseData(Color.FromArgb(0, 0, 255))
+                    .SetName("Blue")
+                    .Returns(@"data:image/svg+xml;charset=utf8,<svg height=""1"" width=""1""><rect width=""1"" height=""1"" fill=""#0000FF""/></svg>");
+
+                yield return new TestCaseData(Color.FromArgb(255, 165, 1))
+                    .SetName("Orange")
+                    .Returns(@"data:image/svg+xml;charset=utf8,<svg height=""1"" width=""1""><rect width=""1"" height=""1"" fill=""#FFA501""/></svg>");
+            }
+        }
+
+        /// <summary>
         /// Gets the <see cref="StreamDeckConnectionExtensions.SetImageFromFileAsync(IStreamDeckConnection, string, string, Target, int?, CancellationToken)"/> test cases.
         /// </summary>
-        public static IEnumerable<TestCaseData> ImageTestCases
+        public static IEnumerable<TestCaseData> ImageFromFileTestCases
         {
             get
             {
@@ -45,13 +79,31 @@ namespace StreamDeck.Tests.Extensions
         }
 
         /// <summary>
+        /// Asserts <see cref="StreamDeckConnectionExtensions.SetImageFromColorAsync(IStreamDeckConnection, string, Color, Target, int?, CancellationToken)"/> correctly sets the image.
+        /// </summary>
+        /// <param name="color">The color of the image.</param>
+        /// <returns>The base64 encoded image send to the connection.</returns>
+        [Test]
+        [TestCaseSource(nameof(ImageFromColorTestCases))]
+        public Task<string> SetImageFromColorAsync(Color color)
+            => TestImageSetter((conn, ctx, target, state, token) => conn.SetImageFromColorAsync(ctx, color, target, state, token));
+
+        /// <summary>
         /// Asserts <see cref="StreamDeckConnectionExtensions.SetImageFromFileAsync(IStreamDeckConnection, string, string, Target, int?, CancellationToken)"/> correctly encodes and sets the image.
         /// </summary>
         /// <param name="path">The path to the file.</param>
-        /// <returns>The base64 encoded image.</returns>
+        /// <returns>The base64 encoded image send to the connection.</returns>
         [Test]
-        [TestCaseSource(nameof(ImageTestCases))]
-        public async Task<string> SetImageFromFileAsync(string path)
+        [TestCaseSource(nameof(ImageFromFileTestCases))]
+        public Task<string> SetImageFromFileAsync(string path)
+            => TestImageSetter((conn, ctx, target, state, token) => conn.SetImageFromFileAsync(ctx, path, target, state, token));
+
+        /// <summary>
+        /// Invokes <paramref name="setImage"/>, and asserts that <see cref="IStreamDeckConnection.SetImageAsync(string, string, Target, int?, CancellationToken)"/> was invoked only once.
+        /// </summary>
+        /// <param name="setImage">The delegate used to test the image setter.</param>
+        /// <returns>The base64 image that was sent to the invocation of <see cref="IStreamDeckConnection.SetImageAsync(string, string, Target, int?, CancellationToken)"/>.</returns>
+        private static async Task<string> TestImageSetter(Func<IStreamDeckConnection, string, Target, int?, CancellationToken, Task> setImage)
         {
             var base64 = string.Empty;
 
@@ -63,7 +115,7 @@ namespace StreamDeck.Tests.Extensions
                 .Callback<string, string, Target, int?, CancellationToken>((_, img, _, _, _) => base64 = img);
 
             // Act.
-            await connection.Object.SetImageFromFileAsync("ABC123", path, Target.Software, 1, cancellationToken);
+            await setImage(connection.Object, "ABC123", Target.Software, 1, cancellationToken);
 
             // Assert.
             connection.Verify(c => c.SetImageAsync("ABC123", It.IsAny<string>(), Target.Software, 1, cancellationToken), Times.Once);
