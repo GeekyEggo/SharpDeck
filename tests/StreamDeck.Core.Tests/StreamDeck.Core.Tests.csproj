@@ -12,4 +12,10 @@
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Helpers\Files\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
