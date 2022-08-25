@@ -9,12 +9,26 @@ namespace StreamDeck.Extensions.Hosting
     public static class HostBuilderExtensions
     {
         /// <summary>
-        /// Adds a delegate for configuring the provided <see cref="IStreamDeckConnection"/> prior to connecting to the Stream Deck.
+        /// Upon starting, the host connects to the Stream Deck and registers the plugin.
         /// </summary>
         /// <param name="hostBuilder">The <see cref="IHostBuilder" /> to configure.</param>
-        /// <param name="configurePlugin">The delegate that configures the <see cref="IStreamDeckConnection"/>.</param>
         /// <returns>The same instance of the <see cref="IHostBuilder"/> for chaining.</returns>
-        public static IHostBuilder ConfigurePlugin(this IHostBuilder builder, Action<IStreamDeckConnection> configurePlugin)
-            => builder.ConfigureServices(services => services.AddSingleton(configurePlugin));
+        public static IHostBuilder UsePluginLifetime(this IHostBuilder hostBuilder)
+        {
+            return hostBuilder.ConfigureServices((ctx, services) =>
+            {
+                const string isConnectionConfigured = "streamdeck:isConnectionConfigured";
+                if (!ctx.Properties.ContainsKey(isConnectionConfigured))
+                {
+                    services
+                        .AddSingleton<StreamDeckConnection>()
+                        .AddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>());
+
+                    ctx.Properties.Add(isConnectionConfigured, true);
+                }
+
+                services.AddSingleton<IHostLifetime, StreamDeckPluginHostLifetime>();
+            });
+        }
     }
 }
