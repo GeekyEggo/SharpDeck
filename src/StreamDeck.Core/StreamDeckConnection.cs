@@ -10,7 +10,7 @@ namespace StreamDeck
     /// <summary>
     /// Provides a connection between Elgato Stream Deck devices and a Stream Deck client.
     /// </summary>
-    public sealed partial class StreamDeckConnection : IStreamDeckConnection
+    public sealed partial class StreamDeckConnection : IStreamDeckConnection, IStreamDeckConnector
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckConnection"/> class.

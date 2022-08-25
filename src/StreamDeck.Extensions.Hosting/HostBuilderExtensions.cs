@@ -22,7 +22,8 @@ namespace StreamDeck.Extensions.Hosting
                 {
                     services
                         .AddSingleton<StreamDeckConnection>()
-                        .AddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>());
+                        .AddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>())
+                        .AddSingleton<IStreamDeckConnector>(s => s.GetRequiredService<StreamDeckConnection>());
 
                     ctx.Properties.Add(isConnectionConfigured, true);
                 }

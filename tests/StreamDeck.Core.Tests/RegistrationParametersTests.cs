@@ -10,6 +10,14 @@ namespace StreamDeck.Tests
     public class RegistrationParametersTests
     {
         /// <summary>
+        /// Gets a set of mock arguments that can be used to construct the <see cref="RegistrationParameters"/>.
+        /// </summary>
+        public static readonly string[] MOCK_ARGS = new[]
+        {
+            "-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", INFO_JSON
+        };
+
+        /// <summary>
         /// A JSON representation of <see cref="RegistrationParameters.Info"/>.
         /// </summary>
         private const string INFO_JSON = """
@@ -54,7 +62,7 @@ namespace StreamDeck.Tests
         public void Construct()
         {
             // Arrange, act
-            var parameters = new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", INFO_JSON);
+            var parameters = new RegistrationParameters(MOCK_ARGS);
 
             // Assert.
             Assert.Multiple(() =>

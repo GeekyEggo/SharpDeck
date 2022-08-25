@@ -5,7 +5,7 @@ namespace StreamDeck
     /// <summary>
     /// Provides a connection to a Stream Deck.
     /// </summary>
-    public partial interface IStreamDeckConnection : IAsyncDisposable, IDisposable
+    public partial interface IStreamDeckConnection
     {
         /// <summary>
         /// Gets the information supplied by Stream Deck when establishing the connection.
