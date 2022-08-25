@@ -11,7 +11,7 @@ namespace StreamDeck.Net
         /// Initializes a new instance of the <see cref="WebSocketMessageEventArgs"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public WebSocketMessageEventArgs(string message)
+        public WebSocketMessageEventArgs(in string message)
             => this.Message = message;
 
         /// <summary>
