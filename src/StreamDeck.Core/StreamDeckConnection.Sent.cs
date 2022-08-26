@@ -37,6 +37,7 @@ namespace StreamDeck
 
         /// <inheritdoc/>
         public Task SetGlobalSettingsAsync<TSettings>(TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+            where TSettings : class
         {
             const string @event = "setGlobalSettings";
 
@@ -51,6 +52,7 @@ namespace StreamDeck
 
         /// <inheritdoc/>
         public Task SetSettingsAsync<TSettings>(string context, TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+            where TSettings : class
         {
             const string @event = "setSettings";
 

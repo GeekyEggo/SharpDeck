@@ -62,7 +62,8 @@ namespace StreamDeck
         /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="settings" />.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the global settings.</returns>
-        Task SetGlobalSettingsAsync<TSettings>(TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default);
+        Task SetGlobalSettingsAsync<TSettings>(TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+            where TSettings : class;
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.
@@ -86,7 +87,8 @@ namespace StreamDeck
         /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="settings" />.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the settings.</returns>
-        Task SetSettingsAsync<TSettings>(string context, TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default);
+        Task SetSettingsAsync<TSettings>(string context, TSettings settings, JsonTypeInfo<TSettings>? jsonTypeInfo = null, CancellationToken cancellationToken = default)
+            where TSettings : class;
 
         /// <summary>
         /// Dynamically change the title of an instance of an action.
