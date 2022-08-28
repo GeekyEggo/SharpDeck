@@ -361,8 +361,6 @@ namespace StreamDeck.Tests
             Assert.That(didHandle, Is.True, "Event was not raised.");
         }
 
-
-
         /// <summary>
         /// Asserts <see cref="StreamDeckConnection.KeyUp"/>.
         /// </summary>
