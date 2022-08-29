@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
     <ProjectReference Include="..\..\src\StreamDeck.Extensions.Hosting\StreamDeck.Extensions.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Manifest\StreamDeck.Manifest.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

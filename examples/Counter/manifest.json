@@ -13,12 +13,11 @@
         "Name": "Counter",
         "SupportedInMultiActions": false,
         "Tooltip": "Increment the count by one.",
-        "UUID": "com.streamdeckcommunity.counter.increment",
+        "UUID": "com.geekyeggo.counter-example.increment",
         "VisibleInActionsList": true,
         "States": [{
             "Image": "Images/Key",
             "FontSize": "18",
-            "FontUnderline": false,
             "TitleAlignment": "middle"
         }]
     }],

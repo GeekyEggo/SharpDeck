@@ -1,6 +1,13 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Hosting;
 using StreamDeck.Extensions.Hosting;
+using StreamDeck.Manifest;
+
+[assembly: PluginManifest(
+    Category = "Counter",
+    CategoryIcon = "Images/CategoryIcon",
+    Icon = "Images/PluginIcon",
+    OSWindowsMinimumVersion = "10")]
 
 #if DEBUG
 System.Diagnostics.Debugger.Launch();

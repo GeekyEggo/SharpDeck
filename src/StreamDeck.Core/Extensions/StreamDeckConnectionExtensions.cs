@@ -36,7 +36,7 @@ namespace StreamDeck.Extensions
 
             try
             {
-                cancellationToken.Register(t => ((TaskCompletionSource<TSettings?>)t).TrySetCanceled(), tcs, useSynchronizationContext: false);
+                cancellationToken.Register(t => ((TaskCompletionSource<TSettings?>)t!).TrySetCanceled(), tcs, useSynchronizationContext: false);
 
                 connection.DidReceiveGlobalSettings += handler;
                 await connection.GetGlobalSettingsAsync(cancellationToken);
@@ -75,7 +75,7 @@ namespace StreamDeck.Extensions
 
             try
             {
-                cancellationToken.Register(t => ((TaskCompletionSource<TSettings?>)t).TrySetCanceled(), tcs, useSynchronizationContext: false);
+                cancellationToken.Register(t => ((TaskCompletionSource<TSettings?>)t!).TrySetCanceled(), tcs, useSynchronizationContext: false);
 
                 connection.DidReceiveSettings += handler;
                 await connection.GetSettingsAsync(context, cancellationToken);
