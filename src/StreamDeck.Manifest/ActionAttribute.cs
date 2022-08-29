@@ -8,7 +8,7 @@ namespace StreamDeck.Manifest
     /// Provides information about an action.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class PluginActionAttribute : Attribute
+    public class ActionAttribute : Attribute
     {
         /// <summary>
         /// Private member field for <see cref="StateImage"/>.
@@ -16,12 +16,12 @@ namespace StreamDeck.Manifest
         private string? _stateIcon;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginActionAttribute"/> class.
+        /// Initializes a new instance of the <see cref="ActionAttribute"/> class.
         /// </summary>
         /// <param name="name">The name of the action. This string is visible to the user in the actions list.</param>
         /// <param name="uuid">The the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.</param>
         /// <param name="icon">The relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).</param>
-        public PluginActionAttribute(string name, string uuid, string icon)
+        public ActionAttribute(string name, string uuid, string icon)
         {
             this.UUID = uuid;
             this.Name = name;
@@ -44,7 +44,7 @@ namespace StreamDeck.Manifest
         public string? PropertyInspectorPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the default image for the only state; to define more information about a state, or define multiple states, please use the <see cref="PluginActionStateAttribute"/>.
+        /// Gets or sets the default image for the only state; to define more information about a state, or define multiple states, please use the <see cref="StateAttribute"/>.
         /// </summary>
         [IgnoreDataMember]
         public string? StateImage
@@ -53,7 +53,7 @@ namespace StreamDeck.Manifest
             set
             {
                 this._stateIcon = value;
-                this.States = new List<PluginActionStateAttribute> { new PluginActionStateAttribute(value ?? "") };
+                this.States = new List<StateAttribute> { new StateAttribute(value ?? "") };
             }
         }
 
@@ -84,6 +84,6 @@ namespace StreamDeck.Manifest
         /// <summary>
         /// Gets or sets the information about the states of the action.
         /// </summary>
-        internal List<PluginActionStateAttribute> States { get; set; } = new List<PluginActionStateAttribute>();
+        internal List<StateAttribute> States { get; set; } = new List<StateAttribute>();
     }
 }

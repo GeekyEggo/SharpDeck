@@ -12,21 +12,21 @@ namespace StreamDeck.Manifest
     /// Provides information about the manifest of the plugin.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
-    public class PluginManifestAttribute : Attribute
+    public class ManifestAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginManifestAttribute"/> class.
+        /// Initializes a new instance of the <see cref="ManifestAttribute"/> class.
         /// </summary>
-        public PluginManifestAttribute()
+        public ManifestAttribute()
             : base()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginManifestAttribute"/> class.
+        /// Initializes a new instance of the <see cref="ManifestAttribute"/> class.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
-        internal PluginManifestAttribute(IAssemblySymbol assembly)
+        internal ManifestAttribute(IAssemblySymbol assembly)
         {
             // Required.
             this.Author = assembly.GetAttributeValueOrDefault<AssemblyCompanyAttribute, string>() ?? "";
@@ -146,7 +146,7 @@ namespace StreamDeck.Manifest
         /// <summary>
         /// Gets the actions associated with the plugin.
         /// </summary>
-        internal List<PluginActionAttribute> Actions { get; } = new List<PluginActionAttribute>();
+        internal List<ActionAttribute> Actions { get; } = new List<ActionAttribute>();
 
         /// <summary>
         /// Gets or sets the list of application identifiers to monitor (applications launched or terminated).
@@ -188,6 +188,11 @@ namespace StreamDeck.Manifest
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets an array of profiles. A plugin can have one or more profiles proposed to the user on installation. This lets you create fullscreen plugins.
+        /// </summary>
+        internal List<ProfileAttribute> Profiles { get; set; } = new List<ProfileAttribute>();
 
         /// <summary>
         /// Gets or sets the value that indicates which version of the Stream Deck application is required to install the plugin.

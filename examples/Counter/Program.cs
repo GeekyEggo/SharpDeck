@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using StreamDeck.Extensions.Hosting;
 using StreamDeck.Manifest;
 
-[assembly: PluginManifest(
+[assembly: Manifest(
     Category = "Counter",
     CategoryIcon = "Images/CategoryIcon",
     Icon = "Images/PluginIcon",

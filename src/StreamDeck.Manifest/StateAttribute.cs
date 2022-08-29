@@ -7,13 +7,13 @@ namespace StreamDeck.Manifest
     /// Provides information about the state of an action.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class PluginActionStateAttribute : Attribute
+    public class StateAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginActionStateAttribute"/> class.
+        /// Initializes a new instance of the <see cref="StateAttribute"/> class.
         /// </summary>
         /// <param name="image">The default image for the state.</param>
-        public PluginActionStateAttribute(string image)
+        public StateAttribute(string image)
             => this.Image = image;
 
         /// <summary>

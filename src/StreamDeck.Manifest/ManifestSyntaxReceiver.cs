@@ -21,7 +21,7 @@ namespace StreamDeck.Manifest
             if (context.Node is ClassDeclarationSyntax _)
             {
                 var symbol = context.SemanticModel.GetDeclaredSymbol(context.Node);
-                if (symbol?.TryGetAttribute<PluginActionAttribute>(out var attrData) == true)
+                if (symbol?.TryGetAttribute<ActionAttribute>(out var attrData) == true)
                 {
                     this.Actions.Add((symbol, attrData));
                 }
@@ -33,12 +33,12 @@ namespace StreamDeck.Manifest
         /// </summary>
         /// <param name="context">The generator execution context.</param>
         /// <returns>The actions discovered whilst traversing the compilation nodes.</returns>
-        internal IEnumerable<PluginActionAttribute> GetActions(GeneratorExecutionContext context)
+        internal IEnumerable<ActionAttribute> GetActions(GeneratorExecutionContext context)
         {
             foreach (var actionDeclaration in this.Actions)
             {
-                var action = actionDeclaration.AttributeData.CreateInstance<PluginActionAttribute>();
-                var states = actionDeclaration.Symbol.GetAttributes<PluginActionStateAttribute>().ToArray();
+                var action = actionDeclaration.AttributeData.CreateInstance<ActionAttribute>();
+                var states = actionDeclaration.Symbol.GetAttributes<StateAttribute>().ToArray();
 
                 if (states.Length > 0)
                 {
@@ -49,7 +49,7 @@ namespace StreamDeck.Manifest
                     }
 
                     action.States.Clear();
-                    action.States.AddRange(states.Select(s => s.CreateInstance<PluginActionStateAttribute>()).Take(2));
+                    action.States.AddRange(states.Select(s => s.CreateInstance<StateAttribute>()).Take(2));
                 }
 
                 // Ensure we have at least 1 action state.
@@ -65,6 +65,20 @@ namespace StreamDeck.Manifest
                 }
 
                 yield return action;
+            }
+        }
+
+        /// <summary>
+        /// Gets the profiles associated with compilation.
+        /// </summary>
+        /// <param name="context">The generator execution context.</param>
+        /// <returns>The profiles discovered from the context's compilation assembly.</returns>
+        internal IEnumerable<ProfileAttribute> GetProfiles(GeneratorExecutionContext context)
+        {
+            foreach (var profileAttr in context.Compilation.Assembly.GetAttributes<ProfileAttribute>())
+            {
+                var item = new ProfileAttribute((string)profileAttr.ConstructorArguments[0].Value!, (DeviceType)profileAttr.ConstructorArguments[1].Value!);
+                yield return profileAttr.Populate(item);
             }
         }
     }

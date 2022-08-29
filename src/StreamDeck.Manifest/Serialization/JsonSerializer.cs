@@ -120,11 +120,6 @@ namespace StreamDeck.Manifest.Serialization
                     this.WriteString(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
                     return;
 
-                // Enum.
-                case Enum @enum:
-                    this.WriteString(@enum.ToString());
-                    return;
-
                 // Number.
                 case byte _:
                 case sbyte _:
@@ -143,8 +138,17 @@ namespace StreamDeck.Manifest.Serialization
                     return;
             }
 
+            var type = value.GetType();
+
+            // Enum.
+            if (type.IsEnum)
+            {
+                this.Json.Append((int)value);
+                return;
+            }
+
             // Object.
-            if (!value.GetType().IsPrimitive)
+            if (!type.IsPrimitive)
             {
                 this.WriteObject(value);
                 return;

@@ -5,13 +5,13 @@ namespace Counter
     /// <summary>
     /// Defines the action that increments the count.
     /// </summary>
-    [PluginAction(
+    [Action(
         name: "Counter",
         uuid: "com.geekyeggo.counter-example.increment",
         icon: "Images/Action",
         SupportedInMultiActions = false,
         Tooltip = "Increment the count by one.")]
-    [PluginActionState(
+    [State(
         image: "Images/Key",
         TitleAlignment = TitleAlignment.Middle,
         FontFamily = FontFamily.Default,

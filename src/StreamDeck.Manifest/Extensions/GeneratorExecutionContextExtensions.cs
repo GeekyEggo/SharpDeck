@@ -41,7 +41,7 @@
                     warningLevel: ERROR_LEVEL));
 
         /// <summary>
-        /// Reports an error due to the compilation assembly missing the <see cref="PluginManifestAttribute"/>.
+        /// Reports an error due to the compilation assembly missing the <see cref="ManifestAttribute"/>.
         /// </summary>
         /// <param name="context">The generator execution context.</param>
         internal static void ReportMissingManifestAttribute(this GeneratorExecutionContext context)
@@ -49,14 +49,14 @@
                 Diagnostic.Create(
                     id: "SDM002",
                     category: DIAGNOSTIC_CATEGORY,
-                    message: $"Unable to generate manifest: assembly requires {nameof(PluginManifestAttribute)}",
+                    message: $"Unable to generate manifest: assembly requires {nameof(ManifestAttribute)}",
                     severity: DiagnosticSeverity.Error,
                     defaultSeverity: DiagnosticSeverity.Error,
                     isEnabledByDefault: true,
                     warningLevel: ERROR_LEVEL));
 
         /// <summary>
-        /// Reports an error due to an action not defining either <see cref="PluginActionAttribute.StateImage"/> or <see cref="PluginActionStateAttribute"/>.
+        /// Reports an error due to an action not defining either <see cref="ActionAttribute.StateImage"/> or <see cref="StateAttribute"/>.
         /// </summary>
         /// <param name="context">The generator execution context.</param>
         /// <param name="location">The location of the error.</param>
@@ -66,7 +66,7 @@
                     new DiagnosticDescriptor(
                         id: "SDM003",
                         title: "No action states",
-                        messageFormat: $"Unable to generate manifest: actions must have either a {nameof(PluginActionAttribute)}.{nameof(PluginActionAttribute.StateImage)}, or up to two {nameof(PluginActionStateAttribute)}",
+                        messageFormat: $"Unable to generate manifest: actions must have either a {nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}, or up to two {nameof(StateAttribute)}",
                         category: DIAGNOSTIC_CATEGORY,
                         defaultSeverity: DiagnosticSeverity.Error,
                         isEnabledByDefault: true),
@@ -94,7 +94,7 @@
         #region Warnings
 
         /// <summary>
-        /// Reports a warning due to the existence of <see cref="PluginActionAttribute.StateImage"/> when a <see cref="PluginActionStateAttribute"/> is defined.
+        /// Reports a warning due to the existence of <see cref="ActionAttribute.StateImage"/> when a <see cref="StateAttribute"/> is defined.
         /// </summary>
         /// <param name="context">The generator execution context.</param>
         /// <param name="location">The location of the warning.</param>
@@ -102,8 +102,8 @@
             => Diagnostic.Create(
                 new DiagnosticDescriptor(
                     id: "SDM101",
-                    title: $"Unnecessary \"{nameof(PluginActionAttribute.StateImage)}\"",
-                    messageFormat: $"Unnecessary \"{nameof(PluginActionAttribute.StateImage)}\" on action: states are already defined by {nameof(PluginActionStateAttribute)}",
+                    title: $"Unnecessary \"{nameof(ActionAttribute.StateImage)}\"",
+                    messageFormat: $"Unnecessary \"{nameof(ActionAttribute.StateImage)}\" on action: states are already defined by {nameof(StateAttribute)}",
                     category: DIAGNOSTIC_CATEGORY,
                     defaultSeverity: DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),

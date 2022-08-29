@@ -1,7 +1,6 @@
 namespace StreamDeck.Manifest
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -39,16 +38,17 @@ namespace StreamDeck.Manifest
                 }
 
                 // Ensure we have the manifest attribute associated with the assembly.
-                if (!context.Compilation.Assembly.TryGetAttribute<PluginManifestAttribute>(out var manifestAttr))
+                if (!context.Compilation.Assembly.TryGetAttribute<ManifestAttribute>(out var manifestAttr))
                 {
                     context.ReportMissingManifestAttribute();
                     return;
                 }
 
                 // Construct the manifest, and the actions associated with it
-                var manifest = new PluginManifestAttribute(context.Compilation.Assembly);
+                var manifest = new ManifestAttribute(context.Compilation.Assembly);
                 manifestAttr.Populate(manifest);
                 manifest.Actions.AddRange(syntaxReceiver.GetActions(context));
+                manifest.Profiles.AddRange(syntaxReceiver.GetProfiles(context));
 
                 // Write the manifest file.
                 var json = JsonSerializer.Serialize(manifest);
