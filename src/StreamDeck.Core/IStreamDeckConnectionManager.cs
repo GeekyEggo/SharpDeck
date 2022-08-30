@@ -1,9 +1,9 @@
 namespace StreamDeck
 {
     /// <summary>
-    /// Provides methods for connecting to the Stream Deck application.
+    /// Provides methods for managing a connection with the Stream Deck application.
     /// </summary>
-    public interface IStreamDeckConnector : IAsyncDisposable, IDisposable
+    public interface IStreamDeckConnectionManager : IAsyncDisposable, IDisposable
     {
         /// <summary>
         /// Connects to the Stream Deck asynchronously.

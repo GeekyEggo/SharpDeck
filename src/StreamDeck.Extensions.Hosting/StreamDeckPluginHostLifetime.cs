@@ -13,21 +13,21 @@ namespace StreamDeck.Extensions.Hosting
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamDeckPluginHostLifetime"/> class.
         /// </summary>
-        /// <param name="connector">The connector used to establish a connection with the Stream Deck.</param>
-        public StreamDeckPluginHostLifetime(IStreamDeckConnector connector)
-            => this.Connector = connector;
+        /// <param name="connectionManager">The connector manager used to establish a connection with the Stream Deck.</param>
+        public StreamDeckPluginHostLifetime(IStreamDeckConnectionManager connectionManager)
+            => this.ConnectionManager = connectionManager;
 
         /// <summary>
         /// Gets the connection with the Stream Deck.
         /// </summary>
-        private IStreamDeckConnector Connector { get; }
+        private IStreamDeckConnectionManager ConnectionManager { get; }
 
         /// <inheritdoc/>
         public Task WaitForStartAsync(CancellationToken cancellationToken)
-            => this.Connector.ConnectAsync(cancellationToken);
+            => this.ConnectionManager.ConnectAsync(cancellationToken);
 
         /// <inheritdoc/>
         public async Task StopAsync(CancellationToken cancellationToken)
-            => await this.Connector.DisposeAsync();
+            => await this.ConnectionManager.DisposeAsync();
     }
 }

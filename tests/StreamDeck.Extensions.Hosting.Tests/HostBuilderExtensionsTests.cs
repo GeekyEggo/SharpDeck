@@ -28,10 +28,10 @@ namespace StreamDeck.Extensions.Hosting.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(app.Services.GetRequiredService<StreamDeckConnection>(), Is.Not.Null);
-                Assert.That(app.Services.GetRequiredService<IStreamDeckConnector>(), Is.Not.Null);
+                Assert.That(app.Services.GetRequiredService<IStreamDeckConnectionManager>(), Is.Not.Null);
                 Assert.That(app.Services.GetRequiredService<IStreamDeckConnection>(), Is.Not.Null);
                 Assert.That(app.Services.GetRequiredService<StreamDeckConnection>(), Is.SameAs(app.Services.GetRequiredService<IStreamDeckConnection>()));
-                Assert.That(app.Services.GetRequiredService<StreamDeckConnection>(), Is.SameAs(app.Services.GetRequiredService<IStreamDeckConnector>()));
+                Assert.That(app.Services.GetRequiredService<StreamDeckConnection>(), Is.SameAs(app.Services.GetRequiredService<IStreamDeckConnectionManager>()));
                 Assert.That(app.Services.GetRequiredService<IHostLifetime>(), Is.TypeOf<StreamDeckPluginHostLifetime>());
             });
         }

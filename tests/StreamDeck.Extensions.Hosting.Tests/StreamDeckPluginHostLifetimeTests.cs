@@ -16,7 +16,7 @@ namespace StreamDeck.Extensions.Hosting.Tests
         public async Task WaitForStartAsync()
         {
             // Arrange.
-            var connector = new Mock<IStreamDeckConnector>();
+            var connector = new Mock<IStreamDeckConnectionManager>();
             var hostLifetime = new StreamDeckPluginHostLifetime(connector.Object);
             var cancellationToken = new CancellationToken();
 
@@ -34,7 +34,7 @@ namespace StreamDeck.Extensions.Hosting.Tests
         public async Task StopAsync()
         {
             // Arrange.
-            var connector = new Mock<IStreamDeckConnector>();
+            var connector = new Mock<IStreamDeckConnectionManager>();
             var hostLifetime = new StreamDeckPluginHostLifetime(connector.Object);
 
             // Act.

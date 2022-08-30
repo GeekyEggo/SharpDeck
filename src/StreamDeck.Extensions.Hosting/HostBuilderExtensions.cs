@@ -1,6 +1,7 @@
 namespace StreamDeck.Extensions.Hosting
 {
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Hosting;
 
     /// <summary>
@@ -17,16 +18,9 @@ namespace StreamDeck.Extensions.Hosting
         {
             return hostBuilder.ConfigureServices((ctx, services) =>
             {
-                const string isConnectionConfigured = "streamdeck:isConnectionConfigured";
-                if (!ctx.Properties.ContainsKey(isConnectionConfigured))
-                {
-                    services
-                        .AddSingleton<StreamDeckConnection>()
-                        .AddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>())
-                        .AddSingleton<IStreamDeckConnector>(s => s.GetRequiredService<StreamDeckConnection>());
-
-                    ctx.Properties.Add(isConnectionConfigured, true);
-                }
+                services.TryAddSingleton<StreamDeckConnection>();
+                services.TryAddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>());
+                services.TryAddSingleton<IStreamDeckConnectionManager>(s => s.GetRequiredService<StreamDeckConnection>());
 
                 services.AddSingleton<IHostLifetime, StreamDeckPluginHostLifetime>();
             });
