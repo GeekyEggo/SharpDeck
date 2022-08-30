@@ -1,7 +1,8 @@
-namespace StreamDeck.Extensions.Hosting.Tests
+namespace StreamDeck.Tests.Extensions.Hosting.Tests
 {
     using System.Threading.Tasks;
     using Moq;
+    using StreamDeck.Extensions.Hosting;
 
     /// <summary>
     /// Provides assertions for <see cref="StreamDeckPluginHostLifetime"/>.

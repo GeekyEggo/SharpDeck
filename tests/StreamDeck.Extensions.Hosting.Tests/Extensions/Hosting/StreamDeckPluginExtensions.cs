@@ -1,27 +1,24 @@
-namespace StreamDeck.Extensions.Hosting.Tests
+namespace StreamDeck.Tests.Extensions.Hosting.Tests
 {
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using StreamDeck.Tests;
+    using StreamDeck.Extensions.Hosting;
 
     /// <summary>
-    /// Provides assertions for <see cref="HostBuilderExtensions"/>.
+    /// Provides assertions for <see cref="StreamDeckPlugin"/>.
     /// </summary>
     [TestFixture]
-    public class HostBuilderExtensionsTests
+    public class StreamDeckPluginExtensions
     {
         /// <summary>
-        /// Asserts <see cref="HostBuilderExtensions.UsePluginLifetime(IHostBuilder)"/> configures the lifetime of the host.
+        /// Asserts <see cref="StreamDeckPlugin.CreateBuilder"/> configures the builder.
         /// </summary>
         [Test]
-        public void UsePluginLifetime()
+        public void CreateBuilder()
         {
-            // Arrange.
-            var builder = new HostBuilder()
-                .ConfigureServices(s => s.AddSingleton(RegistrationParametersTests.MOCK_ARGS));
-
-            // Act.
-            var app = builder.UsePluginLifetime()
+            // Arrange, act.
+            var app = StreamDeckPlugin.CreateBuilder()
+                .ConfigureServices(s => s.AddSingleton(RegistrationParametersTests.MOCK_ARGS))
                 .Build();
 
             // Assert.
