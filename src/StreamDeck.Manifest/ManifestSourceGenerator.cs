@@ -51,8 +51,9 @@ namespace StreamDeck.Manifest
                 manifest.Profiles.AddRange(syntaxReceiver.GetProfiles(context));
 
                 // Write the manifest file.
+                // We do this asynchronously to prevent odd behaviour within Visual Studio, such as the "Rename" window closing prematurely.
                 var json = JsonSerializer.Serialize(manifest);
-                File.WriteAllText(filePath, json, Encoding.UTF8);
+                Task.Factory.StartNew(() => File.WriteAllText(filePath, json, Encoding.UTF8), TaskCreationOptions.RunContinuationsAsynchronously).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -66,7 +67,7 @@ namespace StreamDeck.Manifest
         /// <param name="context">The generator execution context.</param>
         /// <param name="filePath">The manifest.json file path.</param>
         /// <returns><c>true</c> when the manifest.json file path was present; otherwise <c>false</c>.</returns>
-        internal bool TryGetFilePath(GeneratorExecutionContext context, out string filePath)
+        private bool TryGetFilePath(GeneratorExecutionContext context, out string filePath)
         {
             filePath = context.AdditionalFiles.FirstOrDefault(a => a.Path.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))?.Path ?? string.Empty;
             return !string.IsNullOrEmpty(filePath);
