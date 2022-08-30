@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <RootNamespace>StreamDeck</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
