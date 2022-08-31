@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="StreamDeck.Manifest" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="StreamDeck" />
     <Using Include="StreamDeck.Events" />
   </ItemGroup>
@@ -28,15 +32,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
     <ProjectReference Include="..\..\src\StreamDeck.Extensions.Hosting\StreamDeck.Extensions.Hosting.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck.Manifest\StreamDeck.Manifest.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
-  </Target>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

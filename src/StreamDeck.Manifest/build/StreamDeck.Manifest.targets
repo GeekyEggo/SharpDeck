@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent">
+        <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    </Target>
+
+    <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish">
+        <Copy SourceFiles="manifest.json" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+    </Target>
+
+</Project>
