@@ -28,12 +28,19 @@ namespace StreamDeck.Manifest
                 return;
             }
 
+#if DEBUG_GENERATOR
+            if (!System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
+#endif
+
             try
             {
                 // Ensure we know where the manifest.json file is located.
                 if (!this.TryGetFilePath(context, out var filePath))
                 {
-                    context.ReportMissingManifestFile();
+                    context.ReportUnknownProjectDirectory();
                     return;
                 }
 
@@ -51,9 +58,8 @@ namespace StreamDeck.Manifest
                 manifest.Profiles.AddRange(syntaxReceiver.GetProfiles(context));
 
                 // Write the manifest file.
-                // We do this asynchronously to prevent odd behaviour within Visual Studio, such as the "Rename" window closing prematurely.
                 var json = JsonSerializer.Serialize(manifest);
-                Task.Factory.StartNew(() => File.WriteAllText(filePath, json, Encoding.UTF8), TaskCreationOptions.RunContinuationsAsynchronously).ConfigureAwait(false);
+                File.WriteAllText(filePath, json, Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -69,8 +75,14 @@ namespace StreamDeck.Manifest
         /// <returns><c>true</c> when the manifest.json file path was present; otherwise <c>false</c>.</returns>
         private bool TryGetFilePath(GeneratorExecutionContext context, out string filePath)
         {
-            filePath = context.AdditionalFiles.FirstOrDefault(a => a.Path.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))?.Path ?? string.Empty;
-            return !string.IsNullOrEmpty(filePath);
+            if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var projectDirectory))
+            {
+                filePath = Path.Combine(projectDirectory, "manifest.json");
+                return true;
+            }
+
+            filePath = string.Empty;
+            return false;
         }
     }
 }

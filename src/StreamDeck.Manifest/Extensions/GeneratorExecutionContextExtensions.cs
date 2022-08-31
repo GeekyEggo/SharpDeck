@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Manifest.Extensions
+namespace StreamDeck.Manifest.Extensions
 {
     using System;
     using Microsoft.CodeAnalysis;
@@ -26,15 +26,15 @@
         #region Errors
 
         /// <summary>
-        /// Reports an error due to the manifest file location not being defined.
+        /// Reports an error due to not being able to determine the project's directory.
         /// </summary>
         /// <param name="context">The generator execution context.</param>
-        internal static void ReportMissingManifestFile(this GeneratorExecutionContext context)
+        internal static void ReportUnknownProjectDirectory(this GeneratorExecutionContext context)
             => context.ReportDiagnostic(
                 Diagnostic.Create(
                     id: "SDM001",
                     category: DIAGNOSTIC_CATEGORY,
-                    message: "Unable to generate manifest: \"manifest.json\" must be referenced as an additional file",
+                    message: "Unable to generate manifest: the project's directory could not be determined",
                     severity: DiagnosticSeverity.Error,
                     defaultSeverity: DiagnosticSeverity.Error,
                     isEnabledByDefault: true,

@@ -5,6 +5,9 @@
     <TargetFrameworks />
     <Description>A source generator for constructing a Stream Deck plugin's manifest.json file from the plugin's assembly, and supporting attributes.</Description>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- Enable this to debug the generator -->
+    <!-- <DefineConstants>$(DefineConstants)TRACE;DEBUG_GENERATOR</DefineConstants> -->
   </PropertyGroup>
 
   <ItemGroup>
