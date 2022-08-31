@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <TargetFrameworks />
-    <Description>A source generator for constructing a Stream Deck plugin's manifest.json file from the plugin's assembly, and supporting attributes.</Description>
+    <Description>Provides source generation for a Stream Deck plugin's manifest.json file.</Description>
 
     <!-- Enable this to debug the generator -->
     <!-- <DefineConstants>$(DefineConstants)TRACE;DEBUG_GENERATOR</DefineConstants> -->
