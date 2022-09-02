@@ -32,11 +32,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Core.Tests", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck", "src\StreamDeck\StreamDeck.csproj", "{20A5C4AA-CF2B-4C31-BA4E-81BEA0D5BC6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Extensions.Hosting", "src\StreamDeck.Extensions.Hosting\StreamDeck.Extensions.Hosting.csproj", "{0B56C7B9-13C9-4B94-8D04-1B5319E5CBC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Extensions", "src\StreamDeck.Extensions\StreamDeck.Extensions.csproj", "{0B56C7B9-13C9-4B94-8D04-1B5319E5CBC3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDeck", "src\.archive\SharpDeck\SharpDeck.csproj", "{73D94163-D414-4329-AB64-B443D4552B7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Extensions.Hosting.Tests", "tests\StreamDeck.Extensions.Hosting.Tests\StreamDeck.Extensions.Hosting.Tests.csproj", "{9DDCC039-A2B5-4FC5-BA56-5D67E56D62E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Extensions.Tests", "tests\StreamDeck.Extensions.Tests\StreamDeck.Extensions.Tests.csproj", "{9DDCC039-A2B5-4FC5-BA56-5D67E56D62E5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Manifest", "src\StreamDeck.Manifest\StreamDeck.Manifest.csproj", "{5F797B39-91A4-455D-91FE-11E9CB3DE836}"
 EndProject

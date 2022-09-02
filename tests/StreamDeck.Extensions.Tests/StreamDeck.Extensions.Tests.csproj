@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck.Extensions.Hosting\StreamDeck.Extensions.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
     <ProjectReference Include="..\StreamDeck.Core.Tests\StreamDeck.Core.Tests.csproj" />
   </ItemGroup>
 

@@ -14,6 +14,13 @@ namespace StreamDeck.Tests.Routing
     public class ActionRouterTests
     {
         /// <summary>
+        /// Asserts that nothing is invoked if the action has not yet been constructed, i.e. via <see cref="IStreamDeckConnection.WillAppear"/>.
+        /// </summary>
+        [Test]
+        public void IgnoreNotConstructed()
+            => Assert.Fail("Should assert nothing happens before the action is constructed.");
+
+        /// <summary>
         /// Asserts that unmapped <see cref="IActionContext.Action"/> are ignored.
         /// </summary>
         [Test]

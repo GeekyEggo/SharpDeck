@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StreamDeck.Core\StreamDeck.Core.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StreamDeck.Extensions\StreamDeck.Extensions.csproj" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
