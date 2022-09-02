@@ -21,7 +21,7 @@ namespace StreamDeck.Tests
             // Arrange.
             var connection = new Mock<IStreamDeckConnection>();
             var logger = new Mock<ILogger>();
-            var context = new ActionInitializationContext(connection.Object, EventArgsBuilder.GetActionEventArgs(), logger.Object);
+            var context = new ActionInitializationContext(connection.Object, EventArgsBuilder.CreateActionEventArgs(), logger.Object);
 
             // Act.
             var action = new StreamDeckAction(context);
@@ -228,7 +228,7 @@ namespace StreamDeck.Tests
         private static (StreamDeckAction action, Mock<IStreamDeckConnection> connection) CreateTestCase()
         {
             var connection = new Mock<IStreamDeckConnection>();
-            return (new StreamDeckAction(new ActionInitializationContext(connection.Object, EventArgsBuilder.GetActionEventArgs())), connection);
+            return (new StreamDeckAction(new ActionInitializationContext(connection.Object, EventArgsBuilder.CreateActionEventArgs())), connection);
         }
     }
 }
