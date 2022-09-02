@@ -3,7 +3,7 @@ namespace StreamDeck.Events
     /// <summary>
     /// /// Provides information about an action-based event received from an Elgato Stream Deck.
     /// </summary>
-    public class ActionEventArgs : StreamDeckEventArgs
+    public class ActionEventArgs : StreamDeckEventArgs, IActionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionEventArgs" /> class.

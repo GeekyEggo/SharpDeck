@@ -1,10 +1,8 @@
 namespace StreamDeck.Tests
 {
-    using System.Text.Json.Nodes;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using StreamDeck.Events;
     using StreamDeck.Tests.Helpers;
     using StreamDeck.Tests.Serialization;
 
@@ -23,7 +21,7 @@ namespace StreamDeck.Tests
             // Arrange.
             var connection = new Mock<IStreamDeckConnection>();
             var logger = new Mock<ILogger>();
-            var context = CreateActionInitializationContext(connection.Object, logger.Object);
+            var context = new ActionInitializationContext(connection.Object, EventArgsBuilder.GetActionEventArgs(), logger.Object);
 
             // Act.
             var action = new StreamDeckAction(context);
@@ -230,30 +228,7 @@ namespace StreamDeck.Tests
         private static (StreamDeckAction action, Mock<IStreamDeckConnection> connection) CreateTestCase()
         {
             var connection = new Mock<IStreamDeckConnection>();
-            return (new StreamDeckAction(CreateActionInitializationContext(connection.Object)), connection);
-        }
-
-        /// <summary>
-        /// Creates a new action initialization context.
-        /// </summary>
-        /// <param name="connection">The <see cref="IStreamDeckConnection"/>.</param>
-        /// <param name="logger">The optional <see cref="ILogger"/>.</param>
-        /// <returns>The mock initialization context.</returns>
-        private static ActionInitializationContext CreateActionInitializationContext(IStreamDeckConnection connection, ILogger? logger = null)
-        {
-            var payload = new ActionPayload(
-                new Coordinates(column: 1, row: 1),
-                isInMultiAction: false,
-                settings: new JsonObject());
-
-            var actionInfo = new ActionEventArgs<ActionPayload>(
-                @event: "willAppear",
-                payload,
-                action: "com.tests.plugin.action",
-                context: "ABC123",
-                device: "XYZ789");
-
-            return new ActionInitializationContext(connection, actionInfo, logger);
+            return (new StreamDeckAction(new ActionInitializationContext(connection.Object, EventArgsBuilder.GetActionEventArgs())), connection);
         }
     }
 }

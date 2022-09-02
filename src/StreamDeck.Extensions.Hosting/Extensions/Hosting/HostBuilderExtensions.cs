@@ -3,6 +3,7 @@ namespace StreamDeck.Extensions.Hosting
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Hosting;
+    using StreamDeck.Routing;
 
     /// <summary>
     /// Provides extension methods for <see cref="IHostBuilder"/>.
@@ -21,6 +22,7 @@ namespace StreamDeck.Extensions.Hosting
                 services.TryAddSingleton<StreamDeckConnection>();
                 services.TryAddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>());
                 services.TryAddSingleton<IStreamDeckConnectionManager>(s => s.GetRequiredService<StreamDeckConnection>());
+                services.TryAddSingleton<ActionRouter>();
 
                 services.AddSingleton<IHostLifetime, StreamDeckPluginHostLifetime>();
             });
