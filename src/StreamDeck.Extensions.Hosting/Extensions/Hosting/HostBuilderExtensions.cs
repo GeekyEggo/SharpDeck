@@ -19,11 +19,17 @@ namespace StreamDeck.Extensions.Hosting
         {
             return hostBuilder.ConfigureServices((ctx, services) =>
             {
+                // Connection.
                 services.TryAddSingleton<StreamDeckConnection>();
                 services.TryAddSingleton<IStreamDeckConnection>(s => s.GetRequiredService<StreamDeckConnection>());
                 services.TryAddSingleton<IStreamDeckConnectionManager>(s => s.GetRequiredService<StreamDeckConnection>());
+
+                // Routing.
+                services.TryAddSingleton<IActionFactory, ActivatorUtilitiesActionFactory>();
+                services.TryAddSingleton<IEventDispatcher, AsyncEventDispatcher>();
                 services.TryAddSingleton<ActionRouter>();
 
+                // Hosting.
                 services.AddSingleton<IHostLifetime, StreamDeckPluginHostLifetime>();
             });
         }

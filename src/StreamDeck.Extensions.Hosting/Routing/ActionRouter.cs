@@ -3,11 +3,9 @@ namespace StreamDeck.Routing
     using System;
     using System.Collections.Concurrent;
     using System.Text.Json.Nodes;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using StreamDeck;
     using StreamDeck.Events;
-    using StreamDeck.Extensions;
 
     /// <summary>
     /// Provides routing of <see cref="StreamDeckAction"/> in relation to a <see cref="IStreamDeckConnection"/>.
@@ -15,48 +13,50 @@ namespace StreamDeck.Routing
     internal class ActionRouter
     {
         /// <summary>
-        /// The synchronization root.
-        /// </summary>
-        private readonly SemaphoreSlim _syncRoot = new SemaphoreSlim(1);
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ActionRouter" /> class.
         /// </summary>
-        /// <param name="connection">The connection..</param>
-        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="actionFactory">The action factory, used to create new instances of actions.</param>
+        /// <param name="connection">The connection with the Stream Deck.</param>
+        /// <param name="eventDispatcher">The event dispatcher responsible for dispatching propagated events delegates.</param>
         /// <param name="loggerFactory">The optional logger factory.</param>
-        public ActionRouter(IStreamDeckConnection connection, IServiceProvider serviceProvider, ILoggerFactory? loggerFactory = null)
+        public ActionRouter(IActionFactory actionFactory, IEventDispatcher eventDispatcher, IStreamDeckConnection connection, ILoggerFactory? loggerFactory = null)
         {
+            this.ActionFactory = actionFactory;
             this.Connection = connection;
+            this.EventDispatcher = eventDispatcher;
             this.LoggerFactory = loggerFactory;
-            this.ServiceProvider = serviceProvider;
 
             connection.WillAppear += this.OnWillAppear;
             connection.WillDisappear += this.OnWillDisappear;
 
-            connection.DidReceiveSettings += this.GetDelegateHandler<ActionEventArgs<ActionPayload>>(a => a.OnDidReceiveSettings);
-            connection.KeyDown += this.GetDelegateHandler<ActionEventArgs<KeyPayload>>(a => a.OnKeyDown);
-            connection.KeyUp += this.GetDelegateHandler<ActionEventArgs<KeyPayload>>(a => a.OnKeyUp);
-            connection.PropertyInspectorDidAppear += this.GetDelegateHandler<ActionEventArgs>(a => a.OnPropertyInspectorDidAppear);
-            connection.PropertyInspectorDidDisappear += this.GetDelegateHandler<ActionEventArgs>(a => a.OnPropertyInspectorDidDisappear);
-            connection.SendToPlugin += this.GetDelegateHandler<PartialActionEventArgs<JsonObject>>(a => a.OnSendToPlugin);
-            connection.TitleParametersDidChange += this.GetDelegateHandler<ActionEventArgs<TitlePayload>>(a => a.OnTitleParametersDidChange);
+            connection.DidReceiveSettings += this.CreateEventHandler<ActionEventArgs<ActionPayload>>(a => a.OnDidReceiveSettings);
+            connection.KeyDown += this.CreateEventHandler<ActionEventArgs<KeyPayload>>(a => a.OnKeyDown);
+            connection.KeyUp += this.CreateEventHandler<ActionEventArgs<KeyPayload>>(a => a.OnKeyUp);
+            connection.PropertyInspectorDidAppear += this.CreateEventHandler<ActionEventArgs>(a => a.OnPropertyInspectorDidAppear);
+            connection.PropertyInspectorDidDisappear += this.CreateEventHandler<ActionEventArgs>(a => a.OnPropertyInspectorDidDisappear);
+            connection.SendToPlugin += this.CreateEventHandler<PartialActionEventArgs<JsonObject>>(a => a.OnSendToPlugin);
+            connection.TitleParametersDidChange += this.CreateEventHandler<ActionEventArgs<TitlePayload>>(a => a.OnTitleParametersDidChange);
         }
 
         /// <summary>
-        /// Gets the connection.
+        /// Gets the action factory, used to create new instances of actions.
+        /// </summary>
+        private IActionFactory ActionFactory { get; }
+
+        /// <summary>
+        /// Gets the connection with the Stream Deck.
         /// </summary>
         private IStreamDeckConnection Connection { get; }
+
+        /// <summary>
+        /// Gets the event dispatcher responsible for dispatching propagated events delegates.
+        /// </summary>
+        private IEventDispatcher EventDispatcher { get; }
 
         /// <summary>
         /// Gets the logger factory.
         /// </summary>
         private ILoggerFactory? LoggerFactory { get; }
-
-        /// <summary>
-        /// Gets the service provider.
-        /// </summary>
-        private IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Gets the registered routes that map to action types.
@@ -66,7 +66,7 @@ namespace StreamDeck.Routing
         /// <summary>
         /// Gets the action instances by their context.
         /// </summary>
-        private Dictionary<string, StreamDeckAction> Actions { get; } = new Dictionary<string, StreamDeckAction>();
+        private ConcurrentDictionary<string, StreamDeckAction> Actions { get; } = new ConcurrentDictionary<string, StreamDeckAction>();
 
         /// <summary>
         /// Maps the specified action <paramref name="uuid"/> to the <typeparamref name="TAction"/> type, allowing for <see cref="IStreamDeckConnection"/> events to be routed to an action instance.
@@ -84,28 +84,21 @@ namespace StreamDeck.Routing
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}"/> instance containing the event data.</param>
         private void OnWillAppear(IStreamDeckConnection sender, ActionEventArgs<ActionPayload> args)
         {
-            using (this._syncRoot.Lock())
+            // Determine if the route is configured.
+            if (!this.Routes.TryGetValue(args.Action, out var actionType))
             {
-                // Determine if the route is configured.
-                if (!this.Routes.TryGetValue(args.Action, out var actionType))
-                {
-                    return;
-                }
-
-                // Get or add an action instance for the specified action type.
-                if (!this.Actions.TryGetValue(args.Context, out var action))
-                {
-                    var initializationContext = new ActionInitializationContext(this.Connection, args, this.LoggerFactory?.CreateLogger(actionType));
-                    action = (StreamDeckAction)ActivatorUtilities.CreateInstance(this.ServiceProvider, actionType, initializationContext);
-
-                    this.Actions.Add(args.Context, action);
-                }
-
-                this.InvokeAsync(args, action.OnWillAppear);
+                return;
             }
-        }
 
-        private ConcurrentDictionary<string, string> Foo = new ConcurrentDictionary<string, string>();
+            // Get or add the action instance for the specified action type.
+            var action = this.Actions.GetOrAdd(args.Context, _ =>
+            {
+                var initializationContext = new ActionInitializationContext(this.Connection, args, this.LoggerFactory?.CreateLogger(actionType));
+                return this.ActionFactory.CreateInstance(actionType, initializationContext);
+            });
+
+            this.EventDispatcher.Invoke(action.OnWillAppear, args);
+        }
 
         /// <summary>
         /// Handles the <see cref="IStreamDeckConnection.WillDisappear"/>, removing and disposing of actions.
@@ -114,72 +107,33 @@ namespace StreamDeck.Routing
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}"/> instance containing the event data.</param>
         private void OnWillDisappear(IStreamDeckConnection sender, ActionEventArgs<ActionPayload> args)
         {
-            using (this._syncRoot.Lock())
+            // Attempt to remove the action, if successful, invoke OnWillDisappear and dispose of the action.
+            if (this.Actions.TryRemove(args.Context, out var action))
             {
-                // Determine if there is an action associated with the context.
-                if (!this.Actions.TryGetValue(args.Context, out var action))
+                this.EventDispatcher.Invoke(async a =>
                 {
-                    return;
-                }
-
-                this.Actions.Remove(args.Context, out var m);
-
-                // Remove the action, and dispose of it.
-                this.Actions.Remove(args.Context);
-                this.InvokeAsync(args, async (e) =>
-                {
-                    await action.OnWillDisappear(e);
+                    await action.OnWillDisappear(a);
                     action.Dispose();
-                });
+                }, args);
             }
         }
 
-        private EventHandler<IStreamDeckConnection, TArgs> GetDelegateHandler<TArgs>(Func<StreamDeckAction, Func<TArgs, Task>> getPropagator)
+        /// <summary>
+        /// Creates an <see cref="EventHandler"/> that can be attached to one of the events within a <see cref="StreamDeckAction"/>.
+        /// </summary>
+        /// <typeparam name="TArgs">The type of the arguments supplied to the event handler.</typeparam>
+        /// <param name="eventHandler">The event handler to propagate the event onto.</param>
+        /// <returns>The event handler.</returns>
+        private EventHandler<IStreamDeckConnection, TArgs> CreateEventHandler<TArgs>(Func<StreamDeckAction, Func<TArgs, Task>> eventHandler)
             where TArgs : IActionContext
         {
             return (conn, args) =>
             {
-                using (this._syncRoot.Lock())
+                if (this.Actions.TryGetValue(args.Context, out var action))
                 {
-                    if (this.Actions.TryGetValue(args.Context, out var action))
-                    {
-                        this.InvokeAsync(args, getPropagator(action));
-                    }
+                    this.EventDispatcher.Invoke(eventHandler(action), args);
                 }
             };
-        }
-
-        private void InvokeAsync<TArgs>(TArgs args, Func<TArgs, Task> method)
-            where TArgs : IActionContext
-        {
-            Task.Factory.StartNew(async (state) =>
-            {
-                var ctx = (AsyncExecutionContext<TArgs>)state!;
-
-                try
-                {
-                    await ctx.Method(ctx.Args);
-                }
-                catch (Exception ex)
-                {
-                    await this.Connection.ShowAlertAsync(ctx.Args.Context);
-                    await this.Connection.LogMessageAsync(ex.Message);
-                }
-            },
-            new AsyncExecutionContext<TArgs>(args, method),
-            TaskCreationOptions.RunContinuationsAsynchronously);
-        }
-
-        private struct AsyncExecutionContext<TArgs>
-        {
-            public AsyncExecutionContext(TArgs args, Func<TArgs, Task> method)
-            {
-                this.Args = args;
-                this.Method = method;
-            }
-
-            public TArgs Args { get; }
-            public Func<TArgs, Task> Method { get; }
         }
     }
 }
