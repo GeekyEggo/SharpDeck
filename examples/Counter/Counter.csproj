@@ -7,12 +7,17 @@
     <LangVersion>latest</LangVersion>
     <Description>A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.</Description>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.geekyeggo.counter-example.sdPlugin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StreamDeck" Version="0.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="StreamDeck" />
@@ -23,12 +28,6 @@
     <None Update="Images\**\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck.Generators\StreamDeck.Generators.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="coverlet.collector" Version="3.1.2" />
+    <PackageVersion Include="coverlet.msbuild" Version="3.1.2" />
+    <PackageVersion Include="Fleck" Version="1.2.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+    <PackageVersion Include="NUnit" Version="3.13.3" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageVersion Include="NUnit.Analyzers" Version="3.3.0" />
+    <PackageVersion Include="Moq" Version="4.18.2" />
+    <PackageVersion Include="System.Text.Json" Version="6.0.5" />
+    <PackageVersion Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0" />
+  </ItemGroup>
+</Project>
