@@ -1,6 +1,6 @@
 namespace Counter
 {
-    using StreamDeck.Manifest;
+    using StreamDeck.Generators;
 
     /// <summary>
     /// Defines the action that increments the count.

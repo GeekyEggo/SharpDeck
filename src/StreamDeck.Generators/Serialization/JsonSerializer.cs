@@ -1,4 +1,4 @@
-namespace StreamDeck.Manifest.Serialization
+namespace StreamDeck.Generators.Serialization
 {
     using System;
     using System.Collections;

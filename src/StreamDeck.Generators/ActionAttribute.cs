@@ -1,4 +1,4 @@
-namespace StreamDeck.Manifest
+namespace StreamDeck.Generators
 {
     using System;
     using System.Collections.Generic;

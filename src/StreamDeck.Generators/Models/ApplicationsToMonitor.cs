@@ -1,4 +1,4 @@
-namespace StreamDeck.Manifest.Models
+namespace StreamDeck.Generators.Models
 {
     using System.Runtime.Serialization;
 

@@ -1,12 +1,12 @@
-namespace StreamDeck.Manifest
+namespace StreamDeck.Generators
 {
     using System;
     using System.IO;
     using System.Linq;
     using System.Text;
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Manifest.Extensions;
-    using StreamDeck.Manifest.Serialization;
+    using StreamDeck.Generators.Extensions;
+    using StreamDeck.Generators.Serialization;
 
     /// <summary>
     /// Provides auto-generation of the manifest.json file that accompanies a Stream Deck plugin.

@@ -1,12 +1,12 @@
-namespace StreamDeck.Manifest
+namespace StreamDeck.Generators
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Runtime.Serialization;
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Manifest.Extensions;
-    using StreamDeck.Manifest.Models;
+    using StreamDeck.Generators.Extensions;
+    using StreamDeck.Generators.Models;
 
     /// <summary>
     /// Provides information about the manifest of the plugin.

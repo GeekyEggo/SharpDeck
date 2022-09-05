@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Manifest.Models
+﻿namespace StreamDeck.Generators.Models
 {
     /// <summary>
     /// Provides information about the minimum required version of Stream Deck.

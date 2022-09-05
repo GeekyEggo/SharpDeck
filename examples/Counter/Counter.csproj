@@ -15,10 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamDeck.Manifest" Version="1.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Using Include="StreamDeck" />
     <Using Include="StreamDeck.Events" />
   </ItemGroup>
@@ -32,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
     <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Generators\StreamDeck.Generators.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

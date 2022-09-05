@@ -1,4 +1,4 @@
-namespace StreamDeck.Manifest.Models
+namespace StreamDeck.Generators.Models
 {
     /// <summary>
     /// Provides information about the operating systems supported by the plugin.

@@ -1,4 +1,4 @@
-namespace StreamDeck.Manifest
+namespace StreamDeck.Generators
 {
     /// <summary>
     /// Provides an enumeration of devices.

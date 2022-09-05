@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Hosting;
 using StreamDeck.Extensions.Hosting;
-using StreamDeck.Manifest;
+using StreamDeck.Generators;
 
 [assembly: Manifest(
     Category = "Counter",

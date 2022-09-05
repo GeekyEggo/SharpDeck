@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Manifest.Extensions
+﻿namespace StreamDeck.Generators.Extensions
 {
     using System;
     using System.Linq;

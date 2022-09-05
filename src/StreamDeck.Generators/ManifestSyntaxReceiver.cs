@@ -1,9 +1,9 @@
-namespace StreamDeck.Manifest
+namespace StreamDeck.Generators
 {
     using System.Collections.ObjectModel;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using StreamDeck.Manifest.Extensions;
+    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relative to generating a manifest file.

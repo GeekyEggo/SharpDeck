@@ -1,4 +1,4 @@
-namespace StreamDeck.Manifest
+namespace StreamDeck.Generators
 {
     /// <summary>
     /// Defines the possible values the "FontFamily" can be when generating the manifest.
