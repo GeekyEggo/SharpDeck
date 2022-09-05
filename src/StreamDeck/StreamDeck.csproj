@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <IsPackable>true</IsPackable>
+    <BeforePack>$(BeforePack);IncludeAnalyzersInPackage</BeforePack>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="System.Text.Json" Version="6.0.5" />
     <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -17,5 +18,23 @@
     <ProjectReference Include="..\StreamDeck.Core\StreamDeck.Core.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StreamDeck.Extensions\StreamDeck.Extensions.csproj" PrivateAssets="all" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AnalyzerReference Include="..\StreamDeck.Generators\StreamDeck.Generators.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!--
+    ref: https://github.com/dotnet/runtime/blob/02c0b976d58bf47190c679771811444c0ff3cf6b/eng/packaging.targets#L139-L154
+  -->
+  <Target Name="IncludeAnalyzersInPackage">
+    <MSBuild Projects="@(AnalyzerReference-&gt;WithMetadataValue('PrivateAssets', 'all'))" Targets="GetAnalyzerPackFiles">
+      <Output TaskParameter="TargetOutputs" ItemName="_AnalyzerFile" />
+    </MSBuild>
+
+    <ItemGroup>
+      <Content Include="@(_AnalyzerFile)" Pack="True" Condition="!%(_AnalyzerFile.IsSymbol)" />
+      <_TargetPathsToSymbols Include="@(_AnalyzerFile)" TargetPath="/%(_AnalyzerFile.PackagePath)" Condition="%(_AnalyzerFile.IsSymbol)" />
+    </ItemGroup>
+  </Target>
 
 </Project>
