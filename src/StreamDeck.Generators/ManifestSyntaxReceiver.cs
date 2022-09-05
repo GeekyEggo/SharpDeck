@@ -38,6 +38,7 @@ namespace StreamDeck.Generators
         {
             foreach (var actionDeclaration in this.Actions)
             {
+                // TODO: validate the UUID of an action (The unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.))
                 var action = actionDeclaration.AttributeData.CreateInstance<ActionAttribute>();
                 var states = actionDeclaration.Symbol.GetAttributes<StateAttribute>().ToArray();
 
