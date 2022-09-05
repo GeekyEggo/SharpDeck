@@ -15,7 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamDeck" Version="0.1.0" />
+    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck\StreamDeck.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="StreamDeck" />
     <Using Include="StreamDeck.Events" />
   </ItemGroup>

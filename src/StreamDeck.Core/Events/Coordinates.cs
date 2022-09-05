@@ -24,6 +24,7 @@ namespace StreamDeck.Events
 
         /// <summary>
         /// Gets the row.
+        /// </summary>
         public int Row { get; }
     }
 }

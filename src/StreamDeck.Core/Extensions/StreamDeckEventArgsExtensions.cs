@@ -15,6 +15,7 @@ namespace StreamDeck.Extensions
         /// Gets the payload as the specified <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The desired type of the settings.</typeparam>
+        /// <param name="args">The <see cref="StreamDeckEventArgs{JsonObject}"/> to get the payload from.</param>
         /// <param name="jsonTypeInfo">The JSON type information.</param>
         /// <returns>The settings as <typeparamref name="T"/>.</returns>
         public static T? GetPayload<T>(this StreamDeckEventArgs<JsonObject>? args, JsonTypeInfo<T>? jsonTypeInfo = null)

@@ -26,6 +26,7 @@ namespace StreamDeck.Events
 
         /// <summary>
         /// Gets an opaque value identifying the instances action. You will need to pass this opaque value to several APIs like the `setTitle` API.
+        /// </summary>
         public string Context { get; }
     }
 }

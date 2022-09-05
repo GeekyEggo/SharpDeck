@@ -78,7 +78,7 @@ namespace StreamDeck.Generators
         {
             foreach (var profileAttr in context.Compilation.Assembly.GetAttributes<ProfileAttribute>())
             {
-                var item = new ProfileAttribute((string)profileAttr.ConstructorArguments[0].Value!, (DeviceType)profileAttr.ConstructorArguments[1].Value!);
+                var item = new ProfileAttribute((string)profileAttr.ConstructorArguments[0].Value!, (Device)profileAttr.ConstructorArguments[1].Value!);
                 yield return profileAttr.Populate(item);
             }
         }

@@ -10,18 +10,6 @@ namespace StreamDeck.Extensions.Hosting
     /// </summary>
     public static class HostExtensions
     {
-        /// <summary>
-        /// Applies the delegate <paramref name="configure"/> to the underlying <see cref="IStreamDeckConnection"/> used by the plugin.
-        /// </summary>
-        /// <param name="host">The <see cref="IHost"/> to configure.</param>
-        /// <param name="configure">The delegate for configuring the <see cref="IHost"/>.</param>
-        /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
-        public static IHost ConfigureConnection(this IHost host, Action<IStreamDeckConnection> configure)
-        {
-            configure(host.Services.GetRequiredService<IStreamDeckConnection>());
-            return host;
-        }
-
 #if NET6_0_OR_GREATER
         /// <summary>
         /// Maps the <see cref="IStreamDeckActionIdentifier.UUID"/> to the <typeparamref name="TAction"/> type, allowing for <see cref="IStreamDeckConnection"/> events to be routed to an action instance.
@@ -49,6 +37,18 @@ namespace StreamDeck.Extensions.Hosting
                 .GetRequiredService<ActionRouter>()
                 .MapAction<TAction>(uuid);
 
+            return host;
+        }
+
+        /// <summary>
+        /// Applies the delegate to the <see cref="IStreamDeckConnection"/> before connecting to the Stream Deck.
+        /// </summary>
+        /// <param name="host">The <see cref="IHost"/> to configure.</param>
+        /// <param name="configure">The delegate for configuring the <see cref="IHost"/>.</param>
+        /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
+        public static IHost MapConnection(this IHost host, Action<IStreamDeckConnection> configure)
+        {
+            configure(host.Services.GetRequiredService<IStreamDeckConnection>());
             return host;
         }
     }

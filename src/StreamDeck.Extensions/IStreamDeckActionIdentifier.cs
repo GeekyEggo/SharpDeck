@@ -10,7 +10,7 @@ namespace StreamDeck
     public interface IStreamDeckActionIdentifier
     {
         /// <summary>
-        /// Gets the the unique identifier of the action; see <see href="https://developer.elgato.com/documentation/stream-deck/sdk/manifest/#actions"/>.</param>
+        /// Gets the the unique identifier of the action; see <see href="https://developer.elgato.com/documentation/stream-deck/sdk/manifest/#actions"/>.
         /// </summary>
         static abstract string UUID { get; }
     }

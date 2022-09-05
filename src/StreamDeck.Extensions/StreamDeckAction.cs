@@ -73,7 +73,6 @@ namespace StreamDeck
         /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#sendtopropertyinspector" />.
         /// </summary>
         /// <typeparam name="TPayload">The type of the payload.</typeparam>
-        /// <param name="action">The action unique identifier.</param>
         /// <param name="payload">A JSON object that will be received by the Property Inspector.</param>
         /// <param name="jsonTypeInfo">The optional JSON type information used when serializing the <paramref name="payload" />.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -147,7 +146,7 @@ namespace StreamDeck
             => this.Connection.ShowOkAsync(this.Context, cancellationToken);
 
         /// <summary>
-        /// Occurs when <see cref="GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.
+        /// Occurs when <see cref="IStreamDeckConnection.GetSettingsAsync(string, CancellationToken)"/> has been called to retrieve the persistent data stored for the action.
         /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#didreceivesettings"/>.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>

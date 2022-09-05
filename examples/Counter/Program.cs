@@ -14,7 +14,7 @@ System.Diagnostics.Debugger.Launch();
 
 var plugin = StreamDeckPlugin.CreateBuilder().Build();
 
-plugin.ConfigureConnection(conn =>
+plugin.MapConnection(conn =>
 {
     var counts = new ConcurrentDictionary<string, int>();
 

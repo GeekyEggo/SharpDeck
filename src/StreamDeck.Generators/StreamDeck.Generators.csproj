@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <TargetFrameworks />
     <AnalyzerLanguage>cs</AnalyzerLanguage>
-    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Compile Include="..\StreamDeck.Abstractions\ActionAttribute.cs" Link="ActionAttribute.cs" />
-    <Compile Include="..\StreamDeck.Abstractions\DeviceType.cs" Link="DeviceType.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\Device.cs" Link="Device.cs" />
     <Compile Include="..\StreamDeck.Abstractions\ManifestAttribute.cs" Link="ManifestAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\ProfileAttribute.cs" Link="ProfileAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\StateAttribute.cs" Link="StateAttribute.cs" />

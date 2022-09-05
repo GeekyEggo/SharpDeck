@@ -1,9 +1,14 @@
-namespace StreamDeck.Events
+namespace StreamDeck
 {
     /// <summary>
     /// Provides an enumeration of devices.
     /// </summary>
-    public enum Device
+#if BUILDING_SOURCE_GENERATOR
+    internal
+#else
+    public
+#endif
+    enum Device
     {
         /// <summary>
         /// Stream Deck (kESDSDKDeviceType_StreamDeck).

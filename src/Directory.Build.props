@@ -4,13 +4,14 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-
+        <IsPackable>false</IsPackable>
         <PackageOutputPath>..\..\dist</PackageOutputPath>
         <Authors>Richard Herman</Authors>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!--
             <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
             <PackageReadmeFile>README.md</PackageReadmeFile>

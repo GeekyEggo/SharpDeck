@@ -51,7 +51,6 @@ namespace StreamDeck.Routing
             /// <summary>
             /// Initializes a new instance of the <see cref="AsyncExecutionContext{TArgs}"/> struct.
             /// </summary>
-            /// <typeparam name="TArgs">The type of the arguments.</typeparam>
             /// <param name="event">The event to invoke.</param>
             /// <param name="args">The arguments to supply to the <paramref name="event"/>.</param>
             public AsyncExecutionContext(Func<TArgs, Task> @event, TArgs args)

@@ -92,6 +92,7 @@ namespace StreamDeck.Extensions
         /// Dynamically change the image displayed by an instance of an action.
         /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#setimage"/>.
         /// </summary>
+        /// <param name="connection">The <see cref="IStreamDeckConnection"/> where the set image message will be sent.</param>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="color">The color of the image to display.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>
@@ -105,6 +106,7 @@ namespace StreamDeck.Extensions
         /// Dynamically change the image displayed by an instance of an action.
         /// <see href="https://developer.elgato.com/documentation/stream-deck/sdk/events-sent/#setimage"/>.
         /// </summary>
+        /// <param name="connection">The <see cref="IStreamDeckConnection"/> where the set image message will be sent.</param>
         /// <param name="context">An opaque value identifying the instance's action.</param>
         /// <param name="path">The path of the image to display; supports BMP, GIF, JPEG, PNG, SVG, and TIFF images.</param>
         /// <param name="target">Specify if you want to display the title on the hardware and software, only on the hardware, or only on the software.</param>

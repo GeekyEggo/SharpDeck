@@ -19,7 +19,7 @@ namespace StreamDeck
         /// </summary>
         /// <param name="name">The filename of the profile.</param>
         /// <param name="deviceType">The type of the device.</param>
-        public ProfileAttribute(string name, DeviceType deviceType)
+        public ProfileAttribute(string name, Device deviceType)
         {
             this.Name = name;
             this.DeviceType = deviceType;
@@ -33,7 +33,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the type of the device.
         /// </summary>
-        public DeviceType DeviceType { get; set; }
+        public Device DeviceType { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether to mark the profile as read-only; <c>false</c> by default.

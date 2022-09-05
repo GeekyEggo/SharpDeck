@@ -1,7 +1,6 @@
 namespace StreamDeck.Tests
 {
     using System.Globalization;
-    using StreamDeck.Events;
 
     /// <summary>
     /// Provides assertions for <see cref="RegistrationParameters"/>.

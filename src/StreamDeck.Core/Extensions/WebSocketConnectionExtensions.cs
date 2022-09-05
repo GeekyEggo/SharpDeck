@@ -15,6 +15,7 @@ namespace StreamDeck.Extensions
         /// <summary>
         /// Sends the specified <paramref name="value"/> as a JSON message.
         /// </summary>
+        /// <param name="connection">The <see cref="IWebSocketConnection"/> to send the message to.</param>
         /// <param name="value">The value to send.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         internal static async Task SendAsync<T>(this IWebSocketConnection connection, T value, CancellationToken cancellationToken = default)
@@ -26,6 +27,7 @@ namespace StreamDeck.Extensions
         /// <summary>
         /// Sends the specified <paramref name="value"/> as a JSON message.
         /// </summary>
+        /// <param name="connection">The <see cref="IWebSocketConnection"/> to send the message to.</param>
         /// <param name="value">The value to send.</param>
         /// <param name="jsonTypeInfo">The JSON type information used to serialize <paramref name="value"/>.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>

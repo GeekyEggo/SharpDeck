@@ -67,7 +67,7 @@ namespace StreamDeck
 
         /// <summary>
         /// Gets the event type that should be used to register the plugin once the WebSocket is opened.
-        /// </summary
+        /// </summary>
         public string Event { get; }
 
         /// <summary>
