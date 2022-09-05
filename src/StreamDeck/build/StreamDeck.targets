@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+    <Target Name="TargetsOutputToPluginsFolder" BeforeTargets="PrepareForBuild">
+        <PropertyGroup>
+            <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(Author).$(Name).sdPlugin\</OutputPath>
+            <OutDir>$(OutputPath)</OutDir>
+            <TargetDir>$(OutputPath)</TargetDir>
+            <ProjectDepsFilePath>$(OutputPath)$(ProjectDepsFileName)</ProjectDepsFilePath>
+            <ProjectRuntimeConfigFilePath>$(OutputPath)$(ProjectRuntimeConfigFileName)</ProjectRuntimeConfigFilePath>
+        </PropertyGroup>
+
+        <Message Text="Installing plugin -> $(OutputPath)" Importance="high" />
+    </Target>
+
     <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
     </Target>
