@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Target Name="TargetsOutputToPluginsFolder" BeforeTargets="PrepareForBuild">
+    <Target Name="UpdateOutPathToPluginsFolder"
+            BeforeTargets="PrepareForBuild"
+            Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
         <PropertyGroup>
+            <Author Condition="'$(Author)' == ''">user</Author>
+            <Name Condition="'$(Name)' == ''">plugin</Name>
             <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(Author).$(Name).sdPlugin\</OutputPath>
             <OutDir>$(OutputPath)</OutDir>
             <TargetDir>$(OutputPath)</TargetDir>
