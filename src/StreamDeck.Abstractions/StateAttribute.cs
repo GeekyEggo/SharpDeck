@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators
+namespace StreamDeck
 {
     using System;
     using System.Runtime.Serialization;
@@ -7,7 +7,12 @@ namespace StreamDeck.Generators
     /// Provides information about the state of an action.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class StateAttribute : Attribute
+#if BUILDING_SOURCE_GENERATOR
+    internal
+#else
+    public
+#endif
+    class StateAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StateAttribute"/> class.

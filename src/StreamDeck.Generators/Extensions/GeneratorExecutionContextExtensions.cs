@@ -41,21 +41,6 @@ namespace StreamDeck.Generators.Extensions
                     warningLevel: ERROR_LEVEL));
 
         /// <summary>
-        /// Reports an error due to the compilation assembly missing the <see cref="ManifestAttribute"/>.
-        /// </summary>
-        /// <param name="context">The generator execution context.</param>
-        internal static void ReportMissingManifestAttribute(this GeneratorExecutionContext context)
-            => context.ReportDiagnostic(
-                Diagnostic.Create(
-                    id: "SDM002",
-                    category: DIAGNOSTIC_CATEGORY,
-                    message: $"Unable to generate manifest: assembly requires {nameof(ManifestAttribute)}",
-                    severity: DiagnosticSeverity.Error,
-                    defaultSeverity: DiagnosticSeverity.Error,
-                    isEnabledByDefault: true,
-                    warningLevel: ERROR_LEVEL));
-
-        /// <summary>
         /// Reports an error due to an action not defining either <see cref="ActionAttribute.StateImage"/> or <see cref="StateAttribute"/>.
         /// </summary>
         /// <param name="context">The generator execution context.</param>
@@ -64,7 +49,7 @@ namespace StreamDeck.Generators.Extensions
             => context.ReportDiagnostic(
                 Diagnostic.Create(
                     new DiagnosticDescriptor(
-                        id: "SDM003",
+                        id: "SDM002",
                         title: "No action states",
                         messageFormat: $"Unable to generate manifest: actions must have either a {nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}, or up to two {nameof(StateAttribute)}",
                         category: DIAGNOSTIC_CATEGORY,
@@ -81,7 +66,7 @@ namespace StreamDeck.Generators.Extensions
             => context.ReportDiagnostic(
                 Diagnostic.Create(
                     new DiagnosticDescriptor(
-                        id: "SDM004",
+                        id: "SDM003",
                         title: "Too many action states",
                         messageFormat: $"Unable to generate manifest: actions can have a maximum of two states",
                         category: DIAGNOSTIC_CATEGORY,

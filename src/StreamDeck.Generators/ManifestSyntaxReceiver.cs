@@ -3,6 +3,7 @@ namespace StreamDeck.Generators
     using System.Collections.ObjectModel;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using StreamDeck;
     using StreamDeck.Generators.Extensions;
 
     /// <summary>

@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators
+namespace StreamDeck
 {
     /// <summary>
     /// Defines the possible values the "TitleAlignment" can be when generating the manifest.

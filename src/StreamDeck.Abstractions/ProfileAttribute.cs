@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators
+namespace StreamDeck
 {
     using System;
     using System.Runtime.Serialization;
@@ -7,7 +7,12 @@ namespace StreamDeck.Generators
     /// Provides information about a profile supplied with the plugin.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    public class ProfileAttribute : Attribute
+#if BUILDING_SOURCE_GENERATOR
+    internal
+#else
+    public
+#endif
+    class ProfileAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileAttribute"/> class.

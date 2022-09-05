@@ -2,10 +2,10 @@ namespace StreamDeck.Generators
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
+    using StreamDeck.Generators.Models;
     using StreamDeck.Generators.Serialization;
 
     /// <summary>
@@ -37,22 +37,20 @@ namespace StreamDeck.Generators
 
             try
             {
+                // Determine if the project requires manifest generation.
+                if (!context.Compilation.Assembly.TryGetAttribute<ManifestAttribute>(out var manifestAttr))
+                {
+                    return;
+                }
+
                 // Ensure we know where the manifest.json file is located.
                 if (!this.TryGetFilePath(context, out var filePath))
                 {
                     context.ReportUnknownProjectDirectory();
                     return;
                 }
-
-                // Ensure we have the manifest attribute associated with the assembly.
-                if (!context.Compilation.Assembly.TryGetAttribute<ManifestAttribute>(out var manifestAttr))
-                {
-                    context.ReportMissingManifestAttribute();
-                    return;
-                }
-
                 // Construct the manifest, and the actions associated with it
-                var manifest = new ManifestAttribute(context.Compilation.Assembly);
+                var manifest = new Manifest(context.Compilation.Assembly);
                 manifestAttr.Populate(manifest);
                 manifest.Actions.AddRange(syntaxReceiver.GetActions(context));
                 manifest.Profiles.AddRange(syntaxReceiver.GetProfiles(context));

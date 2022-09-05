@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators
+namespace StreamDeck
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,12 @@ namespace StreamDeck.Generators
     /// Provides information about an action.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ActionAttribute : Attribute
+#if BUILDING_SOURCE_GENERATOR
+    internal
+#else
+    public
+#endif
+    class ActionAttribute : Attribute
     {
         /// <summary>
         /// Private member field for <see cref="StateImage"/>.

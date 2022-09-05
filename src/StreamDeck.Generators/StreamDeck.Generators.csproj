@@ -1,12 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <TargetFrameworks />
-    <Description>Provides source generators for a Stream Deck plugin's manifest.json file.</Description>
-
-    <!-- Enable this to debug the generator -->
-    <!-- <DefineConstants>$(DefineConstants)TRACE;DEBUG_GENERATOR</DefineConstants> -->
+    <AnalyzerLanguage>cs</AnalyzerLanguage>
+    <DefineConstants>$(DefineConstants)TRACE;BUILDING_SOURCE_GENERATOR;DEBUG_GENERATOR</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,12 +18,19 @@
     <None Include="buildMultiTargeting\**" Pack="true" PackagePath="buildMultiTargeting\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\StreamDeck.Abstractions\ActionAttribute.cs" Link="ActionAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\DeviceType.cs" Link="DeviceType.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\ManifestAttribute.cs" Link="ManifestAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\ProfileAttribute.cs" Link="ProfileAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\StateAttribute.cs" Link="StateAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\TitleAlignment.cs" Link="TitleAlignment.cs" />
+  </ItemGroup>
+
   <!--
     ref: https://github.com/dotnet/runtime/blob/3b706dd67bd0d5a29a5bf1801e970b94e0d0f33e/src/libraries/Directory.Build.targets#L220-L237
   -->
-  <Target Name="GetAnalyzerPackFiles"
-          DependsOnTargets="$(GenerateNuspecDependsOn)"
-          Returns="@(_AnalyzerPackFile)">
+  <Target Name="GetAnalyzerPackFiles" DependsOnTargets="$(GenerateNuspecDependsOn)" Returns="@(_AnalyzerPackFile)">
     <PropertyGroup>
       <_analyzerPath>analyzers/dotnet</_analyzerPath>
       <_analyzerPath Condition="'$(AnalyzerRoslynVersion)' != ''">$(_analyzerPath)/roslyn$(AnalyzerRoslynVersion)</_analyzerPath>
@@ -38,8 +43,7 @@
       <_AnalyzerPackFile PackagePath="$(_analyzerPath)/%(TargetPath)" />
     </ItemGroup>
 
-    <Error Condition="'%(_AnalyzerPackFile.TargetFramework)' != 'netstandard2.0'"
-           Text="Analyzers must only target netstandard2.0 since they run in the compiler which targets netstandard2.0. The following files were found to target '%(_AnalyzerPackFile.TargetFramework)': @(_AnalyzerPackFile)" />
+    <Error Condition="'%(_AnalyzerPackFile.TargetFramework)' != 'netstandard2.0'" Text="Analyzers must only target netstandard2.0 since they run in the compiler which targets netstandard2.0. The following files were found to target '%(_AnalyzerPackFile.TargetFramework)': @(_AnalyzerPackFile)" />
   </Target>
 
 </Project>

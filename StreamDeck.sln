@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{76E8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Generators", "src\StreamDeck.Generators\StreamDeck.Generators.csproj", "{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamDeck.Abstractions", "src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj", "{3230C0E4-0878-41FC-B8BB-8E5FC629634E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3230C0E4-0878-41FC-B8BB-8E5FC629634E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3230C0E4-0878-41FC-B8BB-8E5FC629634E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3230C0E4-0878-41FC-B8BB-8E5FC629634E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3230C0E4-0878-41FC-B8BB-8E5FC629634E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +102,7 @@ Global
 		{9DDCC039-A2B5-4FC5-BA56-5D67E56D62E5} = {0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}
 		{76E85D54-E0AD-4454-A4D5-44032F1AC1E7} = {96D17EC6-DE4E-4E66-825C-6537171DCD6E}
 		{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
+		{3230C0E4-0878-41FC-B8BB-8E5FC629634E} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CE7DE09-893D-4603-807D-674413F38D73}
