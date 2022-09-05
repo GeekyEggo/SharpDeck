@@ -4,33 +4,21 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-        <IsPackable>false</IsPackable>
-        <PackageOutputPath>..\..\dist</PackageOutputPath>
         <Authors>Richard Herman</Authors>
-        <IncludeSymbols>true</IncludeSymbols>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <!--
-            <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-            <PackageReadmeFile>README.md</PackageReadmeFile>
-        -->
-        <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/GeekyEggo/SharpDeck</RepositoryUrl>
-        <PackageTags>Elgato,Stream-Deck,Plugin,Streaming,SDK</PackageTags>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
-    <ItemGroup Condition="'$(IsPackable)'=='true'">
-        <!--
-        This might need to be within the Directory.Build.targets
-        This might need to be within the Directory.Build.targets
-        <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" Visible="false" />
-        <None Include="..\..\README.md" Pack="true" PackagePath="" Visible="false" />
-        -->
-    </ItemGroup>
+    <PropertyGroup>
+        <!-- Source control and source link packages. -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
     <ItemGroup>
+        <!-- Source control and source link packages. -->
         <PackageReference Include="Microsoft.SourceLink.GitHub">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -38,6 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Expose internals to tests. -->
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
             <_Parameter1>$(AssemblyName).Tests</_Parameter1>
         </AssemblyAttribute>

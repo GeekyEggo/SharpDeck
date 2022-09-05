@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
     <BeforePack>$(BeforePack);IncludeAnalyzersInPackage</BeforePack>
+    <Description>Create .NET plugins for the Elgato Stream Deck, using the official Elgato SDK.</Description>
+    <IsPackable>true</IsPackable>
+    <PackageOutputPath>..\..\dist</PackageOutputPath>
+    <PackageTags>elgato-stream-deck,elgato,stream-deck,streamdeck,plugins,sdk,streaming</PackageTags>
+    <PackageProjectUrl>https://github.com/GeekyEggo/SharpDeck</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/GeekyEggo/SharpDeck</RepositoryUrl>
+    <!--
+      <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+    -->
   </PropertyGroup>
 
   <ItemGroup>
