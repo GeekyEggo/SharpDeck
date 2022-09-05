@@ -4,7 +4,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <TargetFrameworks />
     <AnalyzerLanguage>cs</AnalyzerLanguage>
-    <DefineConstants>$(DefineConstants)TRACE;BUILDING_SOURCE_GENERATOR;DEBUG_GENERATOR</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -15,8 +14,6 @@
 
   <ItemGroup>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="build\**" Pack="true" PackagePath="build\" />
-    <None Include="buildMultiTargeting\**" Pack="true" PackagePath="buildMultiTargeting\" />
   </ItemGroup>
 
   <ItemGroup>

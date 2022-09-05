@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{91AE8732-D0CC-4618-968A-02EFDE46E4EF}"
+	ProjectSection(SolutionItems) = preProject
+		examples\Directory.Packages.props = examples\Directory.Packages.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter", "examples\Counter\Counter.csproj", "{A2FAC999-0AE4-406C-96D0-C7BC4FA9DD7E}"
 EndProject
@@ -44,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{76E8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Generators", "src\StreamDeck.Generators\StreamDeck.Generators.csproj", "{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamDeck.Abstractions", "src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj", "{3230C0E4-0878-41FC-B8BB-8E5FC629634E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Abstractions", "src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj", "{3230C0E4-0878-41FC-B8BB-8E5FC629634E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

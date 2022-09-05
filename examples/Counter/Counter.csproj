@@ -7,7 +7,6 @@
     <LangVersion>latest</LangVersion>
     <Description>A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.</Description>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,10 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamDeck" Version="0.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="StreamDeck" Version="0.1.0" />
     <Using Include="StreamDeck" />
     <Using Include="StreamDeck.Events" />
   </ItemGroup>
