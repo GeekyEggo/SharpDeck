@@ -7,18 +7,13 @@
     <LangVersion>latest</LangVersion>
     <Description>A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.</Description>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.geekyeggo.counter-example.sdPlugin\</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Author>GeekyEggo</Author>
+    <Name>Counter</Name>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
-    <ProjectReference Include="..\..\src\StreamDeck\StreamDeck.csproj" />
+    <PackageReference Include="StreamDeck" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>
