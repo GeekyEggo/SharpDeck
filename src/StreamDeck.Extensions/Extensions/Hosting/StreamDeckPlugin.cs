@@ -8,6 +8,13 @@ namespace StreamDeck.Extensions.Hosting
     public static class StreamDeckPlugin
     {
         /// <summary>
+        /// Creates a <see cref="IHost"/> with Stream Deck plugin connectivity configured.
+        /// </summary>
+        /// <returns>The configured host.</returns>
+        public static IHost Create()
+            => CreateBuilder().Build();
+
+        /// <summary>
         /// Creates a <see cref="IHostBuilder"/> with Stream Deck plugin connectivity configured.
         /// </summary>
         /// <returns>The configured host builder.</returns>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -13,12 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamDeck" Version="0.4.10" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="StreamDeck" />
-    <Using Include="StreamDeck.Events" />
+    <PackageReference Include="StreamDeck" Version="0.5.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,9 +21,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
-  </Target>
 
 </Project>
