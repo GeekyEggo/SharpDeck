@@ -69,7 +69,7 @@ namespace StreamDeck.Generators.Models
                 if (string.IsNullOrWhiteSpace(this.OSMacMinimumVersion)
                     || !string.IsNullOrWhiteSpace(this.OSWindowsMinimumVersion))
                 {
-                    yield return SupportedOperatingSystem.Windows(this.OSWindowsMinimumVersion ?? "10");
+                    yield return SupportedOperatingSystem.Windows(this.OSWindowsMinimumVersion);
                 }
             }
         }

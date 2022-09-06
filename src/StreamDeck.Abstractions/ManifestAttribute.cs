@@ -94,7 +94,7 @@ namespace StreamDeck
         /// Gets or sets minimum version of Windows supported by the plugin
         /// </summary>
         [IgnoreDataMember]
-        public string OSWindowsMinimumVersion { get; set; } = "";
+        public string OSWindowsMinimumVersion { get; set; } = "10";
 
         /// <summary>
         /// Gets or sets the relative path to the Property Inspector HTML file if your plugin wants to display some custom settings in the Property Inspector. If missing, the plugin will have an empty Property Inspector.
