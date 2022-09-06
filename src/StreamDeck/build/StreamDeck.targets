@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+    <!--
+        Create the default launchSettings.json file; this enables user to debug more easily.
+        NB. Ensure we don't override any existing profiles the user might have.
+    -->
+    <PropertyGroup>
+        <LaunchSettingsFilePath>$(ProjectDir)Properties\launchSettings.json</LaunchSettingsFilePath>
+    </PropertyGroup>
+
+    <Target Name="WriteDefaultLaunchSettings" BeforeTargets="PreBuildEvent" Condition="!$([System.IO.File]::Exists('$(LaunchSettingsFilePath)'))">
+        <PropertyGroup>
+            <_launchSettingsContents>
+                <![CDATA[{
+  "profiles": {
+    "Debug (Windows)": {
+      "commandName": "Executable",
+      "executablePath": "%windir%\\system32\\cmd.exe",
+      "commandLineArgs": "/S /C \"start \"title\" /B \"%ProgramW6432%\\Elgato\\StreamDeck\\StreamDeck.exe\" \""
+    }
+  }
+}]]>
+            </_launchSettingsContents>
+        </PropertyGroup>
+
+        <WriteLinesToFile
+          File="$(LaunchSettingsFilePath)"
+          Lines="$(_launchSettingsContents)"
+          Overwrite="false"/>
+    </Target>
+
+    <!--
+        Configure the output path; this enables the plugin to be installed and run seamless during debugging.
+        NB. When an output path is already specified, do nothing.
+    -->
     <Target Name="UpdateOutPathToPluginsFolder"
             BeforeTargets="PrepareForBuild"
             Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
@@ -20,10 +53,17 @@
         <Message Text="Installing plugin -> $(OutputPath)" Importance="high" />
     </Target>
 
+    <!--
+        Copy the manifest.json to the output path.
+        NB. This is deliberately not part of the build process; if it were, the source generator would re-run.
+    -->
     <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
     </Target>
 
+    <!--
+        Copy the manifest.json to the publish directory after publishing the plugin.
+    -->
     <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
     </Target>
