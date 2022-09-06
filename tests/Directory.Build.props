@@ -5,7 +5,14 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Moq" />
+        <Using Include="NUnit.Framework" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="coverlet.msbuild" >

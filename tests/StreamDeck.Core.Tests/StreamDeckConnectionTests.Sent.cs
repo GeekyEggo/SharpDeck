@@ -1,7 +1,6 @@
 namespace StreamDeck.Tests
 {
     using System.Text.Json.Serialization.Metadata;
-    using Moq;
     using StreamDeck.Payloads;
     using StreamDeck.Tests.Helpers;
     using StreamDeck.Tests.Serialization;

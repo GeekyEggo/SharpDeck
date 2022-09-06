@@ -1,6 +1,5 @@
 namespace StreamDeck.Tests
 {
-    using Moq;
     using StreamDeck.Net;
 
     /// <summary>

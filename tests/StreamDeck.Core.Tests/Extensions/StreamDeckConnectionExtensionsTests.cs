@@ -6,7 +6,6 @@ namespace StreamDeck.Tests.Extensions
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization.Metadata;
     using System.Threading.Tasks;
-    using Moq;
     using StreamDeck.Events;
     using StreamDeck.Extensions;
     using StreamDeck.Tests.Helpers;
