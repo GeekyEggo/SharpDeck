@@ -5,6 +5,7 @@ namespace StreamDeck.Generators
     using System.Text;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
+    using StreamDeck.Generators.IO;
     using StreamDeck.Generators.Models;
     using StreamDeck.Generators.Serialization;
 
@@ -14,6 +15,24 @@ namespace StreamDeck.Generators
     [Generator]
     public class ManifestSourceGenerator : ISourceGenerator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManifestSourceGenerator"/> class.
+        /// </summary>
+        public ManifestSourceGenerator()
+            : this(new FileSystem()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManifestSourceGenerator"/> class.
+        /// </summary>
+        /// <param name="fileSystem">The file system.</param>
+        internal ManifestSourceGenerator(IFileSystem fileSystem)
+            => this.FileSystem = fileSystem;
+
+        /// <summary>
+        /// Gets the file system responsible for handling files.
+        /// </summary>
+        private IFileSystem FileSystem { get; }
+
         /// <inheritdoc/>
         public void Initialize(GeneratorInitializationContext context)
             => context.RegisterForSyntaxNotifications(() => new ManifestSyntaxReceiver());
@@ -57,7 +76,7 @@ namespace StreamDeck.Generators
 
                 // Write the manifest file.
                 var json = JsonSerializer.Serialize(manifest);
-                File.WriteAllText(filePath, json, Encoding.UTF8);
+                this.FileSystem.WriteAllText(filePath, json, Encoding.UTF8);
             }
             catch (Exception ex)
             {

@@ -7,6 +7,7 @@
     <PackageVersion Include="coverlet.collector" Version="3.1.2" />
     <PackageVersion Include="coverlet.msbuild" Version="3.1.2" />
     <PackageVersion Include="Fleck" Version="1.2.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
