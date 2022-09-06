@@ -5,11 +5,11 @@
             BeforeTargets="PrepareForBuild"
             Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
         <PropertyGroup>
-            <InvalidUUIDRegExPattern>[^A-z0-9\-\.]+</InvalidUUIDRegExPattern>
+            <InvalidUUIDCharsRegex>[^A-Za-z0-9\-\.]+</InvalidUUIDCharsRegex>
+            <Author Condition="'$(Author)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Author)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Author>
             <Author Condition="'$(Author)' == ''">user</Author>
-            <Author>$([System.Text.RegularExpressions.Regex]::Replace('$(Author)', '$(InvalidUUIDRegExPattern)', '').ToLower())</Author>
+            <Name Condition="'$(Name)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Name)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Name>
             <Name Condition="'$(Name)' == ''">plugin</Name>
-            <Name>$([System.Text.RegularExpressions.Regex]::Replace('$(Name)', '$(InvalidUUIDRegExPattern)', '').ToLower())</Name>
             <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(Author).$(Name).sdPlugin\</OutputPath>
             <OutDir>$(OutputPath)</OutDir>
             <TargetDir>$(OutputPath)</TargetDir>
