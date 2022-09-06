@@ -1,6 +1,7 @@
 namespace StreamDeck.Generators
 {
     using System.Collections.ObjectModel;
+    using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck;
@@ -38,9 +39,14 @@ namespace StreamDeck.Generators
         {
             foreach (var actionDeclaration in this.Actions)
             {
-                // TODO: validate the UUID of an action (The unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.))
                 var action = actionDeclaration.AttributeData.CreateInstance<ActionAttribute>();
                 var states = actionDeclaration.Symbol.GetAttributes<StateAttribute>().ToArray();
+
+                // Validate UUID characters (https://developer.elgato.com/documentation/stream-deck/sdk/manifest/).
+                if (Regex.IsMatch(action.UUID, @"[^a-z0-9\-\.]+"))
+                {
+                    context.ReportInvalidUUIDCharacters(actionDeclaration.Symbol.Locations.First());
+                }
 
                 if (states.Length > 0)
                 {

@@ -68,7 +68,24 @@ namespace StreamDeck.Generators.Extensions
                     new DiagnosticDescriptor(
                         id: "SDM003",
                         title: "Too many action states",
-                        messageFormat: $"Unable to generate manifest: actions can have a maximum of two states",
+                        messageFormat: "Unable to generate manifest: actions can have a maximum of two states",
+                        category: DIAGNOSTIC_CATEGORY,
+                        defaultSeverity: DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location));
+
+        /// <summary>
+        /// Generates a new diagnostic used to indicate when an action's UUID contains invalid characters.
+        /// </summary>
+        /// <param name="context">The generator execution context.</param>
+        /// <param name="location">The location of the error.</param>
+        internal static void ReportInvalidUUIDCharacters(this GeneratorExecutionContext context, Location location)
+            => context.ReportDiagnostic(
+                Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        id: "SDM004",
+                        title: "Invalid UUID",
+                        messageFormat: "The action's UUID can only contain lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.)",
                         category: DIAGNOSTIC_CATEGORY,
                         defaultSeverity: DiagnosticSeverity.Error,
                         isEnabledByDefault: true),
