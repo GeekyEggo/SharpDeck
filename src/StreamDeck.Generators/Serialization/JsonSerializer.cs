@@ -34,7 +34,7 @@ namespace StreamDeck.Generators.Serialization
         /// <summary>
         /// Gets the properties that can be serialized, indexed by their parent type.
         /// </summary>
-        private IDictionary<Type, IReadOnlyDictionary<string, PropertyInfo>> SerializableProperties { get; } = new Dictionary<Type, IReadOnlyDictionary<string, PropertyInfo>>();
+        private IDictionary<Type, IEnumerable<KeyValuePair<string, PropertyInfo>>> SerializableProperties { get; } = new Dictionary<Type, IEnumerable<KeyValuePair<string, PropertyInfo>>>();
 
         /// <summary>
         /// Serializes the specified value.
@@ -212,7 +212,9 @@ namespace StreamDeck.Generators.Serialization
                 properties = type
                     .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
                     .Where(p => p.GetCustomAttribute<IgnoreDataMemberAttribute>() == null)
-                    .ToDictionary(p => p.GetCustomAttribute<DataMemberAttribute>()?.Name ?? p.Name, p => p);
+                    .Select(p => new KeyValuePair<string, PropertyInfo>(p.GetCustomAttribute<DataMemberAttribute>()?.Name ?? p.Name, p))
+                    .OrderBy(p => p.Key)
+                    .ToArray();
 
                 this.SerializableProperties[type] = properties;
             }
