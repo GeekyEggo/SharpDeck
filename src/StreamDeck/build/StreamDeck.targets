@@ -2,11 +2,22 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <!--
+        Add the default recommended global usings.
+    -->
+    <ItemGroup Condition="'$(ImplicitUsings)' != 'disable'">
+        <Using Include="Microsoft.Extensions.Hosting" />
+        <Using Include="StreamDeck" />
+        <Using Include="StreamDeck.Events" />
+        <Using Include="StreamDeck.Extensions.Hosting" />
+    </ItemGroup>
+
+    <!--
         Create the default launchSettings.json file; this enables user to debug more easily.
         NB. Ensure we don't override any existing profiles the user might have.
     -->
     <PropertyGroup>
         <LaunchSettingsFilePath>$(ProjectDir)Properties\launchSettings.json</LaunchSettingsFilePath>
+        <PluginManifestFilePath>$(ProjectDir)\manifest.json</PluginManifestFilePath>
     </PropertyGroup>
 
     <Target Name="WriteDefaultLaunchSettings" BeforeTargets="PreBuildEvent" Condition="!$([System.IO.File]::Exists('$(LaunchSettingsFilePath)'))">
@@ -54,17 +65,24 @@
     </Target>
 
     <!--
+        Kill the Stream Deck process when installing directly to the plugins folder.
+    -->
+    <Target Name="KillStreamDeckProcess" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And $(OutputPath.Contains('Elgato\StreamDeck\Plugins'))">
+        <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
+    </Target>
+
+    <!--
         Copy the manifest.json to the output path.
         NB. This is deliberately not part of the build process; if it were, the source generator would re-run.
     -->
-    <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent">
+    <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent" Condition="$([System.IO.File]::Exists('$(PluginManifestFilePath)'))">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
     </Target>
 
     <!--
         Copy the manifest.json to the publish directory after publishing the plugin.
     -->
-    <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish">
+    <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish" Condition="$([System.IO.File]::Exists('$(PluginManifestFilePath)'))">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
     </Target>
 
