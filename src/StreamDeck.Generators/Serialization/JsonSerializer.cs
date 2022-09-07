@@ -5,8 +5,8 @@ namespace StreamDeck.Generators.Serialization
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Text;
     using System.Runtime.Serialization;
+    using System.Text;
 
     /// <summary>
     /// Provides a basic JSON serialization; this can be used to prevent external requirements and dependencies.
@@ -83,7 +83,7 @@ namespace StreamDeck.Generators.Serialization
             {
                 // Null.
                 case null:
-                    this.WriteRawValue("null");
+                    this.Json.Append("null");
                     return;
 
                 // Strings.
@@ -112,7 +112,7 @@ namespace StreamDeck.Generators.Serialization
 
                 // Boolean.
                 case bool boolean:
-                    this.WriteRawValue(boolean.ToString().ToLower());
+                    this.Json.Append(boolean.ToString().ToLower());
                     return;
 
                 // Date times.
@@ -164,21 +164,23 @@ namespace StreamDeck.Generators.Serialization
         /// <param name="array">The array to write.</param>
         private void WriteArray(IEnumerable array)
         {
-            this.WriteRawValue("[");
-
-            var enumerator = array.GetEnumerator();
-            if (enumerator.MoveNext())
+            this.WriteWrapped('[', ']', () =>
             {
-                this.Write(enumerator.Current);
-            }
+                this.Json.Append(this.Indentation);
 
-            while (enumerator.MoveNext())
-            {
-                this.WriteRawValue(",");
-                this.Write(enumerator.Current);
-            }
+                var enumerator = array.GetEnumerator();
+                if (enumerator.MoveNext())
+                {
+                    this.Write(enumerator.Current);
+                }
 
-            this.WriteRawValue("]");
+                while (enumerator.MoveNext())
+                {
+                    this.Json.AppendLine(",");
+                    this.Json.Append(this.Indentation);
+                    this.Write(enumerator.Current);
+                }
+            });
         }
 
         /// <summary>
@@ -228,24 +230,20 @@ namespace StreamDeck.Generators.Serialization
         /// <param name="properties">The properties that represent the object.</param>
         private void WriteObject(IEnumerable<KeyValuePair<string, object>> properties)
         {
-            this.Json.AppendLine("{");
-            this.Indentation = new string(' ', this.Indentation.Length + 4);
-
-            var validProperties = properties.Where(p => this.CanWriteProperty(p.Value)).GetEnumerator();
-            if (validProperties.MoveNext())
+            this.WriteWrapped('{', '}', () =>
             {
-                Write(validProperties.Current);
-            }
+                var validProperties = properties.Where(p => this.CanWriteProperty(p.Value)).GetEnumerator(); ;
+                if (validProperties.MoveNext())
+                {
+                    Write(validProperties.Current);
+                }
 
-            while (validProperties.MoveNext())
-            {
-                this.Json.AppendLine(",");
-                Write(validProperties.Current);
-            }
-
-            this.Json.AppendLine();
-            this.Indentation = new string(' ', this.Indentation.Length - 4);
-            this.Json.Append($"{this.Indentation}}}");
+                while (validProperties.MoveNext())
+                {
+                    this.Json.AppendLine(",");
+                    Write(validProperties.Current);
+                }
+            });
 
             void Write(KeyValuePair<string, object> property)
             {
@@ -257,11 +255,22 @@ namespace StreamDeck.Generators.Serialization
         }
 
         /// <summary>
-        /// Writes the raw value to the JSON string.
+        /// Executes <paramref name="action"/>, wrapped by the <see cref="open"/> and <see cref="close"/> tags.
         /// </summary>
-        /// <param name="value">The value.</param>
-        private void WriteRawValue(string value)
-            => this.Json.Append(value);
+        /// <param name="open">The open tag.</param>
+        /// <param name="close">The close tag.</param>
+        /// <param name="action">The action responsible for writing the JSON.</param>
+        private void WriteWrapped(char open, char close, Action action)
+        {
+            this.Json.AppendLine(open.ToString());
+            this.Indentation = new string(' ', this.Indentation.Length + 4);
+
+            action();
+
+            this.Indentation = new string(' ', this.Indentation.Length - 4);
+            this.Json.AppendLine();
+            this.Json.Append(this.Indentation + close);
+        }
 
         /// <summary>
         /// Writes the escaped <see cref="string"/> to the JSON string.

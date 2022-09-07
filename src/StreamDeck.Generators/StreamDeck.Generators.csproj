@@ -5,6 +5,7 @@
     <TargetFrameworks />
     <AnalyzerLanguage>cs</AnalyzerLanguage>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <DefineConstants>$(DefineConstants);BUILDING_SOURCE_GENERATOR</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -115,6 +115,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets a site to provide more information about the plugin.
         /// </summary>
+        [DataMember(Name = "URL")]
         public string? Url { get; set; }
 
         /// <summary>

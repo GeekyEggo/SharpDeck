@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);BUILDING_SOURCE_GENERATOR</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Common" />
@@ -6,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\StreamDeck.Generators\StreamDeck.Generators.csproj" />
   </ItemGroup>
 
