@@ -50,6 +50,8 @@
             Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
         <PropertyGroup>
             <InvalidUUIDCharsRegex>[^A-Za-z0-9\-\.]+</InvalidUUIDCharsRegex>
+            <Author Condition="'$(Authors)' != ''">$(Authors)</Author>
+            <Author Condition="'$(Company)' != ''">$(Company)</Author>
             <Author Condition="'$(Author)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Author)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Author>
             <Author Condition="'$(Author)' == ''">user</Author>
             <Name Condition="'$(Name)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Name)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Name>
