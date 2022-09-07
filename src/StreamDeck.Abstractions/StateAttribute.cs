@@ -1,7 +1,7 @@
 namespace StreamDeck
 {
     using System;
-    using System.Runtime.Serialization;
+    using StreamDeck.Serialization;
 
     /// <summary>
     /// Provides information about the state of an action.
@@ -12,19 +12,20 @@ namespace StreamDeck
 #else
     public
 #endif
-    class StateAttribute : Attribute
+    class StateAttribute : SerializableSafeAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StateAttribute"/> class.
         /// </summary>
         /// <param name="image">The default image for the state.</param>
         public StateAttribute(string image)
+            : base()
             => this.Image = image;
 
         /// <summary>
-        /// Gets or sets the default image for the state.
+        /// Gets the default image for the state.
         /// </summary>
-        public string Image { get; set; }
+        public string Image { get; }
 
         /// <summary>
         /// Gets or sets the default font family for the title
@@ -45,7 +46,8 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets a value indicating whether to have an underline under the title; <c>false</c> by default
         /// </summary>
-        public bool? FontUnderline { get; set; } = null;
+        [IgnoreDataMemberWhen(false)]
+        public bool FontUnderline { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the multi-action image; this can be used if you want to provide a different image for the state when the action is displayed in a Multi-Action.
@@ -60,7 +62,8 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets a value indicating whether to hide/show the title; <c>true</c> by default.
         /// </summary>
-        public bool? ShowTitle { get; set; }
+        [IgnoreDataMemberWhen(true)]
+        public bool ShowTitle { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the default title.
@@ -76,9 +79,5 @@ namespace StreamDeck
         /// Gets or sets the default title vertical alignment.
         /// </summary>
         public string? TitleAlignment { get; set; }
-
-        /// <inheritdoc/>
-        [IgnoreDataMember]
-        public override object TypeId => base.TypeId;
     }
 }

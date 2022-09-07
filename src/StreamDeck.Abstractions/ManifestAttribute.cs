@@ -12,7 +12,7 @@ namespace StreamDeck
 #else
     public
 #endif
-    class ManifestAttribute : Attribute
+    class ManifestAttribute : SerializableSafeAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ManifestAttribute"/> class.
@@ -122,9 +122,5 @@ namespace StreamDeck
         /// Gets or sets the plugin's semantic version (1.0.0).
         /// </summary>
         public string Version { get; set; } = "";
-
-        /// <inheritdoc/>
-        [IgnoreDataMember]
-        public override object TypeId => base.TypeId;
     }
 }

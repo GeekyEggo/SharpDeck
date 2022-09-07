@@ -3,6 +3,7 @@ namespace StreamDeck
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using StreamDeck.Serialization;
 
     /// <summary>
     /// Provides information about an action.
@@ -13,7 +14,7 @@ namespace StreamDeck
 #else
     public
 #endif
-    class ActionAttribute : Attribute
+    class ActionAttribute : SerializableSafeAttribute
     {
         /// <summary>
         /// Private member field for <see cref="StateImage"/>.
@@ -27,6 +28,7 @@ namespace StreamDeck
         /// <param name="uuid">The the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.</param>
         /// <param name="icon">The relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).</param>
         public ActionAttribute(string name, string uuid, string icon)
+            : base()
         {
             this.UUID = uuid;
             this.Name = name;
@@ -36,12 +38,12 @@ namespace StreamDeck
         /// <summary>
         /// Gets the relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).
         /// </summary>
-        public string Icon { get; internal set; }
+        public string Icon { get; }
 
         /// <summary>
         /// Gets the name of the action. This string is visible to the user in the actions list.
         /// </summary>
-        public string Name { get; internal set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets property inspector path; this can override PropertyInspectorPath member from the plugin if you wish to have a different PropertyInspectorPath based on the action. The relative path to the Property Inspector HTML file if your plugin wants to display some custom settings in the Property Inspector.
@@ -65,6 +67,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets a value indicating whether to prevent the action from being used in a Multi Action. <c>true</c> by default.
         /// </summary>
+        [IgnoreDataMemberWhen(true)]
         public bool SupportedInMultiActions { get; set; } = true;
 
         /// <summary>
@@ -73,18 +76,15 @@ namespace StreamDeck
         public string? Tooltip { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.
+        /// Gets the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.
         /// </summary>
-        public string UUID { get; set; }
+        public string UUID { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to hide the action in the actions list. This can be used for a plugin that only works with a specific profile. <c>true</c> by default.
         /// </summary>
+        [IgnoreDataMemberWhen(true)]
         public bool VisibleInActionsList { get; set; } = true;
-
-        /// <inheritdoc/>
-        [IgnoreDataMember]
-        public override object TypeId => base.TypeId;
 
         /// <summary>
         /// Gets or sets the information about the states of the action.

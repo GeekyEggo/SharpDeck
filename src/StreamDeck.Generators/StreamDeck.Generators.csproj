@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -22,8 +22,10 @@
     <Compile Include="..\StreamDeck.Abstractions\Device.cs" Link="StreamDeck.Abstractions\Device.cs" />
     <Compile Include="..\StreamDeck.Abstractions\ManifestAttribute.cs" Link="StreamDeck.Abstractions\ManifestAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\ProfileAttribute.cs" Link="StreamDeck.Abstractions\ProfileAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\SerializableSafeAttribute.cs" Link="StreamDeck.Abstractions\SerializableSafeAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\StateAttribute.cs" Link="StreamDeck.Abstractions\StateAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\TitleAlignment.cs" Link="StreamDeck.Abstractions\TitleAlignment.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\Serialization\IgnoreDataMemberWhenAttribute.cs" Link="StreamDeck.Abstractions\Serialization\IgnoreDataMemberWhenAttribute.cs" />
   </ItemGroup>
 
   <!--

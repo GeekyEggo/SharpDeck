@@ -7,6 +7,7 @@ namespace StreamDeck.Generators.Serialization
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Text;
+    using StreamDeck.Serialization;
 
     /// <summary>
     /// Provides a basic JSON serialization; this can be used to prevent external requirements and dependencies.
@@ -34,7 +35,7 @@ namespace StreamDeck.Generators.Serialization
         /// <summary>
         /// Gets the properties that can be serialized, indexed by their parent type.
         /// </summary>
-        private IDictionary<Type, IEnumerable<KeyValuePair<string, PropertyInfo>>> SerializableProperties { get; } = new Dictionary<Type, IEnumerable<KeyValuePair<string, PropertyInfo>>>();
+        private IDictionary<Type, IEnumerable<JsonPropertyInfo>> SerializableProperties { get; } = new Dictionary<Type, IEnumerable<JsonPropertyInfo>>();
 
         /// <summary>
         /// Serializes the specified value.
@@ -214,14 +215,14 @@ namespace StreamDeck.Generators.Serialization
                 properties = type
                     .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
                     .Where(p => p.GetCustomAttribute<IgnoreDataMemberAttribute>() == null)
-                    .Select(p => new KeyValuePair<string, PropertyInfo>(p.GetCustomAttribute<DataMemberAttribute>()?.Name ?? p.Name, p))
-                    .OrderBy(p => p.Key)
+                    .Select(p => new JsonPropertyInfo(p))
+                    .OrderBy(p => p.Name)
                     .ToArray();
 
                 this.SerializableProperties[type] = properties;
             }
 
-            this.WriteObject(properties.Select(p => new KeyValuePair<string, object>(p.Key, p.Value.GetValue(obj))));
+            this.WriteObject(properties.Select(p => new KeyValuePair<string, object>(p.Name, p.GetValue(obj))));
         }
 
         /// <summary>
@@ -297,6 +298,49 @@ namespace StreamDeck.Generators.Serialization
             }
 
             this.Json.Append($"\"{escaped}\"");
+        }
+
+        /// <summary>
+        /// Provides information about a property being serialized.
+        /// </summary>
+        private struct JsonPropertyInfo
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="JsonPropertyInfo"/> struct.
+            /// </summary>
+            /// <param name="propertyInfo">The property information.</param>
+            public JsonPropertyInfo(PropertyInfo propertyInfo)
+            {
+                this.PropertyInfo = propertyInfo;
+                this.Name = propertyInfo.GetCustomAttribute<DataMemberAttribute>()?.Name ?? propertyInfo.Name;
+                this.IgnoreValue = propertyInfo.GetCustomAttribute<IgnoreDataMemberWhenAttribute>()?.Value;
+            }
+
+            /// <summary>
+            /// Gets the property information.
+            /// </summary>
+            public PropertyInfo PropertyInfo { get; }
+
+            /// <summary>
+            /// Gets the name that represents the serialized value.
+            /// </summary>
+            public string Name { get; }
+
+            /// <summary>
+            /// Gets the ignored value; when this matches the property's value, the item will not be serialized.
+            /// </summary>
+            public object? IgnoreValue { get; }
+
+            /// <summary>
+            /// Gets the value from the specified <paramref name="obj"/>.
+            /// </summary>
+            /// <param name="obj">The object.</param>
+            /// <returns>The value.</returns>
+            public object GetValue(object obj)
+            {
+                var value = this.PropertyInfo.GetValue(obj);
+                return this.IgnoreValue?.Equals(value) == true ? null! : value;
+            }
         }
     }
 }
