@@ -1,5 +1,9 @@
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
+pushd "$SCRIPTPATH/../tests/"
+rm -rf .coverage
+popd
+
 dotnet test \
     -p:Exclude=\"[*.Tests]*\" \
     -p:Excludebyattribute="ExcludeFromCodeCoverage" \
