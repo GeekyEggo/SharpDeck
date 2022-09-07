@@ -18,7 +18,20 @@ namespace StreamDeck.Tests.Routing
         /// </summary>
         [Test]
         public void IgnoreNotConstructed()
-            => Assert.Fail("Should assert nothing happens before the action is constructed.");
+        {
+            // Arrange.
+            var (actions, actionFactory, dispatcher, connection, router) = CreateTestCase();
+            router.MapAction<StreamDeckAction>(EventArgsBuilder.ACTION_UUID);
+
+            // Act.
+            var args = EventArgsBuilder.CreateKeyEventArgs();
+            connection.Raise(c => c.KeyDown += null, connection.Object, args);
+
+            // Assert.
+            actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Never);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<KeyPayload>, Task>>(), args), Times.Never);
+            Assert.That(actions, Is.Empty);
+        }
 
         /// <summary>
         /// Asserts that unmapped <see cref="IActionContext.Action"/> are ignored.
