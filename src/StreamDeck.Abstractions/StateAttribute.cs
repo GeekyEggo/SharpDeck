@@ -6,7 +6,7 @@ namespace StreamDeck
     /// <summary>
     /// Provides information about the state of an action.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 #if BUILDING_SOURCE_GENERATOR
     internal
 #else

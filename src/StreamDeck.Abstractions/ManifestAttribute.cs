@@ -6,7 +6,7 @@ namespace StreamDeck
     /// <summary>
     /// Provides information about the manifest of the plugin.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
 #if BUILDING_SOURCE_GENERATOR
     internal
 #else
