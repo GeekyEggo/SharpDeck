@@ -1,17 +1,21 @@
 ﻿{
-    "Actions": [{
-        "Icon": "Images/Action",
-        "Name": "Counter",
-        "States": [{
-            "FontSize": "18",
-            "Image": "Images/Key",
-            "TitleAlignment": "middle"
-        }],
-        "SupportedInMultiActions": false,
-        "Tooltip": "Increment the count by one.",
-        "UUID": "com.geekyeggo.counter-example.increment",
-        "VisibleInActionsList": true
-    }],
+    "Actions": [
+        {
+            "Icon": "Images/Action",
+            "Name": "Counter",
+            "States": [
+                {
+                    "FontSize": "18",
+                    "Image": "Images/Key",
+                    "TitleAlignment": "middle"
+                }
+            ],
+            "SupportedInMultiActions": false,
+            "Tooltip": "Increment the count by one.",
+            "UUID": "com.geekyeggo.counter-example.increment",
+            "VisibleInActionsList": true
+        }
+    ],
     "Author": "Counter",
     "Category": "Counter",
     "CategoryIcon": "Images/CategoryIcon",
@@ -19,10 +23,12 @@
     "Description": "A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.",
     "Icon": "Images/PluginIcon",
     "Name": "Counter",
-    "OS": [{
-        "MinimumVersion": "10",
-        "Platform": "windows"
-    }],
+    "OS": [
+        {
+            "MinimumVersion": "10",
+            "Platform": "windows"
+        }
+    ],
     "SDKVersion": 2,
     "Software": {
         "MinimumVersion": "5.0"

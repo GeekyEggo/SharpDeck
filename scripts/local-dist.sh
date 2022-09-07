@@ -9,6 +9,8 @@ dotnet pack ./src/StreamDeck/StreamDeck.csproj -c Debug -p:Version=$1
 mv ./dist/StreamDeck.* ~/AppData/Local/NuGet/Local/
 
 pushd ./examples/Counter
+rm -rf bin
+rm -rf obj
 dotnet add package StreamDeck -v $1
 dotnet restore
 popd

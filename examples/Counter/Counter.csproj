@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamDeck" Version="0.5.2" />
+    <PackageReference Include="StreamDeck" Version="0.6.0" />
   </ItemGroup>
 
   <ItemGroup>
