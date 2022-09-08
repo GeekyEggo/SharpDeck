@@ -36,6 +36,12 @@ namespace StreamDeck
         }
 
         /// <summary>
+        /// Gets or sets a value indicating to disable image caching. <c>false</c> by default.
+        /// </summary>
+        [IgnoreDataMemberWhen(false)]
+        public bool DisableCaching { get; set; } = false;
+
+        /// <summary>
         /// Gets the relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).
         /// </summary>
         public string Icon { get; }

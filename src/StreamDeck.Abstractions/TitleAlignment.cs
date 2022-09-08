@@ -1,7 +1,7 @@
 namespace StreamDeck
 {
     /// <summary>
-    /// Defines the possible values the "TitleAlignment" can be when generating the manifest.
+    /// Defines the possible title-alignment that an action's title can be.
     /// </summary>
     public static class TitleAlignment
     {
