@@ -388,8 +388,55 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
+        /// <summary>
+        /// Asserts the <see cref="ActionAttribute.UUID"/> is valid.
+        /// </summary>
         [Test]
-        public void Action_FailsWhenNoStateImage()
+        public void Action_Fail_InvalidUUIDCharacters()
+        {
+            // Arrange.
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest]
+
+                [Action("My Action", "Foo Bar", "Images/Action", StateImage = "Imgages/State")]
+                public class MyAction {}
+                """;
+
+            // Act, assert.
+            VerifyFailure(
+                sourceText,
+                (6, 14, "SD101", "Action 'My Action' must have a valid UUID; identifiers can only contain lowercase alphanumeric characters (a-z, 0-9), hyphens (-), and periods (.).", DiagnosticSeverity.Error));
+        }
+
+        /// <summary>
+        /// Asserts the <see cref="ActionAttribute.StageImage"/> is defined.
+        /// </summary>
+        [Test]
+        public void Action_Fail_StateImageNotDefined()
+        {
+            // Arrange.
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest]
+
+                [Action("My Action", "com.tests.example.myaction", "Images/Action")]
+                public class MyAction {}
+                """;
+
+            // Act, assert.
+            VerifyFailure(
+                sourceText,
+                (6, 14, "SD102", "Action 'My Action' must have a state image; set the 'ActionAttribute.StateImage', or add a 'StateAttribute'.", DiagnosticSeverity.Error));
+        }
+
+        /// <summary>
+        /// Asserts the <see cref="ActionAttribute.StateImage"/> and <see cref="StateAttribute"/> aren't both defined on the class.
+        /// </summary>
+        [Test]
+        public void Action_Fail_StatesDefinedMoreThanOnce()
         {
             // Arrange.
             const string sourceText = """
@@ -398,14 +445,39 @@ namespace StreamDeck.Generators.Tests
                 [assembly: Manifest]
 
                 [Action("My Action", "com.tests.example.myaction", "Images/Action", StateImage = "ImageFromAction")]
-                [State("ImageFromState")]
+                [State("1")]
                 public class MyAction {}
                 """;
 
             // Act, assert.
             VerifyFailure(
                 sourceText,
-                (7, 14, "SD101", "Action, 'My Action', should not set the 'ActionAttribute.StateImage' when a 'StateAttribute' is present.", DiagnosticSeverity.Error));
+                (7, 14, "SD103", "Action 'My Action' must not set the 'ActionAttribute.StateImage' when a 'StateAttribute' is present.", DiagnosticSeverity.Error));
+        }
+
+        /// <summary>
+        /// Asserts <see cref="StateAttribute"/> isn't defined more than twice.
+        /// </summary>
+        [Test]
+        public void Action_Fails_TooManyStates()
+        {
+            // Arrange.
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest]
+
+                [Action("My Action", "com.tests.example.myaction", "Images/Action")]
+                [State("1")]
+                [State("2")]
+                [State("3")]
+                public class MyAction {}
+                """;
+
+            // Act, assert.
+            VerifyFailure(
+                sourceText,
+                (9, 14, "SD104", "Action 'My Action' cannot have more than two states ('StateAttribute').", DiagnosticSeverity.Error));
         }
 
         #endregion

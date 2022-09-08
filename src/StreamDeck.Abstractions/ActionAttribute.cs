@@ -1,7 +1,6 @@
 namespace StreamDeck
 {
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using StreamDeck.Serialization;
 
@@ -66,7 +65,7 @@ namespace StreamDeck
             set
             {
                 this._stateIcon = value;
-                this.States = new List<StateAttribute> { new StateAttribute(value ?? "") };
+                this.States = new[] { new StateAttribute(value ?? "") };
             }
         }
 
@@ -95,6 +94,6 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the information about the states of the action.
         /// </summary>
-        internal List<StateAttribute> States { get; set; } = new List<StateAttribute>();
+        internal StateAttribute[] States { get; set; } = new StateAttribute[0];
     }
 }
