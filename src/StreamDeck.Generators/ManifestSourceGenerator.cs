@@ -65,22 +65,26 @@ namespace StreamDeck.Generators
                 // Ensure we know where the manifest.json file is located.
                 if (!this.TryGetFilePath(context, out var filePath))
                 {
-                    context.ReportUnknownProjectDirectory();
+                    //context.ReportUnknownProjectDirectory();
                     return;
                 }
-                // Construct the manifest, and the actions associated with it
-                var manifest = new Manifest(context.Compilation.Assembly);
-                manifestAttr.Populate(manifest);
-                manifest.Actions.AddRange(syntaxReceiver.GetActions(context));
-                manifest.Profiles.AddRange(syntaxReceiver.GetProfiles(context));
 
-                // Write the manifest file.
-                var json = JsonSerializer.Serialize(manifest);
-                this.FileSystem.WriteAllText(filePath, json, Encoding.UTF8);
+                if (syntaxReceiver.TryGetActions(context, out var actions))
+                {
+                    // Construct the manifest, and the actions associated with it
+                    var manifest = new Manifest(context.Compilation.Assembly);
+                    manifestAttr.Populate(manifest);
+                    manifest.Actions.AddRange(actions);
+                    manifest.Profiles.AddRange(syntaxReceiver.GetProfiles(context));
+
+                    // Write the manifest file.
+                    var json = JsonSerializer.Serialize(manifest);
+                    this.FileSystem.WriteAllText(filePath, json, Encoding.UTF8);
+                }
             }
             catch (Exception ex)
             {
-                context.ReportException(ex);
+                //context.ReportException(ex);
             }
         }
 

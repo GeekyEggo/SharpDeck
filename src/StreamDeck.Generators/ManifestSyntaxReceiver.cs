@@ -31,21 +31,35 @@ namespace StreamDeck.Generators
         }
 
         /// <summary>
-        /// Gets the actions associated with compilation.
+        /// Gets the <see cref="ActionAttribute"/> associated with the compilation, and returns <c>true</c> when all actions are valid.
         /// </summary>
         /// <param name="context">The generator execution context.</param>
-        /// <returns>The actions discovered whilst traversing the compilation nodes.</returns>
-        internal IEnumerable<ActionAttribute> GetActions(GeneratorExecutionContext context)
+        /// <param name="actions">The actions.</param>
+        /// <returns><c>true</c> when all actions are valid; otherwise <c>false</c>.</returns>
+        internal bool TryGetActions(GeneratorExecutionContext context, out List<ActionAttribute> actions)
         {
+            var success = true;
+            actions = new List<ActionAttribute>();
+
             foreach (var actionDeclaration in this.Actions)
             {
+                var location = actionDeclaration.Symbol.Locations.First();
+
                 var action = actionDeclaration.AttributeData.CreateInstance<ActionAttribute>();
                 var states = actionDeclaration.Symbol.GetAttributes<StateAttribute>().ToArray();
+
+                // Ensure the ActionAttribute.StateImage is not defined when a StateAttribute is present.
+                if (action.StateImage != null
+                    && states.Length > 0)
+                {
+                    context.ReportStateImageDefinedMoreThanOnce(action.Name, location);
+                    success = false;
+                }
 
                 // Validate UUID characters (https://developer.elgato.com/documentation/stream-deck/sdk/manifest/).
                 if (Regex.IsMatch(action.UUID, @"[^a-z0-9\-\.]+"))
                 {
-                    context.ReportInvalidUUIDCharacters(actionDeclaration.Symbol.Locations.First());
+                    //context.ReportInvalidUUIDCharacters(actionDeclaration.Symbol.Locations.First());
                 }
 
                 if (states.Length > 0)
@@ -53,7 +67,7 @@ namespace StreamDeck.Generators
                     // When there is a state image defined, and custom states, warn of duplication.
                     if (action.States.Count > 0)
                     {
-                        context.ReportStateImageValueObsolete(actionDeclaration.Symbol.Locations.First());
+                        //context.ReportStateImageValueObsolete(actionDeclaration.Symbol.Locations.First());
                     }
 
                     action.States.Clear();
@@ -63,17 +77,19 @@ namespace StreamDeck.Generators
                 // Ensure we have at least 1 action state.
                 if (action.States.Count == 0)
                 {
-                    context.ReportNoActionStatesDefined(actionDeclaration.Symbol.Locations.First());
+                    //context.ReportNoActionStatesDefined(actionDeclaration.Symbol.Locations.First());
                 }
 
                 // Ensure we dont have more than 2 action states.
                 if (action.States.Count > 2)
                 {
-                    context.ReportTooManyActionStates(actionDeclaration.Symbol.Locations.First());
+                    //context.ReportTooManyActionStates(actionDeclaration.Symbol.Locations.First());
                 }
 
-                yield return action;
+                actions.Add(action);
             }
+
+            return success;
         }
 
         /// <summary>

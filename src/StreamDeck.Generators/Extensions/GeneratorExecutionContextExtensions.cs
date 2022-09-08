@@ -1,6 +1,5 @@
 namespace StreamDeck.Generators.Extensions
 {
-    using System;
     using Microsoft.CodeAnalysis;
 
     /// <summary>
@@ -11,20 +10,32 @@ namespace StreamDeck.Generators.Extensions
         /// <summary>
         /// The category of all diagnostics reported.
         /// </summary>
-        private const string DIAGNOSTIC_CATEGORY = "StreamDeckManifest";
+        private const string DIAGNOSTIC_CATEGORY = "StreamDeck";
+
+        #region Manifest
+
+        #endregion
+
+        #region Actions
 
         /// <summary>
-        /// The warning level that represents an error.
+        /// Reports a <see cref="Diagnostic"/> on the <see cref="GeneratorExecutionContext"/>, indicating the <see cref="ActionAttribute.StateImage"/> cannot be defined when a <see cref="StateAttribute"/> is present.
         /// </summary>
-        private const int ERROR_LEVEL = 0;
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
+        /// <param name="actionName">The name of the action.</param>
+        /// <param name="location">The location of the error.</param>
+        internal static void ReportStateImageDefinedMoreThanOnce(this GeneratorExecutionContext context, string actionName, Location? location)
+            => context.ReportError(
+                "SD101",
+                "State images should not be defined more than once",
+                $"Action, '{{0}}', should not set the '{nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}' when a '{nameof(StateAttribute)}' is present.",
+                location,
+                actionName);
 
-        /// <summary>
-        /// The warning level that represents a warning.
-        /// </summary>
-        private const int WARNING_LEVEL = 1;
+        #endregion
 
         #region Errors
-
+        /*
         /// <summary>
         /// Reports an error due to not being able to determine the project's directory.
         /// </summary>
@@ -126,7 +137,51 @@ namespace StreamDeck.Generators.Extensions
                     defaultSeverity: DiagnosticSeverity.Warning,
                     isEnabledByDefault: true,
                     warningLevel: WARNING_LEVEL));
-
+        */
         #endregion
+
+        /// <summary>
+        /// Reports a <see cref="Diagnostic"/> with a severity of <see cref="DiagnosticSeverity.Error"/> error.
+        /// </summary>
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/> where the <see cref="Diagnostic"/> is being reported.</param>
+        /// <param name="id">The <see cref="Diagnostic.Id"/>.</param>
+        /// <param name="title">The <see cref="DiagnosticDescriptor.Title"/>.</param>
+        /// <param name="messageFormat">The <see cref="DiagnosticDescriptor.MessageFormat"/>.</param>
+        /// <param name="location">The optional <see cref="Diagnostic.Location"/>.</param>
+        /// <param name="messageArgs">The optional message arguments supplied to the message format when generating the description.</param>
+        internal static void ReportError(this GeneratorExecutionContext context, string id, string title, string messageFormat, Location? location, params string[] messageArgs)
+            => context.ReportDiagnostic(
+                Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        id: id,
+                        title: title,
+                        messageFormat: messageFormat,
+                        category: DIAGNOSTIC_CATEGORY,
+                        defaultSeverity: DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location,
+                    messageArgs));
+
+        /// <summary>
+        /// Reports a <see cref="Diagnostic"/> with a severity of <see cref="DiagnosticSeverity.Warning"/> error.
+        /// </summary>
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/> where the <see cref="Diagnostic"/> is being reported.</param>
+        /// <param name="id">The <see cref="Diagnostic.Id"/>.</param>
+        /// <param name="title">The <see cref="DiagnosticDescriptor.Title"/>.</param>
+        /// <param name="messageFormat">The <see cref="DiagnosticDescriptor.MessageFormat"/>.</param>
+        /// <param name="location">The optional <see cref="Diagnostic.Location"/>.</param>
+        /// <param name="messageArgs">The optional message arguments supplied to the message format when generating the description.</param>
+        internal static void ReportWarning(this GeneratorExecutionContext context, string id, string title, string messageFormat, Location? location, params string[] messageArgs)
+            => context.ReportDiagnostic(
+                Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        id: id,
+                        title: title,
+                        messageFormat: messageFormat,
+                        category: DIAGNOSTIC_CATEGORY,
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    messageArgs));
     }
 }
