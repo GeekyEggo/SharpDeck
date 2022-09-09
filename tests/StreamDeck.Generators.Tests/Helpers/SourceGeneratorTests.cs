@@ -3,6 +3,7 @@ namespace StreamDeck.Generators.Tests.Helpers
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.Diagnostics;
 
     /// <summary>
     /// Provides a base class responsible for testing a <see cref="ISourceGenerator"/>.
@@ -15,12 +16,18 @@ namespace StreamDeck.Generators.Tests.Helpers
         internal const string DEFAULT_ASSEMBLY_NAME = "TestProject";
 
         /// <summary>
+        /// Gets the default <see cref="AnalyzerConfigOptionsProvider"/>.
+        /// </summary>
+        internal static AnalyzerConfigOptionsProvider DEFAULT_OPTIONS_PROVIDER => new MockAnalyzerConfigOptionsProvider(("build_property.projectdir", "C:\\temp\\"));
+
+        /// <summary>
         /// Runs the <paramref name="sourceText"/> as CSharp against the provided <paramref name="generator"/>.
         /// </summary>
         /// <param name="generator">The generator.</param>
         /// <param name="sourceText">The source text.</param>
+        /// <param name="optionsProvider">The optional <see cref="AnalyzerConfigOptionsProvider"/>.</param>
         /// <returns>The diagnostics reported during execution of the <see cref="ISourceGenerator"/>.</returns>
-        internal static ImmutableArray<Diagnostic> Run(ISourceGenerator generator, string sourceText)
+        internal static ImmutableArray<Diagnostic> Run(ISourceGenerator generator, string sourceText, AnalyzerConfigOptionsProvider? optionsProvider = null)
         {
             // Parse the provided source text into a C# syntax tree.
             var syntaxTrees = new[] { CSharpSyntaxTree.ParseText(sourceText) };
@@ -45,7 +52,7 @@ namespace StreamDeck.Generators.Tests.Helpers
             var driver = CSharpGeneratorDriver.Create(
                 generators: ImmutableArray.Create(generator),
                 parseOptions: (CSharpParseOptions)syntaxTrees[0].Options,
-                optionsProvider: new MockAnalyzerConfigOptionsProvider(("build_property.projectdir", "C:\\temp\\")));
+                optionsProvider: optionsProvider ?? DEFAULT_OPTIONS_PROVIDER);
 
             // Run the driver, and return the diagnostics.
             driver.RunGeneratorsAndUpdateCompilation(compilation, out var _, out var diagnostics);

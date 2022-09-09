@@ -2,6 +2,7 @@ namespace StreamDeck.Generators.Tests
 {
     using System.Text;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.Diagnostics;
     using StreamDeck.Generators.IO;
     using StreamDeck.Generators.Tests.Helpers;
 
@@ -11,13 +12,11 @@ namespace StreamDeck.Generators.Tests
     [TestFixture]
     public class ManifestSourceGeneratorTests
     {
-        #region Manifest
-
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> generates a manifest file.
         /// </summary>
-        [Test]
-        public void Manifest_FullInfo()
+        [TestCase(TestName = "Create manifest from ManifestAttribute (full)")]
+        public void CreateManifestFromAttribute()
         {
             // Arrange.
             const string sourceText = """
@@ -94,8 +93,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> reads the assembly information, populating as much as possible.
         /// </summary>
-        [Test]
-        public void Manifest_ReadsAssemblyInfo()
+        [TestCase(TestName = "Create manifest from ManifestAttribute (defaults and Assembly)")]
+        public void CreateManifestWithAssemblyInfo()
         {
             // Arrange.
             const string sourceText = """
@@ -133,15 +132,49 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
-        #endregion
+        /// <summary>
+        /// Asserts an error diagnostic is reported when the project directory cannot be determined.
+        /// </summary>
+        [TestCase(TestName = "Error when project directory is not found")]
+        public void ErrorWhenProjectDirectoryNotFound()
+        {
+            // Arrange.
+            const string sourceText = """
+                [assembly: StreamDeck.Manifest]
+                """;
 
-        #region Profiles
+            // Act, assert.
+            VerifyFailure(
+                sourceText,
+                new MockAnalyzerConfigOptionsProvider(),
+                (1, 1, "SD001", "Failed to generate manifest JSON file; unable to determine the project's directory from the compilation context.", DiagnosticSeverity.Error));
+        }
+
+        /// <summary>
+        /// Asserts an error diagnostic is not reported when the project directory cannot be determined, as there is no <see cref="ManifestAttribute"/> present.
+        /// </summary>
+        [TestCase(TestName = "No error when project directory is not found, but ManifestAttribute not present")]
+        public void NoErrorWhenProjectDirectoryNotFoundAndNoAttribute()
+        {
+            // Arrange.
+            const string sourceText = """
+                public class Foo
+                {
+                    public string Name { get; set; }
+                }
+                """;
+
+            // Act, assert.
+            VerifyFailure(
+                sourceText,
+                new MockAnalyzerConfigOptionsProvider());
+        }
 
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> adds profiles to the manifest.
         /// </summary>
-        [Test]
-        public void Profiles()
+        [TestCase(TestName = "Create manifest with profiles from ProfileAttribute")]
+        public void CreateManifestWithProfiles()
         {
             // Arrange.
             const string sourceText = """
@@ -198,15 +231,11 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
-        #endregion
-
-        #region Actions
-
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
-        [Test]
-        public void Action_BasicInfo()
+        [TestCase(TestName = "Create manifest with action from ActionAttribute (defaults)")]
+        public void CreateWithActionAndDefaults()
         {
             // Arrange.
             const string sourceText = """
@@ -258,8 +287,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
-        [Test]
-        public void Action_FullInfo()
+        [TestCase(TestName = "Create manifest with action from ActionAttribute (full)")]
+        public void CreateWithActionFuller()
         {
             // Arrange.
             const string sourceText = """
@@ -325,8 +354,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
-        [Test]
-        public void Action_Multiple()
+        [TestCase(TestName = "Create manifest with actions")]
+        public void MultipleActions()
         {
             // Arrange.
             const string sourceText = """
@@ -391,8 +420,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts the <see cref="ActionAttribute.UUID"/> is valid.
         /// </summary>
-        [Test]
-        public void Action_Fail_InvalidUUIDCharacters()
+        [TestCase(TestName = "Error when action UUID contains invalid characters")]
+        public void ErrorWhenInvalidUUID()
         {
             // Arrange.
             const string sourceText = """
@@ -413,8 +442,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts the <see cref="ActionAttribute.StageImage"/> is defined.
         /// </summary>
-        [Test]
-        public void Action_Fail_StateImageNotDefined()
+        [TestCase(TestName = "Error when action does not define a StateImage")]
+        public void ErrorWhenNoStateImage()
         {
             // Arrange.
             const string sourceText = """
@@ -435,8 +464,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts the <see cref="ActionAttribute.StateImage"/> and <see cref="StateAttribute"/> aren't both defined on the class.
         /// </summary>
-        [Test]
-        public void Action_Fail_StatesDefinedMoreThanOnce()
+        [TestCase(TestName = "Error when action contains StateImage and StateAttribute")]
+        public void ErrorWhenStateImageAndStateAttribute()
         {
             // Arrange.
             const string sourceText = """
@@ -458,8 +487,8 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StateAttribute"/> isn't defined more than twice.
         /// </summary>
-        [Test]
-        public void Action_Fails_TooManyStates()
+        [TestCase(TestName = "Error when action has too many states")]
+        public void ErrorWhenTooManyStates()
         {
             // Arrange.
             const string sourceText = """
@@ -480,14 +509,10 @@ namespace StreamDeck.Generators.Tests
                 (9, 14, "SD104", "Action 'My Action' cannot have more than two states ('StateAttribute').", DiagnosticSeverity.Error));
         }
 
-        #endregion
-
-        #region States
-
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, and their <see cref="StateAttribute"/>.
         /// </summary>
-        [Test]
+        [TestCase(TestName = "Create manifest with action states (single)")]
         public void State_Single()
         {
             // Arrange.
@@ -562,7 +587,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, , and their <see cref="StateAttribute"/>.
         /// </summary>
-        [Test]
+        [TestCase(TestName = "Create manifest with action states (multiple)")]
         public void State_Multiple()
         {
             // Arrange.
@@ -659,8 +684,6 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
-        #endregion
-
         /// <summary>
         /// Verifies the specified <paramref name="expectedJson"/> is generated from <see cref="ManifestSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
@@ -687,6 +710,15 @@ namespace StreamDeck.Generators.Tests
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
         private static void VerifyFailure(string sourceText, params (int Row, int Column, string Id, string Description, DiagnosticSeverity Severity)[] expectedDiagnostics)
+            => VerifyFailure(sourceText, SourceGeneratorTests.DEFAULT_OPTIONS_PROVIDER, expectedDiagnostics);
+
+        /// <summary>
+        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="ManifestSourceGenerator"/> when parsing <paramref name="sourceText"/> .
+        /// </summary>
+        /// <param name="sourceText">The source text.</param>
+        /// <param name="optionsProvider">The <see cref="AnalyzerConfigOptionsProvider"/>.</param>
+        /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
+        private static void VerifyFailure(string sourceText, AnalyzerConfigOptionsProvider optionsProvider, params (int Row, int Column, string Id, string Description, DiagnosticSeverity Severity)[] expectedDiagnostics)
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -694,7 +726,8 @@ namespace StreamDeck.Generators.Tests
             // Act.
             var actualDiagnostics = SourceGeneratorTests.Run(
                 new ManifestSourceGenerator(fileSystem.Object),
-                sourceText);
+                sourceText,
+                optionsProvider);
 
             // Assert.
             fileSystem.Verify(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>()), Times.Never);
