@@ -3,6 +3,7 @@ namespace StreamDeck.Generators.Models
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck.Generators.Extensions;
 
     /// <summary>
@@ -13,11 +14,13 @@ namespace StreamDeck.Generators.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionClassDeclarationSyntax"/> struct.
         /// </summary>
-        /// <param name="symbol">The symbol.</param>
+        /// <param name="classDeclaration">The <see cref="ClassDeclarationSyntax"/>.</param>
+        /// <param name="symbol">The <see cref="ISymbol"/>.</param>
         /// <param name="actionAttribute">The action attribute.</param>
-        public ActionClassDeclarationSyntax(ISymbol symbol, AttributeData actionAttribute)
+        public ActionClassDeclarationSyntax(ClassDeclarationSyntax classDeclaration, ISymbol symbol, AttributeData actionAttribute)
         {
             this.Action = actionAttribute.CreateInstance<ActionAttribute>();
+            this.ClassDeclaration = classDeclaration;
             this.Locations = symbol.Locations;
             this.States = symbol.GetAttributes<StateAttribute>()
                 .Select(a => a.CreateInstance<StateAttribute>()).ToArray();
@@ -30,6 +33,11 @@ namespace StreamDeck.Generators.Models
         /// Gets the <see cref="ActionAttribute"/> that represents the action.
         /// </summary>
         public ActionAttribute Action { get; }
+
+        /// <summary>
+        /// Gets the <see cref="ClassDeclarationSyntax"/> that was used to construct this instance.
+        /// </summary>
+        public ClassDeclarationSyntax ClassDeclaration { get; }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="ActionAttribute.UUID"/> is valid according to <see href="https://developer.elgato.com/documentation/stream-deck/sdk/manifest/"/>.

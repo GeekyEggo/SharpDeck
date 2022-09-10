@@ -15,19 +15,45 @@ namespace StreamDeck.Generators.Tests
         /// </summary>
         [TestCase(TestName = "No actions")]
         public void NoActions()
-        {
-            // Arrange.
-            var fileSystem = new Mock<IFileSystem>();
+            => Verify(string.Empty);
 
-            // Act.
-            var (outputCompilation, _) = SourceGeneratorTests.Run(
-                new PluginSourceGenerator(fileSystem.Object),
-                string.Empty);
+        /// <summary>
+        /// Asserts that non-partial classes are ignored.
+        /// </summary>
+        [TestCase(TestName = "Non partial classes")]
+        public void NonPartialClasses()
+            => Verify("""
+                [StreamDeck.Action("My Action", "com.tests.example.myaction", "Images/Action")]
+                public class MyAction {}
+                """);
 
-            // Assert.
-            Assert.That(outputCompilation, Is.Not.Null);
-            Assert.That(outputCompilation.SyntaxTrees.Count(), Is.EqualTo(2));
-        }
+        /// <summary>
+        /// Asserts that a class with a property of "UUID" is ignored.
+        /// </summary>
+        [TestCase(TestName = "Property name already exists")]
+        public void PropertyExists()
+            => Verify("""
+                [StreamDeck.Action("My Action", "com.tests.example.myaction", "Images/Action")]
+                public partial class MyAction
+                {
+                    public const string UUID = "foo";
+                }
+                """);
+
+        /// <summary>
+        /// Asserts that a class with a method of "UUID" is ignored.
+        /// </summary>
+        [TestCase(TestName = "Method name already exists")]
+        public void MethodExists()
+            => Verify("""
+                [StreamDeck.Action("My Action", "com.tests.example.myaction", "Images/Action")]
+                public partial class MyAction
+                {
+                    public void UUID()
+                    {
+                    }
+                }
+                """);
 
         /// <summary>
         /// Asserts the UUID property is written when the class is on the global namespace.
@@ -42,7 +68,7 @@ namespace StreamDeck.Generators.Tests
                 """;
 
             // Act, assert.
-            VerifySuccess(
+            Verify(
                 sourceText,
                 (
                     HintName: "com.tests.example.myaction.0.g.cs",
@@ -77,7 +103,7 @@ namespace StreamDeck.Generators.Tests
                 """;
 
             // Act, assert.
-            VerifySuccess(
+            Verify(
                 sourceText,
                 (
                     HintName: "com.tests.example.myaction.0.g.cs",
@@ -118,7 +144,7 @@ namespace StreamDeck.Generators.Tests
                 """;
 
             // Act, assert.
-            VerifySuccess(
+            Verify(
                 sourceText,
                 (
                     HintName: "com.tests.example.myaction.0.g.cs",
@@ -171,7 +197,7 @@ namespace StreamDeck.Generators.Tests
                 """;
 
             // Act, assert.
-            VerifySuccess(
+            Verify(
                 sourceText,
                 (
                     HintName: "com.tests.example.myaction.0.g.cs",
@@ -210,7 +236,7 @@ namespace StreamDeck.Generators.Tests
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedSyntaxTrees">The expected syntax trees.</param>
-        private static void VerifySuccess(string sourceText, params (string HintName, string SourceText)[] expectedSyntaxTrees)
+        private static void Verify(string sourceText, params (string HintName, string SourceText)[] expectedSyntaxTrees)
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();

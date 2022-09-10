@@ -20,13 +20,13 @@ namespace StreamDeck.Generators
         /// <inheritdoc/>
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            if (context.Node is ClassDeclarationSyntax _)
+            if (context.Node is ClassDeclarationSyntax classDeclaration)
             {
                 var symbol = context.SemanticModel.GetDeclaredSymbol(context.Node);
                 if (symbol is not null
                     && symbol.TryGetAttribute<ActionAttribute>(out var attr) == true)
                 {
-                    this.ActionNodes.Add(new ActionClassDeclarationSyntax(symbol, attr));
+                    this.ActionNodes.Add(new ActionClassDeclarationSyntax(classDeclaration, symbol, attr));
                 }
             }
         }

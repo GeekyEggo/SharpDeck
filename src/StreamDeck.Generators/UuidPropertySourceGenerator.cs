@@ -2,6 +2,7 @@ namespace StreamDeck.Generators
 {
     using System.CodeDom.Compiler;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using StreamDeck.Generators.Models;
 
     /// <summary>
@@ -9,6 +10,11 @@ namespace StreamDeck.Generators
     /// </summary>
     internal class UuidPropertySourceGenerator
     {
+        /// <summary>
+        /// The UUID member name.
+        /// </summary>
+        private const string UUID_MEMBER_NAME = "UUID";
+
         /// <summary>
         /// Generates the const UUID property for all <paramref name="actions" />.
         /// </summary>
@@ -18,7 +24,7 @@ namespace StreamDeck.Generators
         {
             var hintNameIndexes = new Dictionary<string, int>();
 
-            foreach (var node in actions)
+            foreach (var node in actions.Where(CanAutoGenerate))
             {
                 using var writer = new IndentedTextWriter(new StringWriter());
 
@@ -52,6 +58,16 @@ namespace StreamDeck.Generators
         }
 
         /// <summary>
+        /// Determines whether the specified <paramref name="node"/> can have a UUID property generated.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <returns><c>true</c> when the property can be generated; otherwise <c>false</c>.</returns>
+        static bool CanAutoGenerate(ActionClassDeclarationSyntax node)
+            => node.ClassDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword))
+            && node.Symbol is INamedTypeSymbol typedSymbol
+            && !typedSymbol.MemberNames.Contains(UUID_MEMBER_NAME);
+
+        /// <summary>
         /// Generates the partial class that contains the <see cref="ActionAttribute.UUID"/>.
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
@@ -65,7 +81,7 @@ namespace StreamDeck.Generators
             writer.WriteLine("/// <summary>");
             writer.WriteLine("/// Gets the unique identifier of the action as defined by the <see cref=\"StreamDeck.ActionAttribute.UUID\"/>.");
             writer.WriteLine("/// </summary>");
-            writer.WriteLine($"public const string UUID = \"{node.Action.UUID}\";");
+            writer.WriteLine($"public const string {UUID_MEMBER_NAME} = \"{node.Action.UUID}\";");
 
             writer.Indent--;
             writer.WriteLine("}");
