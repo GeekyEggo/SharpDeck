@@ -30,7 +30,7 @@ namespace StreamDeck.Generators
             var actions = new Dictionary<string, ActionClassDeclarationSyntax>();
 
             using var writer = new IndentedTextWriter(new StringWriter());
-            writer.Indent = 2;
+            writer.Indent = 3;
 
             foreach (var node in nodes.Where(CanAutoGenerate))
             {
