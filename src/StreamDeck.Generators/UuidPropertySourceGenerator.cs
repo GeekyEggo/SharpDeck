@@ -16,6 +16,8 @@ namespace StreamDeck.Generators
         /// <param name="actions">The actions.</param>
         public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassDeclarationSyntax> actions)
         {
+            var hintNameIndexes = new Dictionary<string, int>();
+
             foreach (var node in actions)
             {
                 using var writer = new IndentedTextWriter(new StringWriter());
@@ -39,9 +41,11 @@ namespace StreamDeck.Generators
                     GenerateClassWithUuidProperty(writer, node);
                 }
 
+                hintNameIndexes[node.Action.UUID] = hintNameIndexes.TryGetValue(node.Action.UUID, out var index) ? ++index : 0;
+
                 // Add the source.
                 context.AddSource(
-                    hintName: $"{node.Action.UUID}.g",
+                    hintName: $"{node.Action.UUID}.{index}.g",
                     writer.InnerWriter.ToString());
             }
         }

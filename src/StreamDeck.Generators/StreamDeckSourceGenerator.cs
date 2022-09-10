@@ -50,6 +50,7 @@ namespace StreamDeck.Generators
 
             ManifestJsonGenerator.Generate(context, syntaxReceiver.ActionNodes, this.FileSystem);
             UuidPropertySourceGenerator.Generate(context, syntaxReceiver.ActionNodes);
+            MapActionsSourceGenerator.Generate(context, syntaxReceiver.ActionNodes);
         }
     }
 }
