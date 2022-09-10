@@ -1,13 +1,19 @@
 namespace StreamDeck.Routing
 {
     using System;
+    using System.Threading.Tasks;
     using StreamDeck.Events;
 
     /// <summary>
     /// Provides a <see cref="IEventDispatcher"/> that dispatches events non-blocking asynchronously.
     /// </summary>
-    internal class AsyncEventDispatcher : IEventDispatcher
+    internal sealed class AsyncEventDispatcher : IEventDispatcher, IAsyncDisposable
     {
+        /// <summary>
+        /// The active task count.
+        /// </summary>
+        private int _activeTaskCount = 0;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncEventDispatcher"/> class.
         /// </summary>
@@ -20,10 +26,31 @@ namespace StreamDeck.Routing
         /// </summary>
         private IStreamDeckConnection Connection { get; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is disposed.
+        /// </summary>
+        private bool IsDisposed { get; set; }
+
+        /// <inheritdoc/>
+        public async ValueTask DisposeAsync()
+        {
+            this.IsDisposed = true;
+            while (Interlocked.CompareExchange(ref this._activeTaskCount, 0, 0) != 0)
+            {
+                await Task.Delay(100);
+            }
+        }
+
         /// <inheritdoc/>
         public void Invoke<TArgs>(Func<TArgs, Task> @event, TArgs args)
             where TArgs : IActionContext
         {
+            if (this.IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(AsyncEventDispatcher));
+            }
+
+            Interlocked.Increment(ref this._activeTaskCount);
             Task.Factory.StartNew(async (state) =>
             {
                 var ctx = (AsyncExecutionContext<TArgs>)state!;
@@ -36,6 +63,10 @@ namespace StreamDeck.Routing
                 {
                     await this.Connection.ShowAlertAsync(ctx.Arguments.Context);
                     await this.Connection.LogMessageAsync(ex.Message);
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref this._activeTaskCount);
                 }
             },
             new AsyncExecutionContext<TArgs>(@event, args),
