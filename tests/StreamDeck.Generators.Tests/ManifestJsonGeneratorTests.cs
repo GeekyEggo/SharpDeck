@@ -15,7 +15,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StreamDeckSourceGenerator"/> generates a manifest file.
         /// </summary>
-        [TestCase(TestName = "Create manifest from ManifestAttribute (full)")]
+        [TestCase(TestName = "Create manifest from ManifestAttribute with full information")]
         public void CreateManifestFromAttribute()
         {
             // Arrange.
@@ -93,7 +93,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StreamDeckSourceGenerator"/> reads the assembly information, populating as much as possible.
         /// </summary>
-        [TestCase(TestName = "Create manifest from ManifestAttribute (defaults and Assembly)")]
+        [TestCase(TestName = "Create manifest from ManifestAttribute with defaults and Assembly information")]
         public void CreateManifestWithAssemblyInfo()
         {
             // Arrange.
@@ -234,7 +234,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
-        [TestCase(TestName = "Create manifest with action from ActionAttribute (defaults)")]
+        [TestCase(TestName = "Create manifest with action from ActionAttribute with defaults")]
         public void CreateWithActionAndDefaults()
         {
             // Arrange.
@@ -287,7 +287,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
-        [TestCase(TestName = "Create manifest with action from ActionAttribute (full)")]
+        [TestCase(TestName = "Create manifest with action from ActionAttribute with full information")]
         public void CreateWithActionFuller()
         {
             // Arrange.
@@ -512,7 +512,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, and their <see cref="StateAttribute"/>.
         /// </summary>
-        [TestCase(TestName = "Create manifest with action states (single)")]
+        [TestCase(TestName = "Create manifest with action with single state")]
         public void State_Single()
         {
             // Arrange.
@@ -587,7 +587,7 @@ namespace StreamDeck.Generators.Tests
         /// <summary>
         /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, , and their <see cref="StateAttribute"/>.
         /// </summary>
-        [TestCase(TestName = "Create manifest with action states (multiple)")]
+        [TestCase(TestName = "Create manifest with action states with multiple states")]
         public void State_Multiple()
         {
             // Arrange.
