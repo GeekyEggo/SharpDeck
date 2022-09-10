@@ -8,9 +8,9 @@ namespace StreamDeck.Generators
     using StreamDeck.Generators.Models;
 
     /// <summary>
-    /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relative to generating a manifest file.
+    /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relating to a Stream Deck plugin.
     /// </summary>
-    internal class ManifestSyntaxReceiver : ISyntaxContextReceiver
+    internal class StreamDeckSyntaxReceiver : ISyntaxContextReceiver
     {
         /// <summary>
         /// Gets the class nodes that represent Stream Deck actions.

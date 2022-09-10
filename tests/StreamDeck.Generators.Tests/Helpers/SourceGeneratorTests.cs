@@ -34,7 +34,7 @@ namespace StreamDeck.Generators.Tests.Helpers
 
             // Generate the references (credit https://github.com/andrewlock/StronglyTypedId/blob/6d36325be98e90779bd6bac6c9b99a6015fcec7d/test/StronglyTypedIds.Tests/TestHelpers.cs#L17).
             var references = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location) && a != typeof(ManifestSourceGenerator).Assembly)
+                .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location) && a != typeof(StreamDeckSourceGenerator).Assembly)
                 .Select(a => MetadataReference.CreateFromFile(a.Location))
                 .Concat(new[]
                 {

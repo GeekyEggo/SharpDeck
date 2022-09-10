@@ -7,13 +7,13 @@ namespace StreamDeck.Generators.Tests
     using StreamDeck.Generators.Tests.Helpers;
 
     /// <summary>
-    /// Provides assertions for <see cref="ManifestSourceGenerator"/>.
+    /// Provides assertions for <see cref="ManifestJsonGenerator"/>, via the <see cref="StreamDeckSourceGenerator"/>.
     /// </summary>
     [TestFixture]
-    public class ManifestSourceGeneratorTests
+    public class ManifestJsonGeneratorTests
     {
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> generates a manifest file.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> generates a manifest file.
         /// </summary>
         [TestCase(TestName = "Create manifest from ManifestAttribute (full)")]
         public void CreateManifestFromAttribute()
@@ -91,7 +91,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> reads the assembly information, populating as much as possible.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> reads the assembly information, populating as much as possible.
         /// </summary>
         [TestCase(TestName = "Create manifest from ManifestAttribute (defaults and Assembly)")]
         public void CreateManifestWithAssemblyInfo()
@@ -171,7 +171,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> adds profiles to the manifest.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> adds profiles to the manifest.
         /// </summary>
         [TestCase(TestName = "Create manifest with profiles from ProfileAttribute")]
         public void CreateManifestWithProfiles()
@@ -232,7 +232,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
         [TestCase(TestName = "Create manifest with action from ActionAttribute (defaults)")]
         public void CreateWithActionAndDefaults()
@@ -285,7 +285,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
         [TestCase(TestName = "Create manifest with action from ActionAttribute (full)")]
         public void CreateWithActionFuller()
@@ -352,7 +352,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
         /// </summary>
         [TestCase(TestName = "Create manifest with actions")]
         public void MultipleActions()
@@ -510,7 +510,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, and their <see cref="StateAttribute"/>.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, and their <see cref="StateAttribute"/>.
         /// </summary>
         [TestCase(TestName = "Create manifest with action states (single)")]
         public void State_Single()
@@ -585,7 +585,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="ManifestSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, , and their <see cref="StateAttribute"/>.
+        /// Asserts <see cref="StreamDeckSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>, , and their <see cref="StateAttribute"/>.
         /// </summary>
         [TestCase(TestName = "Create manifest with action states (multiple)")]
         public void State_Multiple()
@@ -685,7 +685,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Verifies the specified <paramref name="expectedJson"/> is generated from <see cref="ManifestSourceGenerator"/> when parsing <paramref name="sourceText"/> .
+        /// Verifies the specified <paramref name="expectedJson"/> is generated from <see cref="StreamDeckSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedJson">The expected JSON.</param>
@@ -696,7 +696,7 @@ namespace StreamDeck.Generators.Tests
 
             // Act.
             var resultDiagnostics = SourceGeneratorTests.Run(
-                new ManifestSourceGenerator(fileSystem.Object),
+                new StreamDeckSourceGenerator(fileSystem.Object),
                 sourceText);
 
             // Assert.
@@ -705,7 +705,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="ManifestSourceGenerator"/> when parsing <paramref name="sourceText"/> .
+        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="StreamDeckSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
@@ -713,7 +713,7 @@ namespace StreamDeck.Generators.Tests
             => VerifyFailure(sourceText, SourceGeneratorTests.DEFAULT_OPTIONS_PROVIDER, expectedDiagnostics);
 
         /// <summary>
-        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="ManifestSourceGenerator"/> when parsing <paramref name="sourceText"/> .
+        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="StreamDeckSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="optionsProvider">The <see cref="AnalyzerConfigOptionsProvider"/>.</param>
@@ -725,7 +725,7 @@ namespace StreamDeck.Generators.Tests
 
             // Act.
             var actualDiagnostics = SourceGeneratorTests.Run(
-                new ManifestSourceGenerator(fileSystem.Object),
+                new StreamDeckSourceGenerator(fileSystem.Object),
                 sourceText,
                 optionsProvider);
 

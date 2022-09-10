@@ -1,6 +1,7 @@
 namespace StreamDeck.Generators.Models
 {
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
 
@@ -21,12 +22,19 @@ namespace StreamDeck.Generators.Models
             this.States = symbol.GetAttributes<StateAttribute>()
                 .Select(a => a.CreateInstance<StateAttribute>()).ToArray();
             this.Symbol = symbol;
+
+            this.IsUuidValid = !Regex.IsMatch(this.Action.UUID, @"[^a-z0-9\-\.]+");
         }
 
         /// <summary>
         /// Gets the <see cref="ActionAttribute"/> that represents the action.
         /// </summary>
         public ActionAttribute Action { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="ActionAttribute.UUID"/> is valid according to <see href="https://developer.elgato.com/documentation/stream-deck/sdk/manifest/"/>.
+        /// </summary>
+        public bool IsUuidValid { get; }
 
         /// <summary>
         /// Gets the locations.
