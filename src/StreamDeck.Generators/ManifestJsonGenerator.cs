@@ -67,7 +67,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Gets the valid <see cref="ActionAttribute"/> from the <paramref name="nodes"/>.
         /// </summary>
-        /// <param name="nodes">The collection of <see cref="ActionClassDeclarationSyntax"/> nodes discovered by the <see cref="StreamDeckSyntaxReceiver"/>.</param>
+        /// <param name="nodes">The collection of <see cref="ActionClassDeclarationSyntax"/> nodes discovered by the <see cref="PluginSyntaxReceiver"/>.</param>
         /// <param name="diagnosticReporter">The outer diagnostic reporter.</param>
         /// <returns>The valid actions.</returns>
         private static IEnumerable<ActionAttribute> GetValidActions(IReadOnlyCollection<ActionClassDeclarationSyntax> nodes, DiagnosticReporter diagnosticReporter)

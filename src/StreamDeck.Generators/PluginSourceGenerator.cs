@@ -7,19 +7,19 @@ namespace StreamDeck.Generators
     /// Provides generation of files relating to the Stream Deck plugin.
     /// </summary>
     [Generator]
-    public class StreamDeckSourceGenerator : ISourceGenerator
+    public class PluginSourceGenerator : ISourceGenerator
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckSourceGenerator"/> class.
+        /// Initializes a new instance of the <see cref="PluginSourceGenerator"/> class.
         /// </summary>
-        public StreamDeckSourceGenerator()
+        public PluginSourceGenerator()
             : this(new FileSystem()) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StreamDeckSourceGenerator"/> class.
+        /// Initializes a new instance of the <see cref="PluginSourceGenerator"/> class.
         /// </summary>
         /// <param name="fileSystem">The file system.</param>
-        internal StreamDeckSourceGenerator(IFileSystem fileSystem)
+        internal PluginSourceGenerator(IFileSystem fileSystem)
             => this.FileSystem = fileSystem;
 
         /// <summary>
@@ -29,13 +29,13 @@ namespace StreamDeck.Generators
 
         /// <inheritdoc/>
         public void Initialize(GeneratorInitializationContext context)
-            => context.RegisterForSyntaxNotifications(() => new StreamDeckSyntaxReceiver());
+            => context.RegisterForSyntaxNotifications(() => new PluginSyntaxReceiver());
 
         /// <inheritdoc/>
         public void Execute(GeneratorExecutionContext context)
         {
             // Should only generate the manifest file if we have a receiver.
-            if (context.SyntaxContextReceiver is not StreamDeckSyntaxReceiver syntaxReceiver
+            if (context.SyntaxContextReceiver is not PluginSyntaxReceiver syntaxReceiver
                 || context.CancellationToken.IsCancellationRequested)
             {
                 return;

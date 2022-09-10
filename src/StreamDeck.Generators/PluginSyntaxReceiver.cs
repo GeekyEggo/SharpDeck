@@ -10,7 +10,7 @@ namespace StreamDeck.Generators
     /// <summary>
     /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relating to a Stream Deck plugin.
     /// </summary>
-    internal class StreamDeckSyntaxReceiver : ISyntaxContextReceiver
+    internal class PluginSyntaxReceiver : ISyntaxContextReceiver
     {
         /// <summary>
         /// Gets the class nodes that represent Stream Deck actions.

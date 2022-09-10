@@ -26,15 +26,15 @@ namespace StreamDeck.Generators.Tests.Helpers
         /// <param name="generator">The generator.</param>
         /// <param name="sourceText">The source text.</param>
         /// <param name="optionsProvider">The optional <see cref="AnalyzerConfigOptionsProvider"/>.</param>
-        /// <returns>The diagnostics reported during execution of the <see cref="ISourceGenerator"/>.</returns>
-        internal static ImmutableArray<Diagnostic> Run(ISourceGenerator generator, string sourceText, AnalyzerConfigOptionsProvider? optionsProvider = null)
+        /// <returns>The output compilation and diagnostics reported during execution of the <see cref="ISourceGenerator"/>.</returns>
+        internal static (Compilation? OutputCompilation, ImmutableArray<Diagnostic> Diagnostics) Run(ISourceGenerator generator, string sourceText, AnalyzerConfigOptionsProvider? optionsProvider = null)
         {
             // Parse the provided source text into a C# syntax tree.
             var syntaxTrees = new[] { CSharpSyntaxTree.ParseText(sourceText) };
 
             // Generate the references (credit https://github.com/andrewlock/StronglyTypedId/blob/6d36325be98e90779bd6bac6c9b99a6015fcec7d/test/StronglyTypedIds.Tests/TestHelpers.cs#L17).
             var references = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location) && a != typeof(StreamDeckSourceGenerator).Assembly)
+                .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location) && a != typeof(PluginSourceGenerator).Assembly)
                 .Select(a => MetadataReference.CreateFromFile(a.Location))
                 .Concat(new[]
                 {
@@ -55,8 +55,8 @@ namespace StreamDeck.Generators.Tests.Helpers
                 optionsProvider: optionsProvider ?? DEFAULT_OPTIONS_PROVIDER);
 
             // Run the driver, and return the diagnostics.
-            driver.RunGeneratorsAndUpdateCompilation(compilation, out var _, out var diagnostics);
-            return diagnostics;
+            driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
+            return (outputCompilation, diagnostics);
         }
     }
 }
