@@ -78,6 +78,21 @@ namespace StreamDeck.Routing
             => this.Routes.Add(uuid, typeof(TAction));
 
         /// <summary>
+        /// Maps the specified action <paramref name="uuid"/> to the <paramref name="actionType"/> type, allowing for <see cref="IStreamDeckConnection"/> events to be routed to an action instance.
+        /// </summary>
+        /// <param name="uuid">The the unique identifier of the action; see <see href="https://developer.elgato.com/documentation/stream-deck/sdk/manifest/#actions"/>.</param>
+        /// <param name="actionType">The type of the action to route events to.</param>
+        public void MapAction(string uuid, Type actionType)
+        {
+            if (!typeof(StreamDeckAction).IsAssignableFrom(actionType))
+            {
+                throw new ArgumentException($"The type of the action must be inherited from '{nameof(StreamDeckAction)}'.", nameof(actionType));
+            }
+
+            this.Routes.Add(uuid, actionType);
+        }
+
+        /// <summary>
         /// Handles the <see cref="IStreamDeckConnection.WillAppear"/>, and attempts to route the event to an action.
         /// </summary>
         /// <param name="sender">The sender.</param>
