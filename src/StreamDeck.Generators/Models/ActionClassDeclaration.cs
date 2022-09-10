@@ -20,6 +20,7 @@ namespace StreamDeck.Generators.Models
             this.Locations = symbol.Locations;
             this.States = symbol.GetAttributes<StateAttribute>()
                 .Select(a => a.CreateInstance<StateAttribute>()).ToArray();
+            this.Symbol = symbol;
         }
 
         /// <summary>
@@ -36,5 +37,10 @@ namespace StreamDeck.Generators.Models
         /// Gets the collection of <see cref="StateAttribute"/> associated with the action.
         /// </summary>
         public StateAttribute[] States { get; }
+
+        /// <summary>
+        /// Gets the symbol that represents the class declaration node.
+        /// </summary>
+        public ISymbol Symbol { get; }
     }
 }
