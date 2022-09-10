@@ -42,34 +42,6 @@ namespace StreamDeck.Extensions.Hosting
         }
 
         /// <summary>
-        /// Maps actions discovered in <paramref name="assemblies"/>; actions must inherit from <see cref="StreamDeckAction"/>, and be decorated with <see cref="ActionAttribute"/>.
-        /// </summary>
-        /// <param name="host">The <see cref="IHost"/>.</param>
-        /// <param name="assemblies">The assemblies to discover actions in.</param>
-        /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
-        public static IHost MapActions(this IHost host, params Assembly[] assemblies)
-        {
-            var actionRouter = host.Services
-                .GetRequiredService<ActionRouter>();
-
-            var actionTypes = assemblies
-                .Concat(new[] { Assembly.GetEntryAssembly() })
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(StreamDeckAction).IsAssignableFrom(t));
-
-            foreach (var type in actionTypes)
-            {
-                var actionAttr = type.GetCustomAttribute<ActionAttribute>();
-                if (actionAttr != null)
-                {
-                    actionRouter.MapAction(actionAttr.UUID, type);
-                }
-            }
-
-            return host;
-        }
-
-        /// <summary>
         /// Applies the delegate to the <see cref="IStreamDeckConnection"/> before connecting to the Stream Deck.
         /// </summary>
         /// <param name="host">The <see cref="IHost"/> to configure.</param>
