@@ -12,11 +12,10 @@
             ],
             "SupportedInMultiActions": false,
             "Tooltip": "Increment the count by one.",
-            "UUID": "com.geekyeggo.counter-example.increment",
-            "VisibleInActionsList": true
+            "UUID": "com.geekyeggo.counter.increment"
         }
     ],
-    "Author": "Counter",
+    "Author": "GeekyEggo",
     "Category": "Counter",
     "CategoryIcon": "Images/CategoryIcon",
     "CodePath": "Counter.exe",

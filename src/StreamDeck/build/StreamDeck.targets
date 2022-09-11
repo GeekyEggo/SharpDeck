@@ -50,11 +50,11 @@
             Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
         <PropertyGroup>
             <InvalidUUIDCharsRegex>[^A-Za-z0-9\-\.]+</InvalidUUIDCharsRegex>
-            <Company Condition="'$(Company)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Company)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Company>
-            <Company Condition="'$(Company)' == ''">user</Company>
-            <Product Condition="'$(Product)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Product)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Product>
-            <Product Condition="'$(Product)' == ''">plugin</Product>
-            <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(Company).$(Product).sdPlugin\</OutputPath>
+            <_Company Condition="'$(Company)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Company)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_Company>
+            <_Company Condition="'$(Company)' == '' Or $(_Company) == ''">user</_Company>
+            <_Product Condition="'$(Product)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Product)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_Product>
+            <_Product Condition="'$(Product)' == '' Or $(_Product) == ''">plugin</_Product>
+            <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(_Company).$(_Product).sdPlugin\</OutputPath>
             <OutDir>$(OutputPath)</OutDir>
             <TargetDir>$(OutputPath)</TargetDir>
             <ProjectDepsFilePath>$(OutputPath)$(ProjectDepsFileName)</ProjectDepsFilePath>

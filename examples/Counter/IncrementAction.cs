@@ -5,7 +5,7 @@ namespace Counter
     /// </summary>
     [Action(
         name: "Counter",
-        uuid: "com.geekyeggo.counter-example.increment",
+        uuid: "com.geekyeggo.counter.increment",
         icon: "Images/Action",
         SupportedInMultiActions = false,
         Tooltip = "Increment the count by one.")]

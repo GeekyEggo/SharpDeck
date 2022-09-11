@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,13 +7,14 @@
     <LangVersion>latest</LangVersion>
     <Description>A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.</Description>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Author>GeekyEggo</Author>
-    <Name>Counter</Name>
+    <Company>GeekyEggo</Company>
+    <Product>Counter</Product>
+    <Version>1.0.0</Version>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamDeck" Version="0.6.0" />
+    <PackageReference Include="StreamDeck" Version="0.13.0" />
   </ItemGroup>
 
   <ItemGroup>
