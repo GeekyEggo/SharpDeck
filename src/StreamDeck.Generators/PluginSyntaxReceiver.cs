@@ -16,16 +16,26 @@ namespace StreamDeck.Generators
         /// </summary>
         public List<ActionClassContext> Actions { get; } = new List<ActionClassContext>();
 
+        /// <summary>
+        /// Gets the <see cref="AttributeSyntax"/> that represents the <see cref="StreamDeck.ManifestAttribute"/>.
+        /// </summary>
+        public AttributeSyntax? ManifestAttribute { get; private set; }
+
         /// <inheritdoc/>
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            if (context.Node is ClassDeclarationSyntax node
+            if (context.Node is AttributeSyntax attrNode
+                && context.SemanticModel.GetTypeInfo(context.Node).Type?.ToDisplayString(SymbolDisplayFormats.FullName) == "StreamDeck.ManifestAttribute")
+            {
+                this.ManifestAttribute = attrNode;
+            }
+            else if (context.Node is ClassDeclarationSyntax classNode
                 && context.SemanticModel.GetDeclaredSymbol(context.Node) is INamedTypeSymbol symbol)
             {
-                var attrs = node.GetAttributes(symbol);
+                var attrs = classNode.GetAttributes(symbol);
                 if (attrs.GetAttributesOfType<ActionAttribute>().ToArray() is { Length: > 0 } actionAttrs)
                 {
-                    var actionClassContext = new ActionClassContext(node, symbol, attrs[0]);
+                    var actionClassContext = new ActionClassContext(classNode, symbol, attrs[0]);
                     actionClassContext.StateAttributes.AddRange(attrs.GetAttributesOfType<StateAttribute>());
 
                     this.Actions.Add(actionClassContext);

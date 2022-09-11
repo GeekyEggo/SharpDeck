@@ -12,6 +12,63 @@ namespace StreamDeck.Generators.Tests
     [TestFixture]
     public class ManifestJsonGeneratorTests
     {
+        [Test]
+        public void ManifestReadsAssembly()
+        {
+            const string sourceText = """
+                using StreamDeck;
+                using System.Reflection;
+
+                [assembly: AssemblyCompany("Bob Smith")]
+                [assembly: AssemblyDescription("Hello world, this is a test")]
+                [assembly: AssemblyVersion("12.34.56")]
+                [assembly: Manifest(Icon = "Plugin.png")]]
+
+                [ActionAttribute("Action One", "com.tests.example.one", "Action.png", StateImage = "State.png")]
+                public class ActionOne
+                {
+                }
+                """;
+
+            const string json = $$"""
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Action.png",
+                            "Name": "Action One",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.tests.example.one"
+                        }
+                    ],
+                    "Author": "Bob Smith",
+                    "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
+                    "Description": "Hello world, this is a test",
+                    "Icon": "Plugin.png",
+                    "Name": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "12.34.56"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(sourceText, json);
+        }
+
+        #region "TODO... again"
+
         /// <summary>
         /// Asserts <see cref="PluginSourceGenerator"/> generates a manifest file.
         /// </summary>
@@ -684,6 +741,8 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
+        #endregion
+
         /// <summary>
         /// Verifies the specified <paramref name="expectedJson"/> is generated from <see cref="PluginSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
@@ -709,7 +768,7 @@ namespace StreamDeck.Generators.Tests
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
-        private static void VerifyFailure(string sourceText, params (int Row, int Column, string Id, string Description, DiagnosticSeverity Severity)[] expectedDiagnostics)
+        private static void VerifyFailure(string sourceText, params ExpectedDiagnostic[] expectedDiagnostics)
             => VerifyFailure(sourceText, SourceGeneratorTests.DEFAULT_OPTIONS_PROVIDER, expectedDiagnostics);
 
         /// <summary>
@@ -718,7 +777,7 @@ namespace StreamDeck.Generators.Tests
         /// <param name="sourceText">The source text.</param>
         /// <param name="optionsProvider">The <see cref="AnalyzerConfigOptionsProvider"/>.</param>
         /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
-        private static void VerifyFailure(string sourceText, AnalyzerConfigOptionsProvider optionsProvider, params (int Row, int Column, string Id, string Description, DiagnosticSeverity Severity)[] expectedDiagnostics)
+        private static void VerifyFailure(string sourceText, AnalyzerConfigOptionsProvider optionsProvider, params ExpectedDiagnostic[] expectedDiagnostics)
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -731,13 +790,7 @@ namespace StreamDeck.Generators.Tests
 
             // Assert.
             fileSystem.Verify(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>()), Times.Never);
-
-            Assert.That(actualDiagnostics.Count, Is.EqualTo(expectedDiagnostics.Length));
-            for (var i = 0; i < expectedDiagnostics.Length; i++)
-            {
-                var (Row, Column, Id, Description, Severity) = expectedDiagnostics[i];
-                Assert.That(actualDiagnostics[i].ToString(), Is.EqualTo($"({Row},{Column}): {Severity.ToString().ToLower()} {Id}: {Description}"));
-            }
+            DiagnosticAssert.AreEqual(actualDiagnostics, expectedDiagnostics);
         }
     }
 }

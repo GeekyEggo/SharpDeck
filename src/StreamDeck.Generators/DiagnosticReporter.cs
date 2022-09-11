@@ -1,6 +1,8 @@
 namespace StreamDeck.Generators
 {
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Provides methods for reporting and monitoring diagnostics reported to a <see cref="GeneratorExecutionContext"/>.
@@ -21,14 +23,14 @@ namespace StreamDeck.Generators
         /// Initializes a new instance of the <see cref="DiagnosticReporter"/> struct.
         /// </summary>
         /// <param name="context">The context.</param>
-        public DiagnosticReporter(GeneratorExecutionContext context)
+        internal DiagnosticReporter(GeneratorExecutionContext context)
             => this.Context = context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DiagnosticReporter"/> struct.
         /// </summary>
         /// <param name="innerReporter">The inner reporter; when an error is reported, it is propagated to this reporter.</param>
-        public DiagnosticReporter(DiagnosticReporter innerReporter)
+        internal DiagnosticReporter(DiagnosticReporter innerReporter)
         {
             this.Context = innerReporter.Context;
             this.InnerReporter = innerReporter;
@@ -37,7 +39,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Gets a value indicating whether this instance has reported a diagnostic of type <see cref="DiagnosticSeverity.Error"/>.
         /// </summary>
-        public bool HasErrorDiagnostic
+        internal bool HasErrorDiagnostic
         {
             get => this._hasErrorDiagnostic;
             private set
@@ -64,7 +66,7 @@ namespace StreamDeck.Generators
         /// Reports the project directory could not be found when attempting to generate the manifest.json file.
         /// </summary>
         /// <param name="locations">The locations associated with the assembly that attempted to generate the manifest.json file..</param>
-        public void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
+        internal void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
             => this.ReportError(
                 "SD001",
                 "Generating a manifest.json requires a project directory",
@@ -72,10 +74,61 @@ namespace StreamDeck.Generators
                 locations);
 
         /// <summary>
+        /// Reports the <see cref="ManifestAttribute.Author"/> is <c>null</c> or empty.
+        /// </summary>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestRequiresAuthor(AttributeSyntax manifestNode)
+            => this.ReportWarning(
+                "SD002",
+                "Author is required",
+                "The manifest.json file requires an author; consider specifying the '{0}' on the attribute, or adding '{1}'.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
+                nameof(ManifestAttribute.Author),
+                nameof(System.Reflection.AssemblyCompanyAttribute));
+
+        /// <summary>
+        /// Reports the <see cref="ManifestAttribute.Description"/> is <c>null</c> or empty.
+        /// </summary>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestRequiresDescription(AttributeSyntax manifestNode)
+            => this.ReportWarning(
+                "SD003",
+                "Description is required",
+                "The manifest.json file requires a description; consider specifying the '{0}' on the attribute, or adding '{1}'.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
+                nameof(ManifestAttribute.Description),
+                nameof(System.Reflection.AssemblyDescriptionAttribute));
+
+        /// <summary>
+        /// Reports the <see cref="ManifestAttribute.Icon"/> is <c>null</c> or empty.
+        /// </summary>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestRequiresIcon(AttributeSyntax manifestNode)
+            => this.ReportWarning(
+                "SD003",
+                "Icon is required",
+                "The manifest.json file requires an icon; consider specifying the '{0}' on the attribute.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
+                nameof(ManifestAttribute.Icon));
+
+        /// <summary>
+        /// Reports the <see cref="Models.Manifest.Actions"/> contains no actions.
+        /// </summary>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestRequiresActions(AttributeSyntax manifestNode)
+            => this.ReportError(
+                "SD005",
+                "Actions are required",
+                "No actions were found when generating the manifest.json file; consider adding '{0}' to a class definition.",
+                new[] { manifestNode.GetLocation() },
+                nameof(ActionAttribute),
+                nameof(StateAttribute));
+
+        /// <summary>
         /// Reports the <see cref="ActionAttribute.UUID"/> is invalid.
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
-        public void ReportInvalidActionUUID(ActionClassContext context)
+        internal void ReportInvalidActionUUID(ActionClassContext context)
             => this.ReportError(
                 "SD101",
                 "Action identifiers must be valid uniform type identifiers (UTI)",
@@ -87,7 +140,7 @@ namespace StreamDeck.Generators
         /// Reports the <see cref="ActionAttribute.StateImage"/> is not defined on the <see cref="ActionAttribute"/>.
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
-        public void ReportStateImageNotDefined(ActionClassContext context)
+        internal void ReportStateImageNotDefined(ActionClassContext context)
             => this.ReportError(
                 "SD102",
                 "State image must be defined",
@@ -99,7 +152,7 @@ namespace StreamDeck.Generators
         /// Reports the action contains both an <see cref="ActionAttribute.StateImage"/> and one or more <see cref="StateAttribute"/>.
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
-        public void ReportStateImageDefinedMoreThanOnce(ActionClassContext context)
+        internal void ReportStateImageDefinedMoreThanOnce(ActionClassContext context)
             => this.ReportError(
                 "SD103",
                 "State must not be defined more than once",
@@ -111,7 +164,7 @@ namespace StreamDeck.Generators
         /// Reports the action has more than two <see cref="StateAttribute"/>.
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
-        public void ReportActionHasTooManyStates(ActionClassContext context)
+        internal void ReportActionHasTooManyStates(ActionClassContext context)
             => this.ReportError(
                 "SD104",
                 "Actions cannot have more than two states",

@@ -1,8 +1,10 @@
 namespace StreamDeck.Generators
 {
+    using System.Reflection;
     using System.Text;
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.IO;
     using StreamDeck.Generators.Models;
@@ -17,12 +19,14 @@ namespace StreamDeck.Generators
         /// Generates the manifest.json file for the specified <paramref name="context"/> and <paramref name="actions"/>.
         /// </summary>
         /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
         /// <param name="actions">The actions to write to the manifest.</param>
         /// <param name="fileSystem">The file system.</param>
-        public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassContext> actions, IFileSystem fileSystem)
+        public static void Generate(GeneratorExecutionContext context, AttributeSyntax? manifestNode, IReadOnlyCollection<ActionClassContext> actions, IFileSystem fileSystem)
         {
             // Determine if the assembly requires manifest generation.
-            if (!context.Compilation.Assembly.TryGetAttribute<ManifestAttribute>(out var manifestAttr))
+            if (manifestNode == null
+                || !context.Compilation.Assembly.TryGetAttribute<ManifestAttribute>(out var manifestAttributeData))
             {
                 return;
             }
@@ -36,12 +40,21 @@ namespace StreamDeck.Generators
             }
 
             // Construct the manifest, and add the actions and profiles associated with it.
-            var manifest = new Manifest(context.Compilation.Assembly);
-            manifestAttr.Populate(manifest);
+            var manifest = new Manifest
+            {
+                Author = context.Compilation.Assembly.GetAttributeValueOrDefault<AssemblyCompanyAttribute, string>() ?? "",
+                CodePath = $"{context.Compilation.Assembly.Identity.Name}.exe",
+                Description = context.Compilation.Assembly.GetAttributeValueOrDefault<AssemblyDescriptionAttribute, string>() ?? "",
+                Name = context.Compilation.Assembly.Identity.Name,
+                Version = context.Compilation.Assembly.Identity.Version.ToString(3),
+            };
+
+            manifestAttributeData.Populate(manifest);
             manifest.Actions.AddRange(GetValidActions(actions, diagnostics));
             manifest.Profiles.AddRange(GetProfiles(context));
 
             // Only write the manifest if everything is okay.
+            Validate(manifest, manifestNode, diagnostics);
             if (!diagnostics.HasErrorDiagnostic)
             {
                 fileSystem.WriteAllText(
@@ -69,13 +82,13 @@ namespace StreamDeck.Generators
         /// Gets the valid <see cref="ActionAttribute"/> from the <paramref name="nodes"/>.
         /// </summary>
         /// <param name="nodes">The collection of <see cref="ActionClassDeclarationSyntax"/> nodes discovered by the <see cref="PluginSyntaxReceiver"/>.</param>
-        /// <param name="diagnosticReporter">The outer diagnostic reporter.</param>
+        /// <param name="outerDiagnostics">The outer diagnostic reporter.</param>
         /// <returns>The valid actions.</returns>
-        private static IEnumerable<ActionAttribute> GetValidActions(IReadOnlyCollection<ActionClassContext> nodes, DiagnosticReporter diagnosticReporter)
+        private static IEnumerable<ActionAttribute> GetValidActions(IReadOnlyCollection<ActionClassContext> nodes, DiagnosticReporter outerDiagnostics)
         {
             foreach (var node in nodes)
             {
-                var diagnostics = new DiagnosticReporter(diagnosticReporter);
+                var diagnostics = new DiagnosticReporter(outerDiagnostics);
 
                 var action = node.ActionAttribute.As<ActionAttribute>();
                 var states = node.StateAttributes.Select(s => s.As<StateAttribute>()).ToArray();
@@ -116,6 +129,38 @@ namespace StreamDeck.Generators
 
                     yield return action;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Validates the specified <paramref name="manifest"/> and reports all diagnostics to <paramref name="diagnostics"/>.
+        /// </summary>
+        /// <param name="manifest">The manifest to validate.</param>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        /// <param name="diagnostics">The diagnostics reporter.</param>
+        private static void Validate(Manifest manifest, AttributeSyntax manifestNode, DiagnosticReporter diagnostics)
+        {
+            if (string.IsNullOrWhiteSpace(manifest.Author))
+            {
+                manifest.Author = string.Empty; // Ensure a value is always serialized.
+                diagnostics.ReportManifestRequiresAuthor(manifestNode);
+            }
+
+            if (string.IsNullOrWhiteSpace(manifest.Description))
+            {
+                manifest.Description = string.Empty; // Ensure a value is always serialized.
+                diagnostics.ReportManifestRequiresDescription(manifestNode);
+            }
+
+            if (string.IsNullOrWhiteSpace(manifest.Icon))
+            {
+                manifest.Icon = string.Empty; // Ensure a value is always serialized.
+                diagnostics.ReportManifestRequiresIcon(manifestNode);
+            }
+
+            if (manifest.Actions.Count == 0)
+            {
+                diagnostics.ReportManifestRequiresActions(manifestNode);
             }
         }
     }
