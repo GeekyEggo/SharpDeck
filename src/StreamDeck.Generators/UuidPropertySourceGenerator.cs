@@ -3,7 +3,6 @@ namespace StreamDeck.Generators
     using System.CodeDom.Compiler;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-    using StreamDeck.Generators.Models;
 
     /// <summary>
     /// Generates the const UUID property for classes with <see cref="ActionAttribute"/>.
@@ -18,13 +17,13 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Generates the const UUID property for all <paramref name="actions" />.
         /// </summary>
-        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
-        /// <param name="actions">The actions.</param>
-        public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassDeclarationSyntax> actions)
+        /// <param name="context">The <see cref="GeneratorExecutionContext" />.</param>
+        /// <param name="nodes">The collection of <see cref="ActionClassContext"/> that represent the actions.</param>
+        public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassContext> nodes)
         {
             var hintNameIndexes = new Dictionary<string, int>();
 
-            foreach (var node in actions.Where(CanAutoGenerate))
+            foreach (var node in nodes.Where(CanAutoGenerate))
             {
                 using var writer = new IndentedTextWriter(new StringWriter());
 
@@ -34,7 +33,7 @@ namespace StreamDeck.Generators
                 // When we aren't on the global namespace, we should scope the class to the specified namespace
                 if (!node.Symbol.ContainingNamespace.IsGlobalNamespace)
                 {
-                    writer.WriteLine($"namespace {node.Symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormats.Namespace)}");
+                    writer.WriteLine($"namespace {node.Symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormats.FullName)}");
                     writer.WriteLine("{");
                     writer.Indent++;
 
@@ -48,11 +47,11 @@ namespace StreamDeck.Generators
                     GenerateClassWithUuidProperty(writer, node);
                 }
 
-                hintNameIndexes[node.Action.UUID] = hintNameIndexes.TryGetValue(node.Action.UUID, out var index) ? ++index : 0;
+                hintNameIndexes[node.UUID!] = hintNameIndexes.TryGetValue(node.UUID!, out var index) ? ++index : 0;
 
                 // Add the source.
                 context.AddSource(
-                    hintName: $"{node.Action.UUID}.{index}.g",
+                    hintName: $"{node.UUID}.{index}.g",
                     writer.InnerWriter.ToString());
             }
         }
@@ -62,8 +61,9 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="node">The node.</param>
         /// <returns><c>true</c> when the property can be generated; otherwise <c>false</c>.</returns>
-        static bool CanAutoGenerate(ActionClassDeclarationSyntax node)
-            => node.ClassDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword))
+        static bool CanAutoGenerate(ActionClassContext node)
+            => node.UUID != null
+            && node.IsPartial
             && node.Symbol is INamedTypeSymbol typedSymbol
             && !typedSymbol.MemberNames.Contains(UUID_MEMBER_NAME);
 
@@ -72,7 +72,7 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
         /// <param name="node">The node containing the class action information.</param>
-        static void GenerateClassWithUuidProperty(IndentedTextWriter writer, ActionClassDeclarationSyntax node)
+        static void GenerateClassWithUuidProperty(IndentedTextWriter writer, ActionClassContext node)
         {
             writer.WriteLine($"partial class {node.Symbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}");
             writer.WriteLine("{");
@@ -81,7 +81,7 @@ namespace StreamDeck.Generators
             writer.WriteLine("/// <summary>");
             writer.WriteLine("/// Gets the unique identifier of the action as defined by the <see cref=\"StreamDeck.ActionAttribute.UUID\"/>.");
             writer.WriteLine("/// </summary>");
-            writer.WriteLine($"public const string {UUID_MEMBER_NAME} = \"{node.Action.UUID}\";");
+            writer.WriteLine($"public const string {UUID_MEMBER_NAME} = \"{node.UUID}\";");
 
             writer.Indent--;
             writer.WriteLine("}");

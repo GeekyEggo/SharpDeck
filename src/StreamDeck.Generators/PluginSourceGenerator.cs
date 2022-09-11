@@ -48,9 +48,9 @@ namespace StreamDeck.Generators
             }
 #endif
 
-            ManifestJsonGenerator.Generate(context, syntaxReceiver.ActionNodes, this.FileSystem);
-            UuidPropertySourceGenerator.Generate(context, syntaxReceiver.ActionNodes);
-            HostExtensionsSourceGenerator.Generate(context, syntaxReceiver.ActionNodes);
+            ManifestJsonGenerator.Generate(context, syntaxReceiver.Actions, this.FileSystem);
+            UuidPropertySourceGenerator.Generate(context, syntaxReceiver.Actions);
+            HostExtensionsSourceGenerator.Generate(context, syntaxReceiver.Actions);
         }
     }
 }

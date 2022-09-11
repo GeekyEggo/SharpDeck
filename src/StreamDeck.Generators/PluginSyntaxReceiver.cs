@@ -1,11 +1,10 @@
 namespace StreamDeck.Generators
 {
-    using System.Collections.ObjectModel;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck;
     using StreamDeck.Generators.Extensions;
-    using StreamDeck.Generators.Models;
 
     /// <summary>
     /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relating to a Stream Deck plugin.
@@ -13,20 +12,23 @@ namespace StreamDeck.Generators
     internal class PluginSyntaxReceiver : ISyntaxContextReceiver
     {
         /// <summary>
-        /// Gets the class nodes that represent Stream Deck actions.
+        /// Gets the Stream Deck actions.
         /// </summary>
-        public Collection<ActionClassDeclarationSyntax> ActionNodes { get; } = new Collection<ActionClassDeclarationSyntax>();
+        public List<ActionClassContext> Actions { get; } = new List<ActionClassContext>();
 
         /// <inheritdoc/>
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            if (context.Node is ClassDeclarationSyntax classDeclaration)
+            if (context.Node is ClassDeclarationSyntax node
+                && context.SemanticModel.GetDeclaredSymbol(context.Node) is INamedTypeSymbol symbol)
             {
-                var symbol = context.SemanticModel.GetDeclaredSymbol(context.Node);
-                if (symbol is not null
-                    && symbol.TryGetAttribute<ActionAttribute>(out var attr) == true)
+                var attrs = node.GetAttributes(symbol);
+                if (attrs.GetAttributesOfType<ActionAttribute>().ToArray() is { Length: > 0 } actionAttrs)
                 {
-                    this.ActionNodes.Add(new ActionClassDeclarationSyntax(classDeclaration, symbol, attr));
+                    var actionClassContext = new ActionClassContext(node, symbol, attrs[0]);
+                    actionClassContext.StateAttributes.AddRange(attrs.GetAttributesOfType<StateAttribute>());
+
+                    this.Actions.Add(actionClassContext);
                 }
             }
         }

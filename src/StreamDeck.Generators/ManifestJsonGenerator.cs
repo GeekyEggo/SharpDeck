@@ -1,6 +1,7 @@
 namespace StreamDeck.Generators
 {
     using System.Text;
+    using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.IO;
@@ -18,7 +19,7 @@ namespace StreamDeck.Generators
         /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
         /// <param name="actions">The actions to write to the manifest.</param>
         /// <param name="fileSystem">The file system.</param>
-        public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassDeclarationSyntax> actions, IFileSystem fileSystem)
+        public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassContext> actions, IFileSystem fileSystem)
         {
             // Determine if the assembly requires manifest generation.
             if (!context.Compilation.Assembly.TryGetAttribute<ManifestAttribute>(out var manifestAttr))
@@ -70,34 +71,37 @@ namespace StreamDeck.Generators
         /// <param name="nodes">The collection of <see cref="ActionClassDeclarationSyntax"/> nodes discovered by the <see cref="PluginSyntaxReceiver"/>.</param>
         /// <param name="diagnosticReporter">The outer diagnostic reporter.</param>
         /// <returns>The valid actions.</returns>
-        private static IEnumerable<ActionAttribute> GetValidActions(IReadOnlyCollection<ActionClassDeclarationSyntax> nodes, DiagnosticReporter diagnosticReporter)
+        private static IEnumerable<ActionAttribute> GetValidActions(IReadOnlyCollection<ActionClassContext> nodes, DiagnosticReporter diagnosticReporter)
         {
             foreach (var node in nodes)
             {
                 var diagnostics = new DiagnosticReporter(diagnosticReporter);
 
+                var action = node.ActionAttribute.As<ActionAttribute>();
+                var states = node.StateAttributes.Select(s => s.As<StateAttribute>()).ToArray();
+
                 // Validate UUID characters (https://developer.elgato.com/documentation/stream-deck/sdk/manifest/).
-                if (!node.IsUuidValid)
+                if (Regex.IsMatch(action.UUID, @"[^a-z0-9\-\.]+"))
                 {
                     diagnostics.ReportInvalidActionUUID(node);
                 }
 
                 // Validate the state image is defined.
-                if (node.Action.StateImage == null
-                    && node.States.Length == 0)
+                if (action.StateImage == null
+                    && states.Length == 0)
                 {
                     diagnostics.ReportStateImageNotDefined(node);
                 }
 
                 // Validate the state image is not defined more than once.
-                if (node.Action.StateImage != null
-                    && node.States.Length > 0)
+                if (action.StateImage != null
+                    && states.Length > 0)
                 {
                     diagnostics.ReportStateImageDefinedMoreThanOnce(node);
                 }
 
                 // Validate there are not more than 2 states on the action.
-                if (node.States.Length > 2)
+                if (states.Length > 2)
                 {
                     diagnostics.ReportActionHasTooManyStates(node);
                 }
@@ -105,12 +109,12 @@ namespace StreamDeck.Generators
                 // When the action did not report an error, add it to the collection of valid actions.
                 if (!diagnostics.HasErrorDiagnostic)
                 {
-                    if (node.States.Length > 0)
+                    if (states.Length > 0)
                     {
-                        node.Action.States = node.States;
+                        action.States = states;
                     }
 
-                    yield return node.Action;
+                    yield return action;
                 }
             }
         }

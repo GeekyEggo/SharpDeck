@@ -29,9 +29,9 @@ namespace StreamDeck
         public ActionAttribute(string name, string uuid, string icon)
             : base()
         {
-            this.UUID = uuid;
-            this.Name = name;
             this.Icon = icon;
+            this.Name = name;
+            this.UUID = uuid;
         }
 
         /// <summary>

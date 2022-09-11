@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Generators.Extensions
+namespace StreamDeck.Generators.Extensions
 {
     using System;
     using System.Collections;
@@ -11,6 +11,24 @@
     /// </summary>
     internal static class EnumerableExtensions
     {
+        /// <summary>
+        /// Gets all <see cref="AttributeContext"/> that represent the type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="AttributeContext"/> to retrieve.</typeparam>
+        /// <param name="attrs">The collection of <see cref="AttributeContext"/>.</param>
+        /// <returns>The <see cref="AttributeContext"/> that represent the type <typeparamref name="T"/>.</returns>
+        internal static IEnumerable<AttributeContext> GetAttributesOfType<T>(this IEnumerable<AttributeContext> attrs)
+        {
+            var fullName = typeof(T).FullName;
+            foreach (var attr in attrs)
+            {
+                if (attr.Data.AttributeClass?.ToDisplayString(SymbolDisplayFormats.FullName) == fullName)
+                {
+                    yield return attr;
+                }
+            }
+        }
+
         /// <summary>
         /// Casts the collection to the specified <paramref name="type"/>, and returns them as an array.
         /// </summary>

@@ -13,7 +13,7 @@ namespace StreamDeck.Generators
         /// </summary>
         static SymbolDisplayFormats()
         {
-            Namespace = new SymbolDisplayFormat(
+            FullName = new SymbolDisplayFormat(
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
                 miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
@@ -23,9 +23,9 @@ namespace StreamDeck.Generators
         }
 
         /// <summary>
-        /// Gets the full name of a namespace, suitably escaped. E.g. "System.Collections.Generic"
+        /// Gets the full name of a symbol, suitably escaped. E.g. "System.Collections.Generic"
         /// </summary>
-        public static SymbolDisplayFormat Namespace { get; }
+        public static SymbolDisplayFormat FullName { get; }
 
         /// <summary>
         /// A class declaration, but not including accessibility or modifiers, e.g. "class List&lt;T&gt;"
