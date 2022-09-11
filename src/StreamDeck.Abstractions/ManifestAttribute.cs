@@ -15,6 +15,11 @@ namespace StreamDeck
     class ManifestAttribute : SerializableSafeAttribute
     {
         /// <summary>
+        /// The default <see cref="SoftwareMinimumVersion"/>.
+        /// </summary>
+        internal const string DEFAULT_SOFTWARE_MINIMUM_VERSION = "5.0";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ManifestAttribute"/> class.
         /// </summary>
         public ManifestAttribute()
@@ -37,6 +42,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the author of the plugin. This string is displayed to the user in the Stream Deck store.
         /// </summary>
+        /// <remarks>This can also be defined by setting the <see cref="System.Reflection.AssemblyCompanyAttribute"/>.</remarks>
         public string Author { get; set; } = "";
 
         /// <summary>
@@ -72,6 +78,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets a general description of what the plugin does. This string is displayed to the user in the Stream Deck store.
         /// </summary>
+        /// <remarks>This can also be defined by setting the <see cref="System.Reflection.AssemblyDescriptionAttribute"/>.</remarks>
         public string Description { get; set; } = "";
 
         /// <summary>
@@ -82,6 +89,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the name of the plugin. This string is displayed to the user in the Stream Deck store.
         /// </summary>
+        /// <remarks>This can also be defined by setting the <see cref="System.Reflection.AssemblyProductAttribute"/>.</remarks>
         public string Name { get; set; } = "";
 
         /// <summary>
@@ -110,7 +118,7 @@ namespace StreamDeck
         /// Gets or sets the value that indicates which version of the Stream Deck application is required to install the plugin.
         /// </summary>
         [IgnoreDataMember]
-        public string SoftwareMinimumVersion { get; set; } = "5.0";
+        public string SoftwareMinimumVersion { get; set; } = DEFAULT_SOFTWARE_MINIMUM_VERSION;
 
         /// <summary>
         /// Gets or sets a site to provide more information about the plugin.
@@ -121,6 +129,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the plugin's semantic version (1.0.0).
         /// </summary>
+        /// <remarks>This can also be defined by setting the <see cref="System.Reflection.AssemblyVersionAttribute"/>.</remarks>
         public string Version { get; set; } = "";
     }
 }

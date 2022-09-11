@@ -50,18 +50,16 @@
             Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
         <PropertyGroup>
             <InvalidUUIDCharsRegex>[^A-Za-z0-9\-\.]+</InvalidUUIDCharsRegex>
-            <Author Condition="'$(Authors)' != ''">$(Authors)</Author>
-            <Author Condition="'$(Company)' != ''">$(Company)</Author>
-            <Author Condition="'$(Author)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Author)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Author>
-            <Author Condition="'$(Author)' == ''">user</Author>
-            <Name Condition="'$(Name)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Name)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Name>
-            <Name Condition="'$(Name)' == ''">plugin</Name>
-            <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(Author).$(Name).sdPlugin\</OutputPath>
+            <Company Condition="'$(Company)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Company)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Company>
+            <Company Condition="'$(Company)' == ''">user</Company>
+            <Product Condition="'$(Product)' != ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Product)', '$(InvalidUUIDCharsRegex)', '').ToLower())</Product>
+            <Product Condition="'$(Product)' == ''">plugin</Product>
+            <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(Company).$(Product).sdPlugin\</OutputPath>
             <OutDir>$(OutputPath)</OutDir>
             <TargetDir>$(OutputPath)</TargetDir>
             <ProjectDepsFilePath>$(OutputPath)$(ProjectDepsFileName)</ProjectDepsFilePath>
             <ProjectRuntimeConfigFilePath>$(OutputPath)$(ProjectRuntimeConfigFileName)</ProjectRuntimeConfigFilePath>
-        </PropertyGroup>
+    </PropertyGroup>
 
         <Message Text="Installing plugin -> $(OutputPath)" Importance="high" />
     </Target>

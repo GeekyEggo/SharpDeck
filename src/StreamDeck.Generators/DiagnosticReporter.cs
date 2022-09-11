@@ -62,26 +62,72 @@ namespace StreamDeck.Generators
         /// </summary>
         private GeneratorExecutionContext Context { get; }
 
+        #region Manifest
+
         /// <summary>
         /// Reports the project directory could not be found when attempting to generate the manifest.json file.
         /// </summary>
         /// <param name="locations">The locations associated with the assembly that attempted to generate the manifest.json file..</param>
         internal void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
-            => this.ReportError(
+            => this.Report(
+                DiagnosticSeverity.Error,
                 "SD001",
                 "Generating a manifest.json requires a project directory",
                 "Failed to generate manifest JSON file; unable to determine the project's directory from the compilation context.",
                 locations);
 
         /// <summary>
+        /// Reports the <see cref="ManifestAttribute"/> is contains information that was ignored when serializing as it was not valid.
+        /// </summary>
+        /// <param name="memberName">The name of the member that is required.</param>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestInformationIgnored(string memberName, AttributeSyntax manifestNode)
+            => this.Report(
+                DiagnosticSeverity.Warning,
+                "SD002",
+                "Manifest information ignored",
+                "The '{0}' value was ignored when creating the manifest.json file; value should not be null or empty.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(memberName) },
+                memberName);
+
+        /// <summary>
+        /// Reports the <see cref="ManifestAttribute"/> is missing required information that cannot be fulfilled by another attribute.
+        /// </summary>
+        /// <param name="memberName">The name of the member that is required.</param>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestRequires(string memberName, AttributeSyntax manifestNode)
+            => this.Report(
+                DiagnosticSeverity.Warning,
+                "SD003",
+                "Manifest is missing required information",
+                "The manifest.json file requires the '{0}' to be specified.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(memberName) },
+                memberName);
+
+        /// <summary>
+        /// Reports the <see cref="Models.Manifest.Actions"/> contains no actions.
+        /// </summary>
+        /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
+        internal void ReportManifestRequiresActions(AttributeSyntax manifestNode)
+            => this.Report(
+                DiagnosticSeverity.Error,
+                "SD004",
+                "Actions are required",
+                "No actions were found when generating the manifest.json file; consider adding '{0}' to a class definition.",
+                new[] { manifestNode.GetLocation() },
+                nameof(ActionAttribute),
+                nameof(StateAttribute));
+
+        /// <summary>
         /// Reports the <see cref="ManifestAttribute.Author"/> is <c>null</c> or empty.
         /// </summary>
         /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
         internal void ReportManifestRequiresAuthor(AttributeSyntax manifestNode)
-            => this.ReportWarning(
-                "SD002",
-                "Author is required",
-                "The manifest.json file requires an author; consider specifying the '{0}' on the attribute, or adding '{1}'.",
+            => this.Report(
+                DiagnosticSeverity.Warning,
+                "SD005",
+                "Manifest requires an Author or AssemblyCompanyAttribute",
+                "The manifest.json file requires an '{0}'; consider specifying the '{0}', or adding '{1}'.",
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
                 nameof(ManifestAttribute.Author),
                 nameof(System.Reflection.AssemblyCompanyAttribute));
@@ -91,45 +137,54 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
         internal void ReportManifestRequiresDescription(AttributeSyntax manifestNode)
-            => this.ReportWarning(
-                "SD003",
-                "Description is required",
-                "The manifest.json file requires a description; consider specifying the '{0}' on the attribute, or adding '{1}'.",
-                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
+            => this.Report(
+                DiagnosticSeverity.Warning,
+                "SD006",
+                "Manifest requires a Description or AssemblyDescriptionAttribute",
+                "The manifest.json file requires a '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Description)) },
                 nameof(ManifestAttribute.Description),
                 nameof(System.Reflection.AssemblyDescriptionAttribute));
 
         /// <summary>
-        /// Reports the <see cref="ManifestAttribute.Icon"/> is <c>null</c> or empty.
+        /// Reports the <see cref="ManifestAttribute.Name"/> is <c>null</c> or empty.
         /// </summary>
         /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
-        internal void ReportManifestRequiresIcon(AttributeSyntax manifestNode)
-            => this.ReportWarning(
-                "SD003",
-                "Icon is required",
-                "The manifest.json file requires an icon; consider specifying the '{0}' on the attribute.",
-                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
-                nameof(ManifestAttribute.Icon));
+        internal void ReportManifestRequiresName(AttributeSyntax manifestNode)
+            => this.Report(
+                DiagnosticSeverity.Warning,
+                "SD007",
+                "Manifest requires a Name or AssemblyProductAttribute",
+                "The manifest.json file requires a '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Name)) },
+                nameof(ManifestAttribute.Name),
+                nameof(System.Reflection.AssemblyProductAttribute));
 
         /// <summary>
-        /// Reports the <see cref="Models.Manifest.Actions"/> contains no actions.
+        /// Reports the <see cref="ManifestAttribute.Version"/> is <c>null</c> or empty.
         /// </summary>
         /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
-        internal void ReportManifestRequiresActions(AttributeSyntax manifestNode)
-            => this.ReportError(
-                "SD005",
-                "Actions are required",
-                "No actions were found when generating the manifest.json file; consider adding '{0}' to a class definition.",
-                new[] { manifestNode.GetLocation() },
-                nameof(ActionAttribute),
-                nameof(StateAttribute));
+        internal void ReportManifestRequiresVersion(AttributeSyntax manifestNode)
+            => this.Report(
+                DiagnosticSeverity.Warning,
+                "SD008",
+                "Manifest requires a Version or AssemblyVersionAttribute",
+                "The manifest.json file requires a '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Version)) },
+                nameof(ManifestAttribute.Version),
+                nameof(System.Reflection.AssemblyVersionAttribute));
+
+        #endregion
+
+        #region Actions
 
         /// <summary>
         /// Reports the <see cref="ActionAttribute.UUID"/> is invalid.
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
         internal void ReportInvalidActionUUID(ActionClassContext context)
-            => this.ReportError(
+            => this.Report(
+                DiagnosticSeverity.Error,
                 "SD101",
                 "Action identifiers must be valid uniform type identifiers (UTI)",
                 $"Action '{{0}}' must have a valid UUID; identifiers can only contain lowercase alphanumeric characters (a-z, 0-9), hyphens (-), and periods (.).",
@@ -141,7 +196,8 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
         internal void ReportStateImageNotDefined(ActionClassContext context)
-            => this.ReportError(
+            => this.Report(
+                DiagnosticSeverity.Error,
                 "SD102",
                 "State image must be defined",
                 $"Action '{{0}}' must have a state image; set the '{nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}', or add a '{nameof(StateAttribute)}'.",
@@ -153,7 +209,8 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
         internal void ReportStateImageDefinedMoreThanOnce(ActionClassContext context)
-            => this.ReportError(
+            => this.Report(
+                DiagnosticSeverity.Error,
                 "SD103",
                 "State must not be defined more than once",
                 $"Action '{{0}}' must not set the '{nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}' when a '{nameof(StateAttribute)}' is present.",
@@ -165,24 +222,32 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="context">The context containing information about the class declaration of the action.</param>
         internal void ReportActionHasTooManyStates(ActionClassContext context)
-            => this.ReportError(
+            => this.Report(
+                DiagnosticSeverity.Error,
                 "SD104",
                 "Actions cannot have more than two states",
                 $"Action '{{0}}' cannot have more than two states ('{nameof(StateAttribute)}').",
                 context.Symbol.Locations,
                 context.Name);
 
+        #endregion
+
         /// <summary>
-        /// Reports a <see cref="Diagnostic"/> with a severity of <see cref="DiagnosticSeverity.Error"/> error.
+        /// Reports a <see cref="Diagnostic"/>.
         /// </summary>
+        /// <param name="severity">The <see cref="DiagnosticSeverity"/>.</param>
         /// <param name="id">The <see cref="Diagnostic.Id"/>.</param>
         /// <param name="title">The <see cref="DiagnosticDescriptor.Title"/>.</param>
         /// <param name="messageFormat">The <see cref="DiagnosticDescriptor.MessageFormat"/>.</param>
         /// <param name="locations">The optional <see cref="Diagnostic.Location"/>; when more than one, the first is taken.</param>
         /// <param name="messageArgs">The optional message arguments supplied to the message format when generating the description.</param>
-        private void ReportError(string id, string title, string messageFormat, IEnumerable<Location>? locations = null, params string?[] messageArgs)
+        private void Report(DiagnosticSeverity severity, string id, string title, string messageFormat, IEnumerable<Location>? locations = null, params string?[] messageArgs)
         {
-            this.HasErrorDiagnostic = true;
+            if (severity == DiagnosticSeverity.Error)
+            {
+                this.HasErrorDiagnostic = true;
+            }
+
             this.Context.ReportDiagnostic(
                 Diagnostic.Create(
                     new DiagnosticDescriptor(
@@ -190,31 +255,10 @@ namespace StreamDeck.Generators
                         title: title,
                         messageFormat: messageFormat,
                         category: DIAGNOSTIC_CATEGORY,
-                        defaultSeverity: DiagnosticSeverity.Error,
+                        defaultSeverity: severity,
                         isEnabledByDefault: true),
                     locations?.FirstOrDefault(),
                     messageArgs));
         }
-
-        /// <summary>
-        /// Reports a <see cref="Diagnostic"/> with a severity of <see cref="DiagnosticSeverity.Warning"/> error.
-        /// </summary>
-        /// <param name="id">The <see cref="Diagnostic.Id"/>.</param>
-        /// <param name="title">The <see cref="DiagnosticDescriptor.Title"/>.</param>
-        /// <param name="messageFormat">The <see cref="DiagnosticDescriptor.MessageFormat"/>.</param>
-        /// <param name="locations">The optional <see cref="Diagnostic.Location"/>; when more than one, the first is taken.</param>
-        /// <param name="messageArgs">The optional message arguments supplied to the message format when generating the description.</param>
-        private void ReportWarning(string id, string title, string messageFormat, IEnumerable<Location>? locations = null, params string[] messageArgs)
-            => this.Context.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: id,
-                        title: title,
-                        messageFormat: messageFormat,
-                        category: DIAGNOSTIC_CATEGORY,
-                        defaultSeverity: DiagnosticSeverity.Warning,
-                        isEnabledByDefault: true),
-                    locations?.FirstOrDefault(),
-                    messageArgs));
     }
 }

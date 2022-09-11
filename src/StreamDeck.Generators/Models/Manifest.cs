@@ -61,6 +61,6 @@ namespace StreamDeck.Generators.Models
         /// <summary>
         /// Gets or sets the value that indicates which version of the Stream Deck application is required to install the plugin.
         /// </summary>
-        internal Software Software => new Software(this.SoftwareMinimumVersion);
+        internal Software Software => new Software(string.IsNullOrWhiteSpace(this.SoftwareMinimumVersion) ? ManifestAttribute.DEFAULT_SOFTWARE_MINIMUM_VERSION : this.SoftwareMinimumVersion);
     }
 }

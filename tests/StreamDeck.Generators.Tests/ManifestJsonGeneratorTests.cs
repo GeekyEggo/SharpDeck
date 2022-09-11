@@ -13,12 +13,134 @@ namespace StreamDeck.Generators.Tests
     public class ManifestJsonGeneratorTests
     {
         [Test]
+        public void ManifestWarnsWithDefaults()
+        {
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest]
+
+                [ActionAttribute("Action One", "com.tests.example.one", "Action.png", StateImage = "State.png")]
+                public class ActionOne
+                {
+                }
+                """;
+
+            const string json = $$"""
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Action.png",
+                            "Name": "Action One",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.tests.example.one"
+                        }
+                    ],
+                    "Author": "",
+                    "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
+                    "Description": "",
+                    "Icon": "",
+                    "Name": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(
+                sourceText,
+                json,
+                new ExpectedDiagnostic(3, 12, "SD005", "The manifest.json file requires an 'Author'; consider specifying the 'Author', or adding 'AssemblyCompanyAttribute'.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SD006", "The manifest.json file requires a 'Description'; consider specifying the 'Description', or adding 'AssemblyDescriptionAttribute'.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SD003", "The manifest.json file requires the 'Icon' to be specified.", DiagnosticSeverity.Warning));
+        }
+
+        [Test]
+        public void ManifestWarnsWithNull()
+        {
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest(
+                    Author = null,
+                    CodePath = null,
+                    Description = null,
+                    Icon = null,
+                    Name = null,
+                    Version = null)]
+
+                [ActionAttribute("Action One", "com.tests.example.one", "Action.png", StateImage = "State.png")]
+                public class ActionOne
+                {
+                }
+                """;
+
+            const string json = $$"""
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Action.png",
+                            "Name": "Action One",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.tests.example.one"
+                        }
+                    ],
+                    "Author": "",
+                    "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
+                    "Description": "",
+                    "Icon": "",
+                    "Name": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(
+                sourceText,
+                json,
+                new ExpectedDiagnostic(4, 5, "SD005", "The manifest.json file requires an 'Author'; consider specifying the 'Author', or adding 'AssemblyCompanyAttribute'.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(5, 5, "SD002", "The 'CodePath' value was ignored when creating the manifest.json file; value should not be null or empty.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(6, 5, "SD006", "The manifest.json file requires a 'Description'; consider specifying the 'Description', or adding 'AssemblyDescriptionAttribute'.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(7, 5, "SD003", "The manifest.json file requires the 'Icon' to be specified.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(8, 5, "SD002", "The 'Name' value was ignored when creating the manifest.json file; value should not be null or empty.", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(9, 5, "SD003", "The manifest.json file requires the 'Version' to be specified.", DiagnosticSeverity.Warning));
+        }
+
+        [Test]
         public void ManifestReadsAssembly()
         {
             const string sourceText = """
                 using StreamDeck;
                 using System.Reflection;
 
+                [assembly: AssemblyProduct("Super Cool Plugin")]
                 [assembly: AssemblyCompany("Bob Smith")]
                 [assembly: AssemblyDescription("Hello world, this is a test")]
                 [assembly: AssemblyVersion("12.34.56")]
@@ -48,7 +170,7 @@ namespace StreamDeck.Generators.Tests
                     "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
                     "Description": "Hello world, this is a test",
                     "Icon": "Plugin.png",
-                    "Name": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}",
+                    "Name": "Super Cool Plugin",
                     "OS": [
                         {
                             "MinimumVersion": "10",
@@ -67,8 +189,8 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
+        /*
         #region "TODO... again"
-
         /// <summary>
         /// Asserts <see cref="PluginSourceGenerator"/> generates a manifest file.
         /// </summary>
@@ -743,24 +865,26 @@ namespace StreamDeck.Generators.Tests
 
         #endregion
 
+        */
         /// <summary>
         /// Verifies the specified <paramref name="expectedJson"/> is generated from <see cref="PluginSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedJson">The expected JSON.</param>
-        private static void VerifySuccess(string sourceText, string expectedJson)
+        /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
+        private static void VerifySuccess(string sourceText, string expectedJson, params ExpectedDiagnostic[] expectedDiagnostics)
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
 
             // Act.
-            var (_, resultDiagnostics) = SourceGeneratorTests.Run(
+            var (_, actualDiagnostics) = SourceGeneratorTests.Run(
                 new PluginSourceGenerator(fileSystem.Object),
                 sourceText);
 
             // Assert.
             fileSystem.Verify(f => f.WriteAllText(@"C:\temp\manifest.json", expectedJson, Encoding.UTF8), Times.Once);
-            Assert.That(resultDiagnostics, Is.Empty);
+            DiagnosticAssert.AreEqual(actualDiagnostics, expectedDiagnostics);
         }
 
         /// <summary>

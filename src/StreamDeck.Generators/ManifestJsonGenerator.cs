@@ -43,9 +43,9 @@ namespace StreamDeck.Generators
             var manifest = new Manifest
             {
                 Author = context.Compilation.Assembly.GetAttributeValueOrDefault<AssemblyCompanyAttribute, string>() ?? "",
-                CodePath = $"{context.Compilation.Assembly.Identity.Name}.exe",
+                CodePath = GetDefaultCodePath(context),
                 Description = context.Compilation.Assembly.GetAttributeValueOrDefault<AssemblyDescriptionAttribute, string>() ?? "",
-                Name = context.Compilation.Assembly.Identity.Name,
+                Name = GetDefaultName(context),
                 Version = context.Compilation.Assembly.Identity.Version.ToString(3),
             };
 
@@ -54,7 +54,7 @@ namespace StreamDeck.Generators
             manifest.Profiles.AddRange(GetProfiles(context));
 
             // Only write the manifest if everything is okay.
-            Validate(manifest, manifestNode, diagnostics);
+            Validate(context, manifest, manifestNode, diagnostics);
             if (!diagnostics.HasErrorDiagnostic)
             {
                 fileSystem.WriteAllText(
@@ -135,15 +135,27 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Validates the specified <paramref name="manifest"/> and reports all diagnostics to <paramref name="diagnostics"/>.
         /// </summary>
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
         /// <param name="manifest">The manifest to validate.</param>
         /// <param name="manifestNode">The <see cref="AttributeSyntax"/> that represents the <see cref="ManifestAttribute"/>.</param>
         /// <param name="diagnostics">The diagnostics reporter.</param>
-        private static void Validate(Manifest manifest, AttributeSyntax manifestNode, DiagnosticReporter diagnostics)
+        private static void Validate(GeneratorExecutionContext context, Manifest manifest, AttributeSyntax manifestNode, DiagnosticReporter diagnostics)
         {
+            if (manifest.Actions.Count == 0)
+            {
+                diagnostics.ReportManifestRequiresActions(manifestNode);
+            }
+
             if (string.IsNullOrWhiteSpace(manifest.Author))
             {
                 manifest.Author = string.Empty; // Ensure a value is always serialized.
                 diagnostics.ReportManifestRequiresAuthor(manifestNode);
+            }
+
+            if (string.IsNullOrWhiteSpace(manifest.CodePath))
+            {
+                manifest.CodePath = GetDefaultCodePath(context);
+                diagnostics.ReportManifestInformationIgnored(nameof(manifest.CodePath), manifestNode);
             }
 
             if (string.IsNullOrWhiteSpace(manifest.Description))
@@ -155,13 +167,36 @@ namespace StreamDeck.Generators
             if (string.IsNullOrWhiteSpace(manifest.Icon))
             {
                 manifest.Icon = string.Empty; // Ensure a value is always serialized.
-                diagnostics.ReportManifestRequiresIcon(manifestNode);
+                diagnostics.ReportManifestRequires(nameof(manifest.Icon), manifestNode);
             }
 
-            if (manifest.Actions.Count == 0)
+            if (string.IsNullOrWhiteSpace(manifest.Name))
             {
-                diagnostics.ReportManifestRequiresActions(manifestNode);
+                manifest.Name = GetDefaultName(context);
+                diagnostics.ReportManifestInformationIgnored(nameof(manifest.Name), manifestNode);
+            }
+
+            if (string.IsNullOrWhiteSpace(manifest.Version))
+            {
+                manifest.Version = "0.0.0"; // Ensure a value is always serialized.
+                diagnostics.ReportManifestRequires(nameof(manifest.Version), manifestNode);
             }
         }
+
+        /// <summary>
+        /// Gets the default <see cref="ManifestAttribute.CodePath"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
+        /// <returns>The default code path.</returns>
+        private static string GetDefaultCodePath(GeneratorExecutionContext context)
+            => $"{context.Compilation.Assembly.Identity.Name}.exe";
+
+        /// <summary>
+        /// Gets the default <see cref="ManifestAttribute.Name"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
+        /// <returns>The default name.</returns>
+        private static string GetDefaultName(GeneratorExecutionContext context)
+            => context.Compilation.Assembly.GetAttributeValueOrDefault<AssemblyProductAttribute, string>() ?? context.Compilation.Assembly.Identity.Name;
     }
 }
