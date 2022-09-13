@@ -10,6 +10,21 @@ namespace StreamDeck.Generators
     internal class DiagnosticReporter
     {
         /// <summary>
+        /// The link to the Stream Deck developer documentation; Manifest.
+        /// </summary>
+        private const string MANIFEST_HELP_LINK = "https://developer.elgato.com/documentation/stream-deck/sdk/manifest";
+
+        /// <summary>
+        /// The link to the Stream Deck developer documentation; Manifest Actions.
+        /// </summary>
+        private const string MANIFEST_ACTIONS_HELP_LINK = "https://developer.elgato.com/documentation/stream-deck/sdk/manifest/#actions";
+
+        /// <summary>
+        /// The link to the Stream Deck developer documentation; Manifest States.
+        /// </summary>
+        private const string MANIFEST_STATES_HELP_LINK = "https://developer.elgato.com/documentation/stream-deck/sdk/manifest/#states";
+
+        /// <summary>
         /// The category of all diagnostics reported.
         /// </summary>
         private const string DIAGNOSTIC_CATEGORY = "StreamDeck";
@@ -73,7 +88,8 @@ namespace StreamDeck.Generators
                 DiagnosticSeverity.Error,
                 "SD001",
                 "Generating a manifest.json requires a project directory",
-                "Failed to generate manifest JSON file; unable to determine the project's directory from the compilation context.",
+                "Failed to generate manifest JSON file; unable to determine the project's directory from the compilation context. Consider creating a manifest.json file manually.",
+                MANIFEST_HELP_LINK,
                 locations);
 
         /// <summary>
@@ -87,6 +103,7 @@ namespace StreamDeck.Generators
                 "SD002",
                 "Manifest information ignored",
                 "The '{0}' value was ignored when creating the manifest.json file; value should not be null or empty.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(memberName) },
                 memberName);
 
@@ -101,6 +118,7 @@ namespace StreamDeck.Generators
                 "SD003",
                 "Manifest is missing required information",
                 "The manifest.json file requires the '{0}' to be specified.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(memberName) },
                 memberName);
 
@@ -114,6 +132,7 @@ namespace StreamDeck.Generators
                 "SD004",
                 "Actions are required",
                 "No actions were found when generating the manifest.json file; consider adding '{0}' to a class definition.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetLocation() },
                 nameof(ActionAttribute),
                 nameof(StateAttribute));
@@ -128,6 +147,7 @@ namespace StreamDeck.Generators
                 "SD005",
                 "Manifest requires an Author or AssemblyCompanyAttribute",
                 "The manifest.json file requires an '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Author)) },
                 nameof(ManifestAttribute.Author),
                 nameof(System.Reflection.AssemblyCompanyAttribute));
@@ -142,6 +162,7 @@ namespace StreamDeck.Generators
                 "SD006",
                 "Manifest requires a Description or AssemblyDescriptionAttribute",
                 "The manifest.json file requires a '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Description)) },
                 nameof(ManifestAttribute.Description),
                 nameof(System.Reflection.AssemblyDescriptionAttribute));
@@ -156,6 +177,7 @@ namespace StreamDeck.Generators
                 "SD007",
                 "Manifest requires a Name or AssemblyProductAttribute",
                 "The manifest.json file requires a '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Name)) },
                 nameof(ManifestAttribute.Name),
                 nameof(System.Reflection.AssemblyProductAttribute));
@@ -170,6 +192,7 @@ namespace StreamDeck.Generators
                 "SD008",
                 "Manifest requires a Version or AssemblyVersionAttribute",
                 "The manifest.json file requires a '{0}'; consider specifying the '{0}', or adding '{1}'.",
+                MANIFEST_HELP_LINK,
                 new[] { manifestNode.GetNamedArgumentLocationOrDefault(nameof(ManifestAttribute.Version)) },
                 nameof(ManifestAttribute.Version),
                 nameof(System.Reflection.AssemblyVersionAttribute));
@@ -188,6 +211,7 @@ namespace StreamDeck.Generators
                 "SD101",
                 "Action identifiers must be valid uniform type identifiers (UTI)",
                 $"Action '{{0}}' must have a valid UUID; identifiers can only contain lowercase alphanumeric characters (a-z, 0-9), hyphens (-), and periods (.).",
+                MANIFEST_ACTIONS_HELP_LINK,
                 context.Symbol.Locations,
                 context.Name);
 
@@ -197,10 +221,11 @@ namespace StreamDeck.Generators
         /// <param name="context">The context containing information about the class declaration of the action.</param>
         internal void ReportStateImageNotDefined(ActionClassContext context)
             => this.Report(
-                DiagnosticSeverity.Error,
+                DiagnosticSeverity.Warning,
                 "SD102",
                 "State image must be defined",
                 $"Action '{{0}}' must have a state image; set the '{nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}', or add a '{nameof(StateAttribute)}'.",
+                MANIFEST_ACTIONS_HELP_LINK,
                 context.Symbol.Locations,
                 context.Name);
 
@@ -214,8 +239,8 @@ namespace StreamDeck.Generators
                 "SD103",
                 "State must not be defined more than once",
                 $"Action '{{0}}' must not set the '{nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}' when a '{nameof(StateAttribute)}' is present.",
-                context.Symbol.Locations,
-                context.Name);
+                locations: context.Symbol.Locations,
+                messageArgs: new[] { context.Name });
 
         /// <summary>
         /// Reports the action has more than two <see cref="StateAttribute"/>.
@@ -227,7 +252,8 @@ namespace StreamDeck.Generators
                 "SD104",
                 "Actions cannot have more than two states",
                 $"Action '{{0}}' cannot have more than two states ('{nameof(StateAttribute)}').",
-                context.Symbol.Locations,
+                MANIFEST_STATES_HELP_LINK,
+                context.StateAttributes.Skip(2).Select(s => s.Node.GetLocation()),
                 context.Name);
 
         #endregion
@@ -239,26 +265,31 @@ namespace StreamDeck.Generators
         /// <param name="id">The <see cref="Diagnostic.Id"/>.</param>
         /// <param name="title">The <see cref="DiagnosticDescriptor.Title"/>.</param>
         /// <param name="messageFormat">The <see cref="DiagnosticDescriptor.MessageFormat"/>.</param>
+        /// <param name="helpLinkUri">The optional help link.</param>
         /// <param name="locations">The optional <see cref="Diagnostic.Location"/>; when more than one, the first is taken.</param>
         /// <param name="messageArgs">The optional message arguments supplied to the message format when generating the description.</param>
-        private void Report(DiagnosticSeverity severity, string id, string title, string messageFormat, IEnumerable<Location>? locations = null, params string?[] messageArgs)
+        private void Report(DiagnosticSeverity severity, string id, string title, string messageFormat, string? helpLinkUri = null, IEnumerable<Location>? locations = null, params string?[] messageArgs)
         {
             if (severity == DiagnosticSeverity.Error)
             {
                 this.HasErrorDiagnostic = true;
             }
 
-            this.Context.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: id,
-                        title: title,
-                        messageFormat: messageFormat,
-                        category: DIAGNOSTIC_CATEGORY,
-                        defaultSeverity: severity,
-                        isEnabledByDefault: true),
-                    locations?.FirstOrDefault(),
-                    messageArgs));
+            foreach (var location in locations ?? new Location[] { null! })
+            {
+                this.Context.ReportDiagnostic(
+                    Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            id: id,
+                            title: title,
+                            messageFormat: messageFormat,
+                            category: DIAGNOSTIC_CATEGORY,
+                            defaultSeverity: severity,
+                            isEnabledByDefault: true,
+                            helpLinkUri: helpLinkUri),
+                        location,
+                        messageArgs));
+            }
         }
     }
 }

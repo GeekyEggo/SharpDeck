@@ -103,6 +103,7 @@ namespace StreamDeck.Generators
                 if (action.StateImage == null
                     && states.Length == 0)
                 {
+                    action.StateImage = ""; // Enable serialization, even without a state image defined.
                     diagnostics.ReportStateImageNotDefined(node);
                 }
 

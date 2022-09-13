@@ -48,7 +48,7 @@ namespace StreamDeck.Generators
                         public static {{IHOST_FULLY_QUALIFIED_NAME}} MapActions(this {{IHOST_FULLY_QUALIFIED_NAME}} host)
                         {
                             // Auto generated actions from their ActionAttribute.
-                            {{GetMappedActions(nodes)}}
+                            {{GenerateMapActions(nodes)}}
                             return host;
                         }
 
@@ -65,7 +65,12 @@ namespace StreamDeck.Generators
             context.AddSource("HostExtensions.g", sourceText);
         }
 
-        private static string GetMappedActions(IReadOnlyCollection<ActionClassContext> nodes)
+        /// <summary>
+        /// Generates the code responsible for mapping actions to the 'IHost'.
+        /// </summary>
+        /// <param name="nodes">The nodes containing the actions to map.</param>
+        /// <returns>The generated code.</returns>
+        private static string GenerateMapActions(IReadOnlyCollection<ActionClassContext> nodes)
         {
             var actions = new Dictionary<string, ActionClassContext>();
 
