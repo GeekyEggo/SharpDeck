@@ -1,10 +1,9 @@
-namespace StreamDeck.Generators
+namespace StreamDeck.Generators.Analyzers
 {
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using StreamDeck.Generators.Analyzers;
 
     /// <summary>
     /// Provides information about a class, and its attributes, that represent a Stream Deck action.
@@ -16,9 +15,8 @@ namespace StreamDeck.Generators
         /// </summary>
         /// <param name="symbol">The <see cref="INamedTypeSymbol"/> of the class declaration node.</param>
         /// <param name="actionAttribute">The attribute that contains information about the <see cref="StreamDeck.ActionAttribute"/>.</param>
-        internal ActionClassContext(ClassDeclarationSyntax node, INamedTypeSymbol symbol, AttributeContext actionAttribute)
+        public ActionClassContext(ClassDeclarationSyntax node, INamedTypeSymbol symbol)
         {
-            this.ActionAttribute = actionAttribute;
             this.IsPartial = node.Modifiers.Any(SyntaxKind.PartialKeyword);
             this.Symbol = symbol;
         }
@@ -26,31 +24,21 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Gets the <see cref="AttributeContext"/> that contains information about the <see cref="StreamDeck.ActionAttribute"/>.
         /// </summary>
-        internal AttributeContext ActionAttribute { get; }
+        public AttributeContext ActionAttribute { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the class is a partial class.
         /// </summary>
-        internal bool IsPartial { get; set; } = false;
-
-        /// <summary>
-        /// Gets the <see cref="ActionAttribute.Name"/>.
-        /// </summary>
-        internal string? Name => this.ActionAttribute.Data.ConstructorArguments[0].Value?.ToString();
-
-        /// <summary>
-        /// Gets the <see cref="ActionAttribute.UUID"/>.
-        /// </summary>
-        internal string? UUID => this.ActionAttribute.Data.ConstructorArguments[1].Value?.ToString();
+        public bool IsPartial { get; set; } = false;
 
         /// <summary>
         /// Gets the collection of <see cref="AttributeContext"/> that represent <see cref="StreamDeck.StateAttribute"/>.
         /// </summary>
-        internal List<AttributeContext> StateAttributes { get; } = new List<AttributeContext>();
+        public List<AttributeContext> StateAttributes { get; } = new List<AttributeContext>();
 
         /// <summary>
         /// Gets the <see cref="ISymbol"/> of the class declaration node.
         /// </summary>
-        internal INamedTypeSymbol Symbol { get; }
+        public INamedTypeSymbol Symbol { get; }
     }
 }

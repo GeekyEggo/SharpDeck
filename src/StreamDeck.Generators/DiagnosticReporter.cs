@@ -38,14 +38,14 @@ namespace StreamDeck.Generators
         /// Initializes a new instance of the <see cref="DiagnosticReporter"/> struct.
         /// </summary>
         /// <param name="context">The context.</param>
-        internal DiagnosticReporter(GeneratorExecutionContext context)
+        public DiagnosticReporter(GeneratorExecutionContext context)
             => this.Context = context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DiagnosticReporter"/> struct.
         /// </summary>
         /// <param name="innerReporter">The inner reporter; when an error is reported, it is propagated to this reporter.</param>
-        internal DiagnosticReporter(DiagnosticReporter innerReporter)
+        public DiagnosticReporter(DiagnosticReporter innerReporter)
         {
             this.Context = innerReporter.Context;
             this.InnerReporter = innerReporter;
@@ -54,7 +54,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Gets a value indicating whether this instance has reported a diagnostic of type <see cref="DiagnosticSeverity.Error"/>.
         /// </summary>
-        internal bool HasErrorDiagnostic
+        public bool HasErrorDiagnostic
         {
             get => this._hasErrorDiagnostic;
             private set
@@ -77,21 +77,24 @@ namespace StreamDeck.Generators
         /// </summary>
         private GeneratorExecutionContext Context { get; }
 
-        #region Manifest
+        #region ManifestJsonGenerator
 
         /// <summary>
         /// Reports the project directory could not be found when attempting to generate the manifest.json file.
         /// </summary>
         /// <param name="locations">The locations associated with the assembly that attempted to generate the manifest.json file..</param>
-        internal void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
+        public void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
             => this.Report(
                 DiagnosticSeverity.Error,
-                "SD001",
+                "SDJ001",
                 "Generating a manifest.json requires a project directory",
-                "Failed to generate manifest JSON file; unable to determine the project's directory from the compilation context. Consider creating a manifest.json file manually.",
+                "Failed to generate manifest JSON file as the project's directory is unknown. Consider creating a manifest.json file manually.",
                 MANIFEST_HELP_LINK,
                 locations);
 
+        #endregion
+
+        /*
         /// <summary>
         /// Reports the <see cref="ManifestAttribute"/> is contains information that was ignored when serializing as it was not valid.
         /// </summary>
@@ -257,7 +260,7 @@ namespace StreamDeck.Generators
                 context.Name);
 
         #endregion
-
+        */
         /// <summary>
         /// Reports a <see cref="Diagnostic"/>.
         /// </summary>

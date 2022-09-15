@@ -14,7 +14,7 @@ namespace StreamDeck.Generators.Extensions
         /// <param name="node">This <see cref="AttributeSyntax"/>.</param>
         /// <param name="name">The name of the argument to whose location is being retrieved..</param>
         /// <returns>The <see cref="Location"/> of the argument; otherwise the <<see cref="AttributeSyntax"/> location.</returns>
-        internal static Location GetNamedArgumentLocationOrDefault(this AttributeSyntax node, string name)
+        public static Location GetNamedArgumentLocationOrDefault(this AttributeSyntax node, string name)
             => node.TryGetNamedArgument(name, out var arg)
                 ? arg!.GetLocation()
                 : node.GetLocation();
@@ -26,7 +26,7 @@ namespace StreamDeck.Generators.Extensions
         /// <param name="name">The name of the argument.</param>
         /// <param name="argument">The argument; otherwise <c>null</c>.</param>
         /// <returns><c>true</c> when a matching argument was found; otherwise <c>false</c>.</returns>
-        internal static bool TryGetNamedArgument(this AttributeSyntax node, string name, out AttributeArgumentSyntax? argument)
+        public static bool TryGetNamedArgument(this AttributeSyntax node, string name, out AttributeArgumentSyntax? argument)
         {
             if (node.ArgumentList != null
                 && node.ArgumentList.Arguments.FirstOrDefault(a => a.NameEquals?.Name?.ToString() == name) is AttributeArgumentSyntax arg)

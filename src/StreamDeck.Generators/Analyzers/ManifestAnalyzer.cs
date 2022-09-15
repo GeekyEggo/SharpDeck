@@ -49,7 +49,7 @@ namespace StreamDeck.Generators.Analyzers
 
                 if (this.Manifest != null
                     && actionAnalyzer.HasValidUUID
-                    && !this.Manifest.TryAdd(actionAnalyzer.Action, out var existing))
+                    && !this.Manifest.TryAddAction(actionAnalyzer.Action, out var existing))
                 {
                     // todo: Warn duplicate uuid found on manifest.
                 }

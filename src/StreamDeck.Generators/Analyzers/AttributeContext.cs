@@ -2,7 +2,6 @@ namespace StreamDeck.Generators.Analyzers
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Provides information about an attribute.
@@ -29,13 +28,5 @@ namespace StreamDeck.Generators.Analyzers
         /// Gets the <see cref="AttributeSyntax"/>.
         /// </summary>
         public AttributeSyntax Node { get; }
-
-        /// <summary>
-        /// Creates a new instance of <typeparamref name="T"/>, and attempts to populate it from <see cref="Data"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of attribute to construct.</typeparam>
-        /// <returns>The constructed attribute.</returns>
-        public T As<T>()
-            => this.Data.CreateInstance<T>();
     }
 }

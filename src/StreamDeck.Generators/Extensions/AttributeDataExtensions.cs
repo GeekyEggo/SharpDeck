@@ -16,7 +16,7 @@ namespace StreamDeck.Generators.Extensions
         /// <typeparam name="T">The type of the attribute.</typeparam>
         /// <param name="data">The attribute data.</param>
         /// <returns>The newly constructed attribute.</returns>
-        internal static T CreateInstance<T>(this AttributeData data)
+        public static T CreateInstance<T>(this AttributeData data)
         {
             var attr = (T)Activator.CreateInstance(typeof(T), data.ConstructorArguments.Select(x => x.Value).ToArray());
             data.Populate(attr);
@@ -31,7 +31,7 @@ namespace StreamDeck.Generators.Extensions
         /// <param name="name">The name of the named argument whose value should be retrieved.</param>
         /// <param name="defaultFactory">The factory responsible for creating the default value.</param>
         /// <returns>The value of the named argument; otherwise the result of <paramref name="defaultFactory"/></returns>
-        internal static string GetNamedArgumentValueOrDefault(this AttributeData data, string name, Func<string> defaultFactory)
+        public static string GetNamedArgumentValueOrDefault(this AttributeData data, string name, Func<string> defaultFactory)
         {
             if (data.NamedArguments.FirstOrDefault(na => na.Key == name) is KeyValuePair<string, TypedConstant> arg
                 && arg.Key == name)
@@ -55,7 +55,7 @@ namespace StreamDeck.Generators.Extensions
         /// <param name="data">The data used to populate the object.</param>
         /// <param name="obj">The object to populate.</param>
         /// <returns>The populated object.</returns>
-        internal static T Populate<T>(this AttributeData data, T obj)
+        public static T Populate<T>(this AttributeData data, T obj)
         {
             var properties = typeof(T)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)

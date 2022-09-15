@@ -5,7 +5,6 @@ namespace StreamDeck.Generators.Extensions
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using StreamDeck.Generators.Analyzers;
 
     /// <summary>
     /// Provides extension methods for <see cref="IEnumerable{T}"/>.
@@ -13,31 +12,13 @@ namespace StreamDeck.Generators.Extensions
     internal static class EnumerableExtensions
     {
         /// <summary>
-        /// Gets all <see cref="AttributeContext"/> that represent the type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="AttributeContext"/> to retrieve.</typeparam>
-        /// <param name="attrs">The collection of <see cref="AttributeContext"/>.</param>
-        /// <returns>The <see cref="AttributeContext"/> that represent the type <typeparamref name="T"/>.</returns>
-        internal static IEnumerable<AttributeContext> GetAttributesOfType<T>(this IEnumerable<AttributeContext> attrs)
-        {
-            var fullName = typeof(T).FullName;
-            foreach (var attr in attrs)
-            {
-                if (attr.Data.AttributeClass?.ToDisplayString(SymbolDisplayFormats.FullName) == fullName)
-                {
-                    yield return attr;
-                }
-            }
-        }
-
-        /// <summary>
         /// Casts the collection to the specified <paramref name="type"/>, and returns them as an array.
         /// </summary>
         /// <typeparam name="T">The type of element within the collection.</typeparam>
         /// <param name="source">The collection.</param>
         /// <param name="type">The desired type.</param>
         /// <returns>The array of casted elements.</returns>
-        internal static IEnumerable CastArray<T>(this IEnumerable<T> source, Type type)
+        public static IEnumerable CastArray<T>(this IEnumerable<T> source, Type type)
         {
             var method = typeof(EnumerableExtensions)
                 .GetMethod(nameof(EnumerableExtensions.CastArrayInternal), BindingFlags.Static | BindingFlags.NonPublic)

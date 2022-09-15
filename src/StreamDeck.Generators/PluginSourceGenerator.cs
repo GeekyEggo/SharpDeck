@@ -53,7 +53,7 @@ namespace StreamDeck.Generators
 
             ManifestJsonGenerator.Generate(context, manifestAnalyzer, this.FileSystem);
             UuidPropertySourceGenerator.Generate(context, manifestAnalyzer);
-            //HostExtensionsSourceGenerator.Generate(context, syntaxReceiver.Actions);
+            HostExtensionsSourceGenerator.Generate(context, manifestAnalyzer);
         }
     }
 }

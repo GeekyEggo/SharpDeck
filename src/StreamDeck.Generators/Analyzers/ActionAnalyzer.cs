@@ -15,7 +15,7 @@ namespace StreamDeck.Generators.Analyzers
         /// </summary>
         /// <param name="context">The <see cref="ActionClassContext"/>.</param>
         /// <param name="manifest">The <see cref="Manifest"/>.</param>
-        internal ActionAnalyzer(ActionClassContext context, Manifest? manifest)
+        public ActionAnalyzer(ActionClassContext context, Manifest? manifest)
         {
             this.Context = context;
             this.Action = context.ActionAttribute.Data.CreateInstance<ActionAttribute>();

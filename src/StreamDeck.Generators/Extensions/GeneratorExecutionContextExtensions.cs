@@ -13,7 +13,7 @@ namespace StreamDeck.Generators.Extensions
         /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
         /// <param name="path">The project directory path.</param>
         /// <returns><c>true</c> when the project directory was present within the <see cref="GeneratorExecutionContext"/> global options; otherwise <c>false</c>.</returns>
-        internal static bool TryGetProjectDirectory(this GeneratorExecutionContext context, out string? path)
+        public static bool TryGetProjectDirectory(this GeneratorExecutionContext context, out string? path)
             => context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out path);
     }
 }
