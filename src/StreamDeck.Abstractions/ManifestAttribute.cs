@@ -20,6 +20,11 @@ namespace StreamDeck
         internal const string DEFAULT_SOFTWARE_MINIMUM_VERSION = "5.0";
 
         /// <summary>
+        /// The default <see cref="OSWindowsMinimumVersion"/>
+        /// </summary>
+        internal const string DEFAULT_OS_WINDOWS_MINIMUM_VERSION = "10";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ManifestAttribute"/> class.
         /// </summary>
         public ManifestAttribute()
@@ -102,7 +107,7 @@ namespace StreamDeck
         /// Gets or sets minimum version of Windows supported by the plugin
         /// </summary>
         [IgnoreDataMember]
-        public string OSWindowsMinimumVersion { get; set; } = "10";
+        public string OSWindowsMinimumVersion { get; set; } = DEFAULT_OS_WINDOWS_MINIMUM_VERSION;
 
         /// <summary>
         /// Gets or sets the relative path to the Property Inspector HTML file if your plugin wants to display some custom settings in the Property Inspector. If missing, the plugin will have an empty Property Inspector.

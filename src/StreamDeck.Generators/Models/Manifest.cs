@@ -48,7 +48,7 @@ namespace StreamDeck.Generators.Models
                 if (string.IsNullOrWhiteSpace(this.OSMacMinimumVersion)
                     || !string.IsNullOrWhiteSpace(this.OSWindowsMinimumVersion))
                 {
-                    yield return SupportedOperatingSystem.Windows(this.OSWindowsMinimumVersion);
+                    yield return SupportedOperatingSystem.Windows(string.IsNullOrWhiteSpace(this.OSWindowsMinimumVersion) ? DEFAULT_OS_WINDOWS_MINIMUM_VERSION : this.OSWindowsMinimumVersion);
                 }
             }
         }
@@ -61,6 +61,6 @@ namespace StreamDeck.Generators.Models
         /// <summary>
         /// Gets or sets the value that indicates which version of the Stream Deck application is required to install the plugin.
         /// </summary>
-        internal Software Software => new Software(string.IsNullOrWhiteSpace(this.SoftwareMinimumVersion) ? ManifestAttribute.DEFAULT_SOFTWARE_MINIMUM_VERSION : this.SoftwareMinimumVersion);
+        internal Software Software => new Software(string.IsNullOrWhiteSpace(this.SoftwareMinimumVersion) ? DEFAULT_SOFTWARE_MINIMUM_VERSION : this.SoftwareMinimumVersion);
     }
 }
