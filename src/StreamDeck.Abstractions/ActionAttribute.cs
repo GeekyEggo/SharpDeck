@@ -21,34 +21,20 @@ namespace StreamDeck
         private string? _stateIcon;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ActionAttribute"/> class.
-        /// </summary>
-        /// <param name="name">The name of the action. This string is visible to the user in the actions list.</param>
-        /// <param name="uuid">The the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.</param>
-        /// <param name="icon">The relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).</param>
-        public ActionAttribute(string name, string uuid, string icon)
-            : base()
-        {
-            this.Icon = icon;
-            this.Name = name;
-            this.UUID = uuid;
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating to disable image caching. <c>false</c> by default.
         /// </summary>
         [IgnoreDataMemberWhen(false)]
         public bool DisableCaching { get; set; } = false;
 
         /// <summary>
-        /// Gets the relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).
+        /// Gets or sets the relative path to a PNG image without the .png extension. This image is displayed in the actions list. The PNG image should be a 20pt x 20pt image. You should provide @1x and @2x versions of the image. The Stream Deck application takes care of loading the appropriate version of the image. This icon is not required for actions not visible in the actions list (VisibleInActionsList set to false).
         /// </summary>
-        public string Icon { get; }
+        public string Icon { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the name of the action. This string is visible to the user in the actions list.
+        /// Gets or sets the name of the action. This string is visible to the user in the actions list.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets property inspector path; this can override PropertyInspectorPath member from the plugin if you wish to have a different PropertyInspectorPath based on the action. The relative path to the Property Inspector HTML file if your plugin wants to display some custom settings in the Property Inspector.
@@ -65,7 +51,7 @@ namespace StreamDeck
             set
             {
                 this._stateIcon = value;
-                this.States = new[] { new StateAttribute(value ?? "") };
+                this.States = new List<StateAttribute>() { new StateAttribute(value ?? string.Empty) };
             }
         }
 
@@ -81,9 +67,9 @@ namespace StreamDeck
         public string? Tooltip { get; set; }
 
         /// <summary>
-        /// Gets the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.
+        /// Gets or sets the unique identifier of the action. It must be a uniform type identifier (UTI) that contains only lowercase alphanumeric characters (a-z, 0-9), hyphen (-), and period (.). The string must be in reverse-DNS format. For example, if your domain is elgato.com and you create a plugin named Hello with the action My Action, you could assign the string com.elgato.hello.myaction as your action's Unique Identifier.
         /// </summary>
-        public string UUID { get; }
+        public string UUID { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether to hide the action in the actions list. This can be used for a plugin that only works with a specific profile. <c>true</c> by default.
@@ -94,6 +80,6 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the information about the states of the action.
         /// </summary>
-        internal StateAttribute[] States { get; set; } = new StateAttribute[0];
+        internal List<StateAttribute> States { get; set; } = new List<StateAttribute>();
     }
 }

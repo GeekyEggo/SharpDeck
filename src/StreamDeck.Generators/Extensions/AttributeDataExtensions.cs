@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Generators.Extensions
+namespace StreamDeck.Generators.Extensions
 {
     using System;
     using System.Linq;
@@ -22,6 +22,30 @@
             data.Populate(attr);
 
             return attr;
+        }
+
+        /// <summary>
+        /// Gets the named argument value, otherwise the result of <paramref name="defaultFactory" />.
+        /// </summary>
+        /// <param name="data">The <see cref="AttributeData"/> that contains the named arguments.</param>
+        /// <param name="name">The name of the named argument whose value should be retrieved.</param>
+        /// <param name="defaultFactory">The factory responsible for creating the default value.</param>
+        /// <returns>The value of the named argument; otherwise the result of <paramref name="defaultFactory"/></returns>
+        internal static string GetNamedArgumentValueOrDefault(this AttributeData data, string name, Func<string> defaultFactory)
+        {
+            if (data.NamedArguments.FirstOrDefault(na => na.Key == name) is KeyValuePair<string, TypedConstant> arg
+                && arg.Key == name)
+            {
+                if (arg.Value.Value?.ToString() is string value
+                    && !string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+
+                // todo: Naughty, a null or empty value should not be defined for this property.
+            }
+
+            return defaultFactory();
         }
 
         /// <summary>

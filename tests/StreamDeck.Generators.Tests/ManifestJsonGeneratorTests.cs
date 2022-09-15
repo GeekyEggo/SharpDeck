@@ -12,6 +12,63 @@ namespace StreamDeck.Generators.Tests
     [TestFixture]
     public class ManifestJsonGeneratorTests
     {
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> from only attributes and defaults.
+        /// </summary>
+        [Test]
+        public void OnlyAttributes()
+        {
+            // Arrange.
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest]
+
+                [Action]
+                public class ActionOne {}
+                """;
+
+            var json = $$"""
+                {
+                    "Actions": [
+                        {
+                            "Icon": "",
+                            "Name": "ActionOne",
+                            "States": [
+                                {
+                                    "Image": ""
+                                }
+                            ],
+                            "UUID": "com.user.testproject.actionone"
+                        }
+                    ],
+                    "Author": "User",
+                    "CodePath": "Test Project.exe",
+                    "Description": "",
+                    "Icon": "",
+                    "Name": "Test Project",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(
+                sourceText,
+                json,
+                "Test Project");
+        }
+
+        /*
         [Test]
         public void ManifestWarnsWithDefaults()
         {
@@ -144,9 +201,9 @@ namespace StreamDeck.Generators.Tests
                 [assembly: AssemblyCompany("Bob Smith")]
                 [assembly: AssemblyDescription("Hello world, this is a test")]
                 [assembly: AssemblyVersion("12.34.56")]
-                [assembly: Manifest(Icon = "Plugin.png")]]
+                [assembly: Manifest(Icon = "Plugin.png")]
 
-                [ActionAttribute("Action One", "com.tests.example.one", "Action.png", StateImage = "State.png")]
+                [Action]
                 public class ActionOne
                 {
                 }
@@ -188,7 +245,7 @@ namespace StreamDeck.Generators.Tests
             // Act, assert.
             VerifySuccess(sourceText, json);
         }
-
+        */
         /*
         #region "TODO... again"
         /// <summary>
@@ -871,8 +928,9 @@ namespace StreamDeck.Generators.Tests
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedJson">The expected JSON.</param>
+        /// <param name="assemblyName">The optional assembly name.</param>
         /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
-        private static void VerifySuccess(string sourceText, string expectedJson, params ExpectedDiagnostic[] expectedDiagnostics)
+        private static void VerifySuccess(string sourceText, string expectedJson, string? assemblyName = null, params ExpectedDiagnostic[] expectedDiagnostics)
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -880,7 +938,8 @@ namespace StreamDeck.Generators.Tests
             // Act.
             var (_, actualDiagnostics) = SourceGeneratorTests.Run(
                 new PluginSourceGenerator(fileSystem.Object),
-                sourceText);
+                sourceText,
+                assemblyName);
 
             // Assert.
             fileSystem.Verify(f => f.WriteAllText(@"C:\temp\manifest.json", expectedJson, Encoding.UTF8), Times.Once);
@@ -910,7 +969,7 @@ namespace StreamDeck.Generators.Tests
             var (_, actualDiagnostics) = SourceGeneratorTests.Run(
                 new PluginSourceGenerator(fileSystem.Object),
                 sourceText,
-                optionsProvider);
+                optionsProvider: optionsProvider);
 
             // Assert.
             fileSystem.Verify(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>()), Times.Never);

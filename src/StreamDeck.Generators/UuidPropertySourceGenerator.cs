@@ -2,7 +2,7 @@ namespace StreamDeck.Generators
 {
     using System.CodeDom.Compiler;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
+    using StreamDeck.Generators.Analyzers;
 
     /// <summary>
     /// Generates the const UUID property for classes with <see cref="ActionAttribute"/>.
@@ -15,15 +15,15 @@ namespace StreamDeck.Generators
         private const string UUID_MEMBER_NAME = "UUID";
 
         /// <summary>
-        /// Generates the const UUID property for all <paramref name="actions" />.
+        /// Generates the const UUID property for all actions within the <paramref name="manifestAnalyzer"/> that have a valid UUID.
         /// </summary>
-        /// <param name="context">The <see cref="GeneratorExecutionContext" />.</param>
-        /// <param name="nodes">The collection of <see cref="ActionClassContext"/> that represent the actions.</param>
-        public static void Generate(GeneratorExecutionContext context, IReadOnlyCollection<ActionClassContext> nodes)
+        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
+        /// <param name="manifestAnalyzer">The <see cref="ManifestAnalyzer"/> that contains the actions.</param>
+        public static void Generate(GeneratorExecutionContext context, ManifestAnalyzer manifestAnalyzer)
         {
             var hintNameIndexes = new Dictionary<string, int>();
 
-            foreach (var node in nodes.Where(CanAutoGenerate))
+            foreach (var actionAnalyzer in manifestAnalyzer.ActionAnalyzers.Where(CanAutoGenerate))
             {
                 using var writer = new IndentedTextWriter(new StringWriter());
 
@@ -31,57 +31,58 @@ namespace StreamDeck.Generators
                 writer.WriteLine();
 
                 // When we aren't on the global namespace, we should scope the class to the specified namespace
-                if (!node.Symbol.ContainingNamespace.IsGlobalNamespace)
+                if (!actionAnalyzer.Context.Symbol.ContainingNamespace.IsGlobalNamespace)
                 {
-                    writer.WriteLine($"namespace {node.Symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormats.FullName)}");
+                    writer.WriteLine($"namespace {actionAnalyzer.Context.Symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormats.FullName)}");
                     writer.WriteLine("{");
                     writer.Indent++;
 
-                    GenerateClassWithUuidProperty(writer, node);
+                    GenerateClassWithUuidProperty(writer, actionAnalyzer);
 
                     writer.Indent--;
                     writer.WriteLine("}");
                 }
                 else
                 {
-                    GenerateClassWithUuidProperty(writer, node);
+                    GenerateClassWithUuidProperty(writer, actionAnalyzer);
                 }
 
-                hintNameIndexes[node.UUID!] = hintNameIndexes.TryGetValue(node.UUID!, out var index) ? ++index : 0;
+                var hintName = actionAnalyzer.Context.Symbol.Name;
+                hintNameIndexes[hintName] = hintNameIndexes.TryGetValue(hintName, out var index) ? ++index : 0;
 
                 // Add the source.
                 context.AddSource(
-                    hintName: $"{node.UUID}.{index}.g",
+                    hintName: $"{hintName}.{index}.g",
                     writer.InnerWriter.ToString());
             }
         }
 
         /// <summary>
-        /// Determines whether the specified <paramref name="node"/> can have a UUID property generated.
+        /// Determines whether the action within the specified <paramref name="actionAnalyzer"/> can have its UUID property generated.
         /// </summary>
-        /// <param name="node">The node.</param>
-        /// <returns><c>true</c> when the property can be generated; otherwise <c>false</c>.</returns>
-        static bool CanAutoGenerate(ActionClassContext node)
-            => node.UUID != null
-            && node.IsPartial
-            && node.Symbol is INamedTypeSymbol typedSymbol
+        /// <param name="actionAnalyzer">The <see cref="ActionAnalyzer"/>.</param>
+        /// <returns><c>true</c> when the instance is valid, and the symbol associated with it is capable of having its UUID property generated; otherwise <c>false</c>.</returns>
+        static bool CanAutoGenerate(ActionAnalyzer actionAnalyzer)
+            => actionAnalyzer.HasValidUUID
+            && actionAnalyzer.Context.IsPartial
+            && actionAnalyzer.Context.Symbol is INamedTypeSymbol typedSymbol
             && !typedSymbol.MemberNames.Contains(UUID_MEMBER_NAME);
 
         /// <summary>
-        /// Generates the partial class that contains the <see cref="ActionAttribute.UUID"/>.
+        /// Generates the partial class that contains the <see cref="ActionAttribute.UUID" />.
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
-        /// <param name="node">The node containing the class action information.</param>
-        static void GenerateClassWithUuidProperty(IndentedTextWriter writer, ActionClassContext node)
+        /// <param name="actionAnalyzer">The <see cref="ActionAnalyzer"/> that contains the action information.</param>
+        static void GenerateClassWithUuidProperty(IndentedTextWriter writer, ActionAnalyzer actionAnalyzer)
         {
-            writer.WriteLine($"partial class {node.Symbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}");
+            writer.WriteLine($"partial class {actionAnalyzer.Context.Symbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}");
             writer.WriteLine("{");
             writer.Indent++;
 
             writer.WriteLine("/// <summary>");
             writer.WriteLine("/// Gets the unique identifier of the action as defined by the <see cref=\"StreamDeck.ActionAttribute.UUID\"/>.");
             writer.WriteLine("/// </summary>");
-            writer.WriteLine($"public const string {UUID_MEMBER_NAME} = \"{node.UUID}\";");
+            writer.WriteLine($"public const string {UUID_MEMBER_NAME} = \"{actionAnalyzer.Action.UUID}\";");
 
             writer.Indent--;
             writer.WriteLine("}");

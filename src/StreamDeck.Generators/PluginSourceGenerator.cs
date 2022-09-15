@@ -1,6 +1,7 @@
 namespace StreamDeck.Generators
 {
     using Microsoft.CodeAnalysis;
+    using StreamDeck.Generators.Analyzers;
     using StreamDeck.Generators.IO;
 
     /// <summary>
@@ -48,9 +49,11 @@ namespace StreamDeck.Generators
             }
 #endif
 
-            ManifestJsonGenerator.Generate(context, syntaxReceiver.ManifestAttribute, syntaxReceiver.Actions, this.FileSystem);
-            UuidPropertySourceGenerator.Generate(context, syntaxReceiver.Actions);
-            HostExtensionsSourceGenerator.Generate(context, syntaxReceiver.Actions);
+            var manifestAnalyzer = new ManifestAnalyzer(context, syntaxReceiver);
+
+            ManifestJsonGenerator.Generate(context, manifestAnalyzer, this.FileSystem);
+            UuidPropertySourceGenerator.Generate(context, manifestAnalyzer);
+            //HostExtensionsSourceGenerator.Generate(context, syntaxReceiver.Actions);
         }
     }
 }

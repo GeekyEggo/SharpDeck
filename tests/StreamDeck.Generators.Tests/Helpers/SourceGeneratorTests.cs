@@ -25,9 +25,14 @@ namespace StreamDeck.Generators.Tests.Helpers
         /// </summary>
         /// <param name="generator">The generator.</param>
         /// <param name="sourceText">The source text.</param>
+        /// <param name="assemblyName">The assembly name.</param>
         /// <param name="optionsProvider">The optional <see cref="AnalyzerConfigOptionsProvider"/>.</param>
         /// <returns>The output compilation and diagnostics reported during execution of the <see cref="ISourceGenerator"/>.</returns>
-        internal static (Compilation? OutputCompilation, ImmutableArray<Diagnostic> Diagnostics) Run(ISourceGenerator generator, string sourceText, AnalyzerConfigOptionsProvider? optionsProvider = null)
+        internal static (Compilation? OutputCompilation, ImmutableArray<Diagnostic> Diagnostics) Run(
+            ISourceGenerator generator,
+            string sourceText,
+            string? assemblyName = DEFAULT_ASSEMBLY_NAME,
+            AnalyzerConfigOptionsProvider? optionsProvider = null)
         {
             // Parse the provided source text into a C# syntax tree.
             var syntaxTrees = new[] { CSharpSyntaxTree.ParseText(sourceText) };
@@ -43,7 +48,7 @@ namespace StreamDeck.Generators.Tests.Helpers
 
             // Create a Roslyn compilation for the syntax tree and references; we can always assert against a console application.
             var compilation = CSharpCompilation.Create(
-                DEFAULT_ASSEMBLY_NAME,
+                assemblyName ?? DEFAULT_ASSEMBLY_NAME,
                 syntaxTrees,
                 references,
                 options: new CSharpCompilationOptions(OutputKind.ConsoleApplication));

@@ -25,14 +25,6 @@ namespace StreamDeck
         internal const string DEFAULT_OS_WINDOWS_MINIMUM_VERSION = "10";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ManifestAttribute"/> class.
-        /// </summary>
-        public ManifestAttribute()
-            : base()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the list of application identifiers to monitor (applications launched or terminated) on Mac. See the applicationDidLaunch and applicationDidTerminate events.
         /// </summary>
         [IgnoreDataMember]

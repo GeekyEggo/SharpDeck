@@ -25,7 +25,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets the default image for the state.
         /// </summary>
-        public string Image { get; }
+        public string Image { get; internal set; }
 
         /// <summary>
         /// Gets or sets the default font family for the title
