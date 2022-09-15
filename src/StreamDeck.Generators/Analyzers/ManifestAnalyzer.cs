@@ -24,6 +24,7 @@ namespace StreamDeck.Generators.Analyzers
         public ManifestAnalyzer(GeneratorExecutionContext context, StreamDeckSyntaxReceiver syntaxReceiver)
         {
             this.GeneratorContext = context;
+            this.DiagnosticReporter = new DiagnosticReporter(context);
 
             // Analyze the manifest.
             if (syntaxReceiver.ManifestAttribute == null
@@ -44,7 +45,7 @@ namespace StreamDeck.Generators.Analyzers
             // Analyze the actions regardless of the manifest; this allows us to generate as much as we can later.
             foreach (var action in syntaxReceiver.Actions)
             {
-                var actionAnalyzer = new ActionAnalyzer(action, this.Manifest);
+                var actionAnalyzer = new ActionAnalyzer(action, this.Manifest, this.DiagnosticReporter);
                 this._actionAnalyzers.Add(actionAnalyzer);
 
                 if (this.Manifest != null
@@ -77,6 +78,11 @@ namespace StreamDeck.Generators.Analyzers
         public AttributeContext Context { get; }
 
         /// <summary>
+        /// Gets the diagnostic reporter.
+        /// </summary>
+        private DiagnosticReporter DiagnosticReporter { get; }
+
+        /// <summary>
         /// Gets the generator context.
         /// </summary>
         private GeneratorExecutionContext GeneratorContext { get; }
@@ -89,7 +95,11 @@ namespace StreamDeck.Generators.Analyzers
             // Author.
             if (string.IsNullOrWhiteSpace(this.Manifest!.Author))
             {
-                this.Manifest.Author = this.GetNamedValueOrDefault<AssemblyCompanyAttribute>(nameof(ManifestAttribute.Author), "User");
+                this.Manifest.Author = this.GetNamedValueOrDefault<AssemblyCompanyAttribute>(nameof(ManifestAttribute.Author), () =>
+                {
+                    this.DiagnosticReporter.ReportManifestAuthorMissing(this.Context);
+                    return "User";
+                });
             }
 
             // CodePath.
@@ -101,19 +111,24 @@ namespace StreamDeck.Generators.Analyzers
             // Description.
             if (string.IsNullOrWhiteSpace(this.Manifest.Description))
             {
-                this.Manifest.Description = this.GetNamedValueOrDefault<AssemblyDescriptionAttribute>(nameof(ManifestAttribute.Description), string.Empty);
+                this.Manifest.Description = this.GetNamedValueOrDefault<AssemblyDescriptionAttribute>(nameof(ManifestAttribute.Description), () =>
+                {
+                    this.DiagnosticReporter.ReportManifestDescriptionMissing(this.Context);
+                    return string.Empty;
+                });
             }
 
             // Icon.
-            if (this.Manifest.Icon == null)
+            if (string.IsNullOrWhiteSpace(this.Manifest.Icon))
             {
                 this.Manifest.Icon = this.Context.Data.GetNamedArgumentValueOrDefault(nameof(ManifestAttribute.Icon), () => string.Empty);
+                this.DiagnosticReporter.ReportManifestIconMissing(this.Context);
             }
 
             // Name.
             if (string.IsNullOrWhiteSpace(this.Manifest.Name))
             {
-                this.Manifest.Name = this.GetNamedValueOrDefault<AssemblyProductAttribute>(nameof(ManifestAttribute.Name), this.GeneratorContext.Compilation.Assembly.Identity.Name);
+                this.Manifest.Name = this.GetNamedValueOrDefault<AssemblyProductAttribute>(nameof(ManifestAttribute.Name), () => this.GeneratorContext.Compilation.Assembly.Identity.Name);
             }
 
             // Version.
@@ -136,13 +151,13 @@ namespace StreamDeck.Generators.Analyzers
         }
 
         /// <summary>
-        /// Gets the named argument value, otherwise constructor argument supplied to the <typeparamref name="TAttribute"/> on the assembly, finally falling back <paramref name="default"/>.
+        /// Gets the named argument value, otherwise constructor argument supplied to the <typeparamref name="TAttribute"/> on the assembly, finally falling back <paramref name="defaultFactory"/>.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute to search for on the assembly as a backup value.</typeparam>
         /// <param name="name">The name of the named argument on the <see cref="Context"/> to search for.</param>
-        /// <param name="default">The default fallback value.</param>
-        /// <returns>The value of the named argument, or the <typeparamref name="TAttribute"/> constructor argument, otherwise <paramref name="default"/>.</returns>
-        private string GetNamedValueOrDefault<TAttribute>(string name, string @default)
+        /// <param name="defaultFactory">The default fallback value factory.</param>
+        /// <returns>The value of the named argument, or the <typeparamref name="TAttribute"/> constructor argument, otherwise <paramref name="defaultFactory"/>.</returns>
+        private string GetNamedValueOrDefault<TAttribute>(string name, Func<string> defaultFactory)
         {
             return this.Context.Data.GetNamedArgumentValueOrDefault(name, () =>
             {
@@ -154,7 +169,7 @@ namespace StreamDeck.Generators.Analyzers
                     return assemblyValue;
                 }
 
-                return @default;
+                return defaultFactory();
             });
         }
     }

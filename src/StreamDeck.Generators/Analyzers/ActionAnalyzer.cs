@@ -15,15 +15,20 @@ namespace StreamDeck.Generators.Analyzers
         /// </summary>
         /// <param name="context">The <see cref="ActionClassContext"/>.</param>
         /// <param name="manifest">The <see cref="Manifest"/>.</param>
-        public ActionAnalyzer(ActionClassContext context, Manifest? manifest)
+        /// <param name="diagnosticReporter">The diagnostic reporter.</param>
+        public ActionAnalyzer(ActionClassContext context, Manifest? manifest, DiagnosticReporter diagnosticReporter)
         {
             this.Context = context;
+            this.DiagnosticReporter = new DiagnosticReporter(diagnosticReporter);
             this.Action = context.ActionAttribute.Data.CreateInstance<ActionAttribute>();
 
             this.SetDefaultValues(manifest);
             this.AddStates();
         }
 
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
         public ActionClassContext Context { get; }
 
         /// <summary>
@@ -37,14 +42,20 @@ namespace StreamDeck.Generators.Analyzers
         public bool HasValidUUID { get; private set; }
 
         /// <summary>
+        /// Gets the diagnostic reporter.
+        /// </summary>
+        private DiagnosticReporter DiagnosticReporter { get; }
+
+        /// <summary>
         /// Assigns the default values to the <see cref="ActionAttribute"/>.
         /// </summary>
         private void SetDefaultValues(Manifest? manifest)
         {
             // Icon.
-            if (this.Action.Icon == null)
+            if (string.IsNullOrWhiteSpace(this.Action.Icon))
             {
                 this.Action.Icon = string.Empty;
+                this.DiagnosticReporter.ReportActionIconMissing(this.Context.ActionAttribute);
             }
 
             // Name.
@@ -75,7 +86,7 @@ namespace StreamDeck.Generators.Analyzers
                 if (this.Action.States.Count == 0)
                 {
                     this.Action.StateImage = string.Empty;
-                    // todo: Warn no states defined.
+                    this.DiagnosticReporter.ReportActionStateImageMissing(this.Context.ActionAttribute);
                 }
 
                 return;

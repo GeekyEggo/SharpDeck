@@ -65,16 +65,12 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(
                 sourceText,
                 json,
-                "Test Project");
-
-            /*
-             * Manifest.Author
-             * Manifest.Description
-             * Manifest.Icon
-             * Manifest.Name
-             * Action.Icon
-             * Action.StateImage
-             */
+                "Test Project",
+                new ExpectedDiagnostic(3, 12, "SD1001", "Manifest 'Author' has defaulted to 'User'; consider adding a <Company> element to the project file", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SD1002", "Manifest 'Description' is not defined; consider adding a <Description> element to the project file", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SD1003", "Manifest 'Icon' is not defined; consider setting the 'ManifestAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(5, 2, "SD2001", "Action 'Icon' is not defined; consider setting the 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(5, 2, "SD2002", "Action 'StateImage' is not defined; consider setting the 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
         }
 
         /// <summary>
@@ -83,6 +79,59 @@ namespace StreamDeck.Generators.Tests
         [TestCase(TestName = "Generate manifest with information Assembly attributes")]
         public void Generate_ReadAssemblyInfo()
         {
+            // Arrange.
+            const string sourceText = """
+                using StreamDeck;
+                using System.Reflection;
+
+                [assembly: AssemblyCompany("Bob Smith")]
+                [assembly: AssemblyDescription("Hello world")]
+                [assembly: Manifest(Icon = "Plugin.png")]
+
+                [Action]
+                public class ActionOne {}
+                """;
+
+            var json = $$"""
+                {
+                    "Actions": [
+                        {
+                            "Icon": "",
+                            "Name": "ActionOne",
+                            "States": [
+                                {
+                                    "Image": ""
+                                }
+                            ],
+                            "UUID": "com.bobsmith.testproject.actionone"
+                        }
+                    ],
+                    "Author": "Bob Smith",
+                    "CodePath": "Test Project.exe",
+                    "Description": "Hello world",
+                    "Icon": "Plugin.png",
+                    "Name": "Test Project",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(
+                sourceText,
+                json,
+                "Test Project",
+                new ExpectedDiagnostic(8, 2, "SD2001", "Action 'Icon' is not defined; consider setting the 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(8, 2, "SD2002", "Action 'StateImage' is not defined; consider setting the 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
         }
 
         /// <summary>
@@ -91,6 +140,143 @@ namespace StreamDeck.Generators.Tests
         [TestCase(TestName = "Generate manifest with all information")]
         public void Generate_EverythingDefined()
         {
+            // Arrange.
+            const string sourceText = """
+                [assembly: StreamDeck.Manifest(
+                    Author = "Bob Smith",
+                    Category = "Tests",
+                    CategoryIcon = "Images/Category/Icon",
+                    CodePath = "default.exe",
+                    CodePathWin = "windows.exe",
+                    CodePathMac = "com.tests.example",
+                    Description = "Mock manifest",
+                    Icon = "Images/Icon",
+                    Name = "Example",
+                    PropertyInspectorPath = "pi/default.html",
+                    DefaultWindowSize = new[] { 100, 200 },
+                    Url = "https://example.com",
+                    Version = "1.2.3",
+                    OSWindowsMinimumVersion = "11",
+                    OSMacMinimumVersion = "10.11",
+                    SoftwareMinimumVersion = "5.0",
+                    ApplicationsToMonitorWin = new[] { "notepad.exe", "chrome.exe" },
+                    ApplicationsToMonitorMac = new[] { "com.apple.mail", "com.apple.safari" })]
+                """;
+
+            const string json = $$"""
+                {
+                    "ApplicationsToMonitor": {
+                        "mac": [
+                            "com.apple.mail",
+                            "com.apple.safari"
+                        ],
+                        "windows": [
+                            "notepad.exe",
+                            "chrome.exe"
+                        ]
+                    },
+                    "Author": "Bob Smith",
+                    "Category": "Tests",
+                    "CategoryIcon": "Images/Category/Icon",
+                    "CodePath": "default.exe",
+                    "CodePathMac": "com.tests.example",
+                    "CodePathWin": "windows.exe",
+                    "DefaultWindowSize": [
+                        100,
+                        200
+                    ],
+                    "Description": "Mock manifest",
+                    "Icon": "Images/Icon",
+                    "Name": "Example",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10.11",
+                            "Platform": "mac"
+                        },
+                        {
+                            "MinimumVersion": "11",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "PropertyInspectorPath": "pi/default.html",
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "URL": "https://example.com",
+                    "Version": "1.2.3"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(sourceText, json);
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Execute(GeneratorExecutionContext, StreamDeckSyntaxReceiver, Analyzers.ManifestAnalyzer)"/> generates profiles.
+        /// </summary>
+        [TestCase(TestName = "Generate profiles")]
+        public void Generate_Profiles()
+        {
+            // Arrange.
+            const string sourceText = """
+                using StreamDeck;
+                using System.Reflection;
+
+                [assembly: AssemblyCompany("Bob Smith")]
+                [assembly: AssemblyDescription("Hello world")]
+                [assembly: Manifest(Icon = "Plugin.png")]
+
+                [assembly: Profile("Profile 1", Device.StreamDeck)]
+                [assembly: Profile("Profile 2", Device.StreamDeckXL, Readonly = true, DontAutoSwitchWhenInstalled = true)]
+                [assembly: Profile("Profile 3", Device.StreamDeckPedal, Readonly = false, DontAutoSwitchWhenInstalled = false)]
+                """;
+
+            var json = $$"""
+                {
+                    "Author": "Bob Smith",
+                    "CodePath": "TestProject.exe",
+                    "Description": "Hello world",
+                    "Icon": "Plugin.png",
+                    "Name": "TestProject",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "Profiles": [
+                        {
+                            "DeviceType": 0,
+                            "DontAutoSwitchWhenInstalled": false,
+                            "Name": "Profile 1",
+                            "Readonly": false
+                        },
+                        {
+                            "DeviceType": 2,
+                            "DontAutoSwitchWhenInstalled": true,
+                            "Name": "Profile 2",
+                            "Readonly": true
+                        },
+                        {
+                            "DeviceType": 5,
+                            "DontAutoSwitchWhenInstalled": false,
+                            "Name": "Profile 3",
+                            "Readonly": false
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            // Act, assert.
+            VerifySuccess(
+                sourceText,
+                json);
         }
 
         /// <summary>
@@ -300,7 +486,7 @@ namespace StreamDeck.Generators.Tests
 
                 [assembly: AssemblyProduct("Super Cool Plugin")]
                 [assembly: AssemblyCompany("Bob Smith")]
-                [assembly: AssemblyDescription("Hello world, this is a test")]
+                [assembly: AssemblyDescription("Hello world, Hello world")]
                 [assembly: AssemblyVersion("12.34.56")]
                 [assembly: Manifest(Icon = "Plugin.png")]
 
@@ -326,7 +512,7 @@ namespace StreamDeck.Generators.Tests
                     ],
                     "Author": "Bob Smith",
                     "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
-                    "Description": "Hello world, this is a test",
+                    "Description": "Hello world, Hello world",
                     "Icon": "Plugin.png",
                     "Name": "Super Cool Plugin",
                     "OS": [
@@ -349,83 +535,7 @@ namespace StreamDeck.Generators.Tests
         */
         /*
         #region "TODO... again"
-        /// <summary>
-        /// Asserts <see cref="PluginSourceGenerator"/> generates a manifest file.
-        /// </summary>
-        [TestCase(TestName = "Create manifest from ManifestAttribute with full information")]
-        public void CreateManifestFromAttribute()
-        {
-            // Arrange.
-            const string sourceText = """
-                [assembly: StreamDeck.Manifest(
-                    Author = "Bob Smith",
-                    Category = "Tests",
-                    CategoryIcon = "Images/Category/Icon",
-                    CodePath = "default.exe",
-                    CodePathWin = "windows.exe",
-                    CodePathMac = "com.tests.example",
-                    Description = "Mock manifest",
-                    Icon = "Images/Icon",
-                    Name = "Example",
-                    PropertyInspectorPath = "pi/default.html",
-                    DefaultWindowSize = new[] { 100, 200 },
-                    Url = "https://example.com",
-                    Version = "1.2.3",
-                    OSWindowsMinimumVersion = "11",
-                    OSMacMinimumVersion = "10.11",
-                    SoftwareMinimumVersion = "5.0",
-                    ApplicationsToMonitorWin = new[] { "notepad.exe", "chrome.exe" },
-                    ApplicationsToMonitorMac = new[] { "com.apple.mail", "com.apple.safari" })]
-                """;
 
-            const string json = $$"""
-                {
-                    "ApplicationsToMonitor": {
-                        "mac": [
-                            "com.apple.mail",
-                            "com.apple.safari"
-                        ],
-                        "windows": [
-                            "notepad.exe",
-                            "chrome.exe"
-                        ]
-                    },
-                    "Author": "Bob Smith",
-                    "Category": "Tests",
-                    "CategoryIcon": "Images/Category/Icon",
-                    "CodePath": "default.exe",
-                    "CodePathMac": "com.tests.example",
-                    "CodePathWin": "windows.exe",
-                    "DefaultWindowSize": [
-                        100,
-                        200
-                    ],
-                    "Description": "Mock manifest",
-                    "Icon": "Images/Icon",
-                    "Name": "Example",
-                    "OS": [
-                        {
-                            "MinimumVersion": "10.11",
-                            "Platform": "mac"
-                        },
-                        {
-                            "MinimumVersion": "11",
-                            "Platform": "windows"
-                        }
-                    ],
-                    "PropertyInspectorPath": "pi/default.html",
-                    "SDKVersion": 2,
-                    "Software": {
-                        "MinimumVersion": "5.0"
-                    },
-                    "URL": "https://example.com",
-                    "Version": "1.2.3"
-                }
-                """;
-
-            // Act, assert.
-            VerifySuccess(sourceText, json);
-        }
 
         /// <summary>
         /// Asserts <see cref="PluginSourceGenerator"/> reads the assembly information, populating as much as possible.
@@ -439,7 +549,7 @@ namespace StreamDeck.Generators.Tests
                 using System.Reflection;
 
                 [assembly: Manifest]
-                [assembly: AssemblyDescription("Hello world, this is a test")]
+                [assembly: AssemblyDescription("Hello world, Hello world")]
                 [assembly: AssemblyCompany("Bob Smith")]
                 [assembly: AssemblyVersion("12.34.56")]
                 """;
@@ -448,7 +558,7 @@ namespace StreamDeck.Generators.Tests
                 {
                     "Author": "Bob Smith",
                     "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
-                    "Description": "Hello world, this is a test",
+                    "Description": "Hello world, Hello world",
                     "Icon": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.png",
                     "Name": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}",
                     "OS": [
@@ -507,66 +617,6 @@ namespace StreamDeck.Generators.Tests
                 new MockAnalyzerConfigOptionsProvider());
         }
 
-        /// <summary>
-        /// Asserts <see cref="PluginSourceGenerator"/> adds profiles to the manifest.
-        /// </summary>
-        [TestCase(TestName = "Create manifest with profiles from ProfileAttribute")]
-        public void CreateManifestWithProfiles()
-        {
-            // Arrange.
-            const string sourceText = """
-                using StreamDeck;
-
-                [assembly: Manifest]
-                [assembly: Profile("Profile 1", Device.StreamDeck)]
-                [assembly: Profile("Profile 2", Device.StreamDeckXL, Readonly = true, DontAutoSwitchWhenInstalled = true)]
-                [assembly: Profile("Profile 3", Device.StreamDeckPedal, Readonly = false, DontAutoSwitchWhenInstalled = false)]
-                """;
-
-            const string json = $$"""
-                {
-                    "Author": "",
-                    "CodePath": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.exe",
-                    "Description": "",
-                    "Icon": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}.png",
-                    "Name": "{{SourceGeneratorTests.DEFAULT_ASSEMBLY_NAME}}",
-                    "OS": [
-                        {
-                            "MinimumVersion": "10",
-                            "Platform": "windows"
-                        }
-                    ],
-                    "Profiles": [
-                        {
-                            "DeviceType": 0,
-                            "DontAutoSwitchWhenInstalled": false,
-                            "Name": "Profile 1",
-                            "Readonly": false
-                        },
-                        {
-                            "DeviceType": 2,
-                            "DontAutoSwitchWhenInstalled": true,
-                            "Name": "Profile 2",
-                            "Readonly": true
-                        },
-                        {
-                            "DeviceType": 5,
-                            "DontAutoSwitchWhenInstalled": false,
-                            "Name": "Profile 3",
-                            "Readonly": false
-                        }
-                    ],
-                    "SDKVersion": 2,
-                    "Software": {
-                        "MinimumVersion": "5.0"
-                    },
-                    "Version": "0.0.0"
-                }
-                """;
-
-            // Act, assert.
-            VerifySuccess(sourceText, json);
-        }
 
         /// <summary>
         /// Asserts <see cref="PluginSourceGenerator"/> writes classes with <see cref="ActionAttribute"/>.
