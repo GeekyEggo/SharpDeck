@@ -20,8 +20,8 @@ namespace StreamDeck.Generators.Analyzers
         /// Initializes a new instance of the <see cref="ManifestAnalyzer"/> class.
         /// </summary>
         /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
-        /// <param name="syntaxReceiver">The <see cref="PluginSyntaxReceiver"/> that contains the manifest and action information.</param>
-        public ManifestAnalyzer(GeneratorExecutionContext context, PluginSyntaxReceiver syntaxReceiver)
+        /// <param name="syntaxReceiver">The <see cref="StreamDeckSyntaxReceiver"/> that contains the manifest and action information.</param>
+        public ManifestAnalyzer(GeneratorExecutionContext context, StreamDeckSyntaxReceiver syntaxReceiver)
         {
             this.GeneratorContext = context;
 

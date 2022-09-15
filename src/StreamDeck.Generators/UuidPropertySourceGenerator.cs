@@ -7,19 +7,15 @@ namespace StreamDeck.Generators
     /// <summary>
     /// Generates the const UUID property for classes with <see cref="ActionAttribute"/>.
     /// </summary>
-    internal class UuidPropertySourceGenerator
+    internal class UuidPropertySourceGenerator : BaseSourceGenerator
     {
         /// <summary>
         /// The UUID member name.
         /// </summary>
         private const string UUID_MEMBER_NAME = "UUID";
 
-        /// <summary>
-        /// Generates the const UUID property for all actions within the <paramref name="manifestAnalyzer"/> that have a valid UUID.
-        /// </summary>
-        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
-        /// <param name="manifestAnalyzer">The <see cref="ManifestAnalyzer"/> that contains the actions.</param>
-        public static void Generate(GeneratorExecutionContext context, ManifestAnalyzer manifestAnalyzer)
+        /// <inheritdoc/>
+        internal override void Execute(GeneratorExecutionContext context, StreamDeckSyntaxReceiver syntaxReceiver, ManifestAnalyzer manifestAnalyzer)
         {
             var hintNameIndexes = new Dictionary<string, int>();
 

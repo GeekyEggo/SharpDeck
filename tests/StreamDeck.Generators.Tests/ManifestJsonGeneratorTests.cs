@@ -7,7 +7,7 @@ namespace StreamDeck.Generators.Tests
     using StreamDeck.Generators.Tests.Helpers;
 
     /// <summary>
-    /// Provides assertions for <see cref="ManifestJsonGenerator"/>, via the <see cref="PluginSourceGenerator"/>.
+    /// Provides assertions for <see cref="ManifestJsonGenerator"/>.
     /// </summary>
     [TestFixture]
     public class ManifestJsonGeneratorTests
@@ -1039,7 +1039,7 @@ namespace StreamDeck.Generators.Tests
 
             // Act.
             var (_, actualDiagnostics) = SourceGeneratorTests.Run(
-                new PluginSourceGenerator(fileSystem.Object),
+                new ManifestJsonGenerator(fileSystem.Object),
                 sourceText,
                 assemblyName);
 
@@ -1049,7 +1049,7 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="PluginSourceGenerator"/> when parsing <paramref name="sourceText"/> .
+        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="ManifestJsonGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="expectedDiagnostics">The expected collection of <see cref="Diagnostic"/>.</param>
@@ -1057,7 +1057,7 @@ namespace StreamDeck.Generators.Tests
             => VerifyFailure(sourceText, SourceGeneratorTests.DEFAULT_OPTIONS_PROVIDER, expectedDiagnostics);
 
         /// <summary>
-        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="PluginSourceGenerator"/> when parsing <paramref name="sourceText"/> .
+        /// Verifies the specified <paramref name="expectedDiagnostics"/> are added to the context from <see cref="ManifestJsonGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="optionsProvider">The <see cref="AnalyzerConfigOptionsProvider"/>.</param>
@@ -1069,7 +1069,7 @@ namespace StreamDeck.Generators.Tests
 
             // Act.
             var (_, actualDiagnostics) = SourceGeneratorTests.Run(
-                new PluginSourceGenerator(fileSystem.Object),
+                new ManifestJsonGenerator(fileSystem.Object),
                 sourceText,
                 optionsProvider: optionsProvider);
 

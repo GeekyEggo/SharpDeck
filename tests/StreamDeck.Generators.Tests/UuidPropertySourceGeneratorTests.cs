@@ -5,7 +5,7 @@ namespace StreamDeck.Generators.Tests
     using StreamDeck.Generators.Tests.Helpers;
 
     /// <summary>
-    /// Provides assertions for <see cref="UuidPropertySourceGenerator"/>, via the <see cref="PluginSourceGenerator"/>.
+    /// Provides assertions for <see cref="UuidPropertySourceGenerator"/>.
     /// </summary>
     [TestFixture]
     public class UuidPropertySourceGeneratorTests
@@ -243,12 +243,12 @@ namespace StreamDeck.Generators.Tests
 
             // Act.
             var (outputCompilation, _) = SourceGeneratorTests.Run(
-                new PluginSourceGenerator(fileSystem.Object),
+                new UuidPropertySourceGenerator(),
                 sourceText);
 
             // Assert.
             Assert.That(outputCompilation, Is.Not.Null);
-            Assert.That(outputCompilation.SyntaxTrees.Count(), Is.EqualTo(expectedSyntaxTrees.Length + 2), "Number of syntax trees differs"); // Add 2; the source text syntax tree, and the HostExtensions syntax tree.
+            Assert.That(outputCompilation.SyntaxTrees.Count(), Is.EqualTo(expectedSyntaxTrees.Length + 1), "Number of syntax trees differs");
 
             var actualSyntaxTrees = outputCompilation
                 .SyntaxTrees.Skip(1) // The source text syntax tree.
@@ -259,7 +259,7 @@ namespace StreamDeck.Generators.Tests
             {
                 Assert.Multiple(() =>
                 {
-                    Assert.That(actualSyntaxTrees[i].FilePath, Is.EqualTo($@"StreamDeck.Generators\StreamDeck.Generators.PluginSourceGenerator\{expectedSyntaxTrees[i].HintName}"), $"FilePath of {nameof(UuidPropertySourceGenerator)} differs");
+                    Assert.That(actualSyntaxTrees[i].FilePath, Is.EqualTo($@"StreamDeck.Generators\StreamDeck.Generators.UuidPropertySourceGenerator\{expectedSyntaxTrees[i].HintName}"), $"FilePath of {nameof(UuidPropertySourceGenerator)} differs");
                     Assert.That(actualSyntaxTrees[i].ToString(), Is.EqualTo(expectedSyntaxTrees[i].SourceText), $"SourceText of {nameof(UuidPropertySourceGenerator)} differs");
                 });
             }

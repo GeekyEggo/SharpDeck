@@ -10,15 +10,22 @@ namespace StreamDeck.Generators
     /// <summary>
     /// Generates the manifest.json file that accompanies a Stream Deck plugin.
     /// </summary>
-    internal class ManifestJsonGenerator
+    internal class ManifestJsonGenerator : BaseSourceGenerator
     {
         /// <summary>
-        /// Generates the manifest.json file for the manifest contained within the specified <paramref name="manifestAnalyzer"/>.
+        /// Initializes a new instance of the <see cref="ManifestJsonGenerator"/> class.
         /// </summary>
-        /// <param name="context">The <see cref="GeneratorExecutionContext"/>.</param>
-        /// <param name="manifestAnalyzer">The <see cref="ManifestAnalyzer"/> that contains the manifest to serialize.</param>
-        /// <param name="fileSystem">The <see cref="IFileSystem"/> used to write the file.</param>
-        public static void Generate(GeneratorExecutionContext context, ManifestAnalyzer manifestAnalyzer, IFileSystem fileSystem)
+        /// <param name="fileSystem">The file system.</param>
+        public ManifestJsonGenerator(IFileSystem fileSystem)
+            => this.FileSystem = fileSystem;
+
+        /// <summary>
+        /// Gets the file system.
+        /// </summary>
+        private IFileSystem FileSystem { get; }
+
+        /// <inheritdoc/>
+        internal override void Execute(GeneratorExecutionContext context, StreamDeckSyntaxReceiver syntaxReceiver, ManifestAnalyzer manifestAnalyzer)
         {
             if (!manifestAnalyzer.HasManifest)
             {
@@ -33,7 +40,7 @@ namespace StreamDeck.Generators
                 return;
             }
 
-            fileSystem.WriteAllText(
+            this.FileSystem.WriteAllText(
                 path: Path.Combine(projectDirectory, "manifest.json"),
                 contents: JsonSerializer.Serialize(manifestAnalyzer.Manifest!),
                 encoding: Encoding.UTF8);
