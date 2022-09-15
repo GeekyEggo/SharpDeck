@@ -82,7 +82,7 @@ namespace StreamDeck.Generators.Analyzers
             }
 
             this.Action.States.Clear();
-            foreach (var state in this.Context.StateAttributes.Select(s => s.As<StateAttribute>()))
+            foreach (var state in this.Context.StateAttributes.Select(s => s.Data.CreateInstance<StateAttribute>()))
             {
                 if (string.IsNullOrWhiteSpace(state.Image))
                 {

@@ -13,10 +13,10 @@ namespace StreamDeck.Generators.Tests
     public class ManifestJsonGeneratorTests
     {
         /// <summary>
-        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> from only attributes and defaults.
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> generates a manifest with only attributes and defaults.
         /// </summary>
-        [Test]
-        public void OnlyAttributes()
+        [TestCase(TestName = "Generate manifest with only attributes")]
+        public void Generate_OnlyAttributes()
         {
             // Arrange.
             const string sourceText = """
@@ -66,7 +66,108 @@ namespace StreamDeck.Generators.Tests
                 sourceText,
                 json,
                 "Test Project");
+
+            /*
+             * Manifest.Author
+             * Manifest.Description
+             * Manifest.Icon
+             * Manifest.Name
+             * Action.Icon
+             * Action.StateImage
+             */
         }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> generates a manifest with assembly attributes and defaults.
+        /// </summary>
+        [TestCase(TestName = "Generate manifest with information Assembly attributes")]
+        public void Generate_ReadAssemblyInfo()
+        {
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> generates a manifest with all information.
+        /// </summary>
+        [TestCase(TestName = "Generate manifest with all information")]
+        public void Generate_EverythingDefined()
+        {
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> warns when the StateImage and States are both defined.
+        /// </summary>
+        [TestCase(TestName = "Warn when action has StateImage and States defined")]
+        public void Warn_Action_HasStateImageAndStates()
+        {
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> warns when more than two states are defined.
+        /// </summary>
+        [TestCase(TestName = "Warn when action has too many states")]
+        public void Warn_Action_TooManyStates()
+        {
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> errors when required manifest fields are explicitly null.
+        /// </summary>
+        [TestCase(TestName = "Error when manifest has explicitly null required fields")]
+        public void Error_Manifest_FieldsNull()
+        {
+            /*
+             * Manifest.Author
+             * Manifest.CodePath
+             * Manifest.Description
+             * Manifest.Icon
+             * Manifest.Name
+             * Manifest.Version
+             * Manifest.SDKVersion
+             * Manifest.Software
+             */
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> errors when required action fields are explicitly null.
+        /// </summary>
+        [TestCase(TestName = "Error when action has explicitly null required fields")]
+        public void Error_Action_FieldsNull()
+        {
+            /*
+             * Action.Icon
+             * Action.Name
+             * Action.StatesImage
+             * Action.UUID
+             */
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> errors when required state fields are explicitly null.
+        /// </summary>
+        [TestCase(TestName = "Error when state has explicitly null required fields")]
+        public void Error_State_FieldsNull()
+        {
+            /*
+             * Action.Icon
+             * Action.Name
+             * Action.StatesImage
+             * Action.UUID
+             */
+        }
+
+        /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> errors when required profile fields are explicitly null.
+        /// </summary>
+        [TestCase(TestName = "Error when profile has explicitly null required fields")]
+        public void Error_Profile_FieldsNull()
+        {
+            /*
+             * Profile.Name
+             * Profile.DeviceType?
+             */
+        }
+
+        #region Old
 
         /*
         [Test]
@@ -920,9 +1021,10 @@ namespace StreamDeck.Generators.Tests
             VerifySuccess(sourceText, json);
         }
 
+        */
+
         #endregion
 
-        */
         /// <summary>
         /// Verifies the specified <paramref name="expectedJson"/> is generated from <see cref="PluginSourceGenerator"/> when parsing <paramref name="sourceText"/> .
         /// </summary>
