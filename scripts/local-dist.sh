@@ -3,16 +3,11 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 pushd $SCRIPTPATH/..
 
 dotnet clean
-dotnet pack ./src/StreamDeck/StreamDeck.csproj -c Debug -p:Version=$1
 
-# This must be registered as alocal  NuGet source.
-mv ./dist/StreamDeck.* ~/AppData/Local/NuGet/Local/
+dotnet pack -c Release -p:ContinuousIntegrationBuild=true -p:Version=$1
+dotnet nuget push ./dist/*.nupkg -s Local --skip-duplicate
+dotnet add ./examples/Counter/Counter.csproj package StreamDeck -v $1
 
-pushd ./examples/Counter
-rm -rf bin
-rm -rf obj
-dotnet add package StreamDeck -v $1
 dotnet restore
-popd
 
 popd
