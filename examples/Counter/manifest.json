@@ -2,7 +2,7 @@
     "Actions": [
         {
             "Icon": "Images/Action",
-            "Name": "Counter",
+            "Name": "Increment",
             "States": [
                 {
                     "FontSize": "18",

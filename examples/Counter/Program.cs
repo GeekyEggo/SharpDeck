@@ -3,8 +3,7 @@ using System.Collections.Concurrent;
 [assembly: Manifest(
     Category = "Counter",
     CategoryIcon = "Images/CategoryIcon",
-    Icon = "Images/PluginIcon",
-    OSWindowsMinimumVersion = "10")]
+    Icon = "Images/PluginIcon")]
 
 #if DEBUG
 System.Diagnostics.Debugger.Launch();
@@ -25,4 +24,4 @@ plugin.MapConnection(conn =>
     };
 });
 
-plugin.Run();
+plugin.RunPlugin();
