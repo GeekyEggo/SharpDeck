@@ -3,6 +3,7 @@ namespace StreamDeck.Generators.Extensions
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using StreamDeck.Generators.Analyzers;
 
     /// <summary>
     /// Provides extension methods for <see cref="ClassDeclarationSyntax"/>.

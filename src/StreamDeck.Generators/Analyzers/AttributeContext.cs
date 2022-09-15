@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators
+namespace StreamDeck.Generators.Analyzers
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;

@@ -4,6 +4,7 @@ namespace StreamDeck.Generators
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using StreamDeck.Generators.Analyzers;
 
     /// <summary>
     /// Provides information about a class, and its attributes, that represent a Stream Deck action.
