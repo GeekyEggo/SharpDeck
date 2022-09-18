@@ -4,6 +4,7 @@ namespace StreamDeck.Generators
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Generates extension methods on 'IHost'.
@@ -92,8 +93,14 @@ namespace StreamDeck.Generators
         /// <returns><c>true</c> when the node's symbol can be automatically mapped to an IHost; otherwise <c>false</c>.</returns>
         private static bool CanAutoGenerate(ActionAnalyzer actionAnalyzer)
         {
+            if (actionAnalyzer.Context.Symbol.TryGetAttribute<DoNotMapAttribute>(out var _))
+            {
+                return false;
+            }
+
             if (!actionAnalyzer.HasValidUUID)
             {
+                return false;
                 // TODO: Warn?
             }
 

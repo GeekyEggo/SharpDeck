@@ -63,5 +63,27 @@ namespace StreamDeck.Generators.Tests.Helpers
             driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
             return (outputCompilation, diagnostics);
         }
+
+        /// <summary>
+        /// Verifies <see cref="Compilation.SyntaxTrees"/> against the expected <paramref name="sources"/>.
+        /// </summary>
+        /// <param name="compilation">The compilation containing the syntax trees..</param>
+        /// <param name="sources">The expected sources.</param>
+        internal static void VerifySyntaxTrees(Compilation? compilation, params (string HintName, string SourceText)[] sources)
+        {
+            Assert.That(compilation, Is.Not.Null);
+
+            var actualSources = compilation.SyntaxTrees.Skip(1).ToArray();
+            Assert.That(actualSources, Has.Length.EqualTo(sources.Length));
+
+            for (var i = 0; i < sources.Length; i++)
+            {
+                Assert.Multiple(() =>
+                {
+                    Assert.That(actualSources[i].FilePath, Is.EqualTo(sources[i].HintName), $"FilePath of syntax trees differs");
+                    Assert.That(actualSources[i].ToString(), Is.EqualTo(sources[i].SourceText), $"SourceText of syntax tree differs");
+                });
+            }
+        }
     }
 }

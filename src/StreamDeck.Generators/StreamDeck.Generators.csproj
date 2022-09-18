@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include="..\StreamDeck.Abstractions\ActionAttribute.cs" Link="StreamDeck.Abstractions\ActionAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\Device.cs" Link="StreamDeck.Abstractions\Device.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\DoNotMapAttribute.cs" Link="StreamDeck.Abstractions\DoNotMapAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\ManifestAttribute.cs" Link="StreamDeck.Abstractions\ManifestAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\ProfileAttribute.cs" Link="StreamDeck.Abstractions\ProfileAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\SerializableSafeAttribute.cs" Link="StreamDeck.Abstractions\SerializableSafeAttribute.cs" />
