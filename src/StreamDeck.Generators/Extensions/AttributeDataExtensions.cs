@@ -41,8 +41,6 @@ namespace StreamDeck.Generators.Extensions
                 {
                     return value;
                 }
-
-                // todo: Naughty, a null or empty value should not be defined for this property.
             }
 
             return defaultFactory();

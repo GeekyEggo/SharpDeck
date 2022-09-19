@@ -103,6 +103,7 @@ namespace StreamDeck.Generators.Analyzers
         /// </summary>
         private void AddStates()
         {
+            // When no state attributes are defined, build one from the StateImage on the action attribute.
             if (this.Context.StateAttributes.Count == 0)
             {
                 if (this.Action.States.Count == 0)
@@ -114,21 +115,26 @@ namespace StreamDeck.Generators.Analyzers
                 return;
             }
 
-            this.Action.States.Clear();
-            foreach (var state in this.Context.StateAttributes.Select(s => s.Data.CreateInstance<StateAttribute>()))
+            // When there are state attributes defined; warn if StateImage is also defined.
+            if (this.Context.ActionAttribute.Node.TryGetNamedArgument(nameof(ActionAttribute.StateImage), out var arg))
             {
-                if (string.IsNullOrWhiteSpace(state.Image))
-                {
-                    state.Image = string.Empty;
-                }
+                this.DiagnosticReporter.ReportActionStateImageNotRequired(arg!.GetLocation());
+            }
 
-                if (this.Action.States.Count < 2)
+            // Reset the states on the action, and build them from the state attributes.
+            this.Action.States.Clear();
+            foreach (var stateContext in this.Context.StateAttributes)
+            {
+                if (this.Action.States.Count >= 2)
                 {
-                    this.Action.States.Add(state);
+                    this.DiagnosticReporter.ReportActionStateIgnored(stateContext);
                 }
                 else
                 {
-                    // todo: Warn state is ignored.
+                    var state = stateContext.Data.CreateInstance<StateAttribute>();
+                    state.Image ??= string.Empty;
+
+                    this.Action.States.Add(state);
                 }
             }
         }

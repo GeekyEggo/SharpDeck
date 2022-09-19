@@ -284,6 +284,67 @@ namespace StreamDeck.Generators.Tests
         [TestCase(TestName = "Warn when action has StateImage and States defined")]
         public void Warn_Action_HasStateImageAndStates()
         {
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest(
+                    Author = "Foo",
+                    Name = "Test",
+                    Icon = "Plugin.png",
+                    Description = "Hello world")]
+
+                [Action(
+                    Icon = "Action.png",
+                    StateImage = "Foo.png")]
+                [State("State1.png")]
+                [State("State2.png")]
+                public class ActionOne
+                {
+                }
+
+                """;
+
+            var json = """
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Action.png",
+                            "Name": "ActionOne",
+                            "States": [
+                                {
+                                    "Image": "State1.png"
+                                },
+                                {
+                                    "Image": "State2.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.actionone"
+                        }
+                    ],
+                    "Author": "Foo",
+                    "CodePath": "Test Project.exe",
+                    "Description": "Hello world",
+                    "Icon": "Plugin.png",
+                    "Name": "Test",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            VerifySuccess(
+                sourceText,
+                json,
+                "Test Project",
+                new ExpectedDiagnostic(11, 5, "SDA04", "Action 'StateImage' can be removed as one or more 'StateAttribute' are present", DiagnosticSeverity.Warning));
         }
 
         /// <summary>
@@ -292,6 +353,68 @@ namespace StreamDeck.Generators.Tests
         [TestCase(TestName = "Warn when action has too many states")]
         public void Warn_Action_TooManyStates()
         {
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest(
+                    Author = "Foo",
+                    Name = "Test",
+                    Icon = "Plugin.png",
+                    Description = "Hello world")]
+
+                [Action(Icon = "Action.png")]
+                [State("State1.png")]
+                [State("State2.png")]
+                [State("State3.png")]
+                [State("State4.png")]
+                public class ActionOne
+                {
+                }
+
+                """;
+
+            var json = """
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Action.png",
+                            "Name": "ActionOne",
+                            "States": [
+                                {
+                                    "Image": "State1.png"
+                                },
+                                {
+                                    "Image": "State2.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.actionone"
+                        }
+                    ],
+                    "Author": "Foo",
+                    "CodePath": "Test Project.exe",
+                    "Description": "Hello world",
+                    "Icon": "Plugin.png",
+                    "Name": "Test",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            VerifySuccess(
+                sourceText,
+                json,
+                "Test Project",
+                new ExpectedDiagnostic(12, 2, "SDA03", "Actions cannot have more than 2 states", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(13, 2, "SDA03", "Actions cannot have more than 2 states", DiagnosticSeverity.Warning));
         }
 
         /// <summary>

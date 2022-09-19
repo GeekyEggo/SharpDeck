@@ -71,25 +71,25 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Warns when the <see cref="ManifestAttribute.Description"/> has not been specified.
         /// </summary>
-        /// <param name="attribute">The manifest attribute context.</param>
-        public void ReportManifestDescriptionMissing(AttributeContext attribute)
+        /// <param name="manifestContext">The manifest attribute context.</param>
+        public void ReportManifestDescriptionMissing(AttributeContext manifestContext)
             => this.ReportWarning(
                 id: "SDM01",
                 title: $"Manifest '{nameof(ManifestAttribute.Description)}' is missing",
                 messageFormat: "Manifest '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { attribute.Node.GetLocation() },
+                locations: new[] { manifestContext.Node.GetLocation() },
                 messageArgs: new[] { nameof(ManifestAttribute.Description), nameof(ManifestAttribute) });
 
         /// <summary>
         /// Warns when the <see cref="ManifestAttribute.Icon"/> has not been specified.
         /// </summary>
-        /// <param name="attribute">The manifest attribute context.</param>
-        public void ReportManifestIconMissing(AttributeContext attribute)
+        /// <param name="manifestContext">The manifest attribute context.</param>
+        public void ReportManifestIconMissing(AttributeContext manifestContext)
              => this.ReportWarning(
                 id: "SDM02",
                 title: $"Manifest '{nameof(ManifestAttribute.Icon)}' is missing",
                 messageFormat: "Manifest '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { attribute.Node.GetLocation() },
+                locations: new[] { manifestContext.Node.GetLocation() },
                 messageArgs: new[] { nameof(ManifestAttribute.Icon), nameof(ManifestAttribute) });
 
         #endregion
@@ -99,26 +99,49 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Warns when the <see cref="ActionAttribute.Icon"/> has not been specified.
         /// </summary>
-        /// <param name="attribute">The action attribute context.</param>
-        public void ReportActionIconMissing(AttributeContext attribute)
+        /// <param name="actionContext">The action attribute context.</param>
+        public void ReportActionIconMissing(AttributeContext actionContext)
             => this.ReportWarning(
                 id: "SDA01",
                 title: $"Action '{nameof(ActionAttribute.Icon)}' is missing",
                 messageFormat: "Action '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { attribute.Node.GetLocation() },
+                locations: new[] { actionContext.Node.GetLocation() },
                 messageArgs: new[] { nameof(ActionAttribute.Icon), nameof(ActionAttribute) });
 
         /// <summary>
         /// Warns when the <see cref="ActionAttribute.StateImage"/> has not been specified.
         /// </summary>
-        /// <param name="attribute">The action attribute context.</param>
-        public void ReportActionStateImageMissing(AttributeContext attribute)
+        /// <param name="actionContext">The action attribute context.</param>
+        public void ReportActionStateImageMissing(AttributeContext actionContext)
             => this.ReportWarning(
                 id: "SDA02",
                 title: $"Action '{nameof(ActionAttribute.StateImage)}' is missing",
                 messageFormat: "Action '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { attribute.Node.GetLocation() },
+                locations: new[] { actionContext.Node.GetLocation() },
                 messageArgs: new[] { nameof(ActionAttribute.StateImage), nameof(ActionAttribute) });
+
+        /// <summary>
+        /// Warns when the <see cref="ActionAttribute"/> has more than two <see cref="StateAttribute"/>.
+        /// </summary>
+        /// <param name="stateContext">The context that contains information about the state.</param>
+        public void ReportActionStateIgnored(AttributeContext stateContext)
+            => this.ReportWarning(
+                id: "SDA03",
+                title: "Action state ignored; too many states",
+                messageFormat: "Actions cannot have more than 2 states",
+                locations: new[] { stateContext.Node.GetLocation() });
+
+        /// <summary>
+        /// Warns when the <see cref="ActionAttribute.StateImage"/> is not required as the <see cref="StateAttribute"/> is present.
+        /// </summary>
+        /// <param name="location">The location of the definition.</param>
+        public void ReportActionStateImageNotRequired(Location location)
+            => this.ReportWarning(
+                id: "SDA04",
+                title: $"Unnecessary '{nameof(ActionAttribute.StateImage)}'",
+                messageFormat: "Action '{0}' can be removed as one or more '{1}' are present",
+                locations: new[] { location },
+                messageArgs: new[] { nameof(ActionAttribute.StateImage), nameof(StateAttribute) });
 
         #endregion
 
