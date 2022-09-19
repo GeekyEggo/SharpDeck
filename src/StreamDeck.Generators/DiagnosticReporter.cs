@@ -69,28 +69,16 @@ namespace StreamDeck.Generators
         #region Manifest Analyzer
 
         /// <summary>
-        /// Warns when the <see cref="ManifestAttribute.Author"/> has not been specified, and has defaulted to 'User'.
-        /// </summary>
-        /// <param name="attribute">The manifest attribute context.</param>
-        public void ReportManifestAuthorMissing(AttributeContext attribute)
-            => this.ReportWarning(
-                id: "SD1001",
-                title: $"Manifest '{nameof(ManifestAttribute.Author)}' is missing",
-                messageFormat: "Manifest '{0}' has defaulted to 'User'; consider adding a <Company> element to the project file",
-                locations: new[] { attribute.Node.GetLocation() },
-                messageArgs: nameof(ManifestAttribute.Author));
-
-        /// <summary>
         /// Warns when the <see cref="ManifestAttribute.Description"/> has not been specified.
         /// </summary>
         /// <param name="attribute">The manifest attribute context.</param>
         public void ReportManifestDescriptionMissing(AttributeContext attribute)
             => this.ReportWarning(
-                id: "SD1002",
+                id: "SDM01",
                 title: $"Manifest '{nameof(ManifestAttribute.Description)}' is missing",
-                messageFormat: "Manifest '{0}' is not defined; consider adding a <Description> element to the project file",
+                messageFormat: "Manifest '{0}' not defined; consider setting '{1}.{0}'",
                 locations: new[] { attribute.Node.GetLocation() },
-                messageArgs: nameof(ManifestAttribute.Description));
+                messageArgs: new[] { nameof(ManifestAttribute.Description), nameof(ManifestAttribute) });
 
         /// <summary>
         /// Warns when the <see cref="ManifestAttribute.Icon"/> has not been specified.
@@ -98,9 +86,9 @@ namespace StreamDeck.Generators
         /// <param name="attribute">The manifest attribute context.</param>
         public void ReportManifestIconMissing(AttributeContext attribute)
              => this.ReportWarning(
-                id: "SD1003",
+                id: "SDM02",
                 title: $"Manifest '{nameof(ManifestAttribute.Icon)}' is missing",
-                messageFormat: "Manifest '{0}' is not defined; consider setting the '{1}.{0}'",
+                messageFormat: "Manifest '{0}' not defined; consider setting '{1}.{0}'",
                 locations: new[] { attribute.Node.GetLocation() },
                 messageArgs: new[] { nameof(ManifestAttribute.Icon), nameof(ManifestAttribute) });
 
@@ -114,9 +102,9 @@ namespace StreamDeck.Generators
         /// <param name="attribute">The action attribute context.</param>
         public void ReportActionIconMissing(AttributeContext attribute)
             => this.ReportWarning(
-                id: "SD2001",
+                id: "SDA01",
                 title: $"Action '{nameof(ActionAttribute.Icon)}' is missing",
-                messageFormat: "Action '{0}' is not defined; consider setting the '{1}.{0}'",
+                messageFormat: "Action '{0}' not defined; consider setting '{1}.{0}'",
                 locations: new[] { attribute.Node.GetLocation() },
                 messageArgs: new[] { nameof(ActionAttribute.Icon), nameof(ActionAttribute) });
 
@@ -126,9 +114,9 @@ namespace StreamDeck.Generators
         /// <param name="attribute">The action attribute context.</param>
         public void ReportActionStateImageMissing(AttributeContext attribute)
             => this.ReportWarning(
-                id: "SD2002",
+                id: "SDA02",
                 title: $"Action '{nameof(ActionAttribute.StateImage)}' is missing",
-                messageFormat: "Action '{0}' is not defined; consider setting the '{1}.{0}'",
+                messageFormat: "Action '{0}' not defined; consider setting '{1}.{0}'",
                 locations: new[] { attribute.Node.GetLocation() },
                 messageArgs: new[] { nameof(ActionAttribute.StateImage), nameof(ActionAttribute) });
 
@@ -142,7 +130,7 @@ namespace StreamDeck.Generators
         /// <param name="locations">The locations associated with the assembly that attempted to generate the manifest.json file..</param>
         public void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
             => this.ReportError(
-                id: "SD1010",
+                id: "SDP01",
                 title: "Generating a manifest.json requires a project directory",
                 messageFormat: "Failed to generate manifest JSON file as the project's directory is unknown. Consider creating a manifest.json file manually.",
                 MANIFEST_HELP_LINK,

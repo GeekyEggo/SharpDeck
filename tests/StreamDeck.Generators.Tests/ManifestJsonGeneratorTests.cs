@@ -39,10 +39,10 @@ namespace StreamDeck.Generators.Tests
                                     "Image": ""
                                 }
                             ],
-                            "UUID": "com.user.testproject.actionone"
+                            "UUID": "com.testproject.testproject.actionone"
                         }
                     ],
-                    "Author": "User",
+                    "Author": "Test Project",
                     "CodePath": "Test Project.exe",
                     "Description": "",
                     "Icon": "",
@@ -66,11 +66,10 @@ namespace StreamDeck.Generators.Tests
                 sourceText,
                 json,
                 "Test Project",
-                new ExpectedDiagnostic(3, 12, "SD1001", "Manifest 'Author' has defaulted to 'User'; consider adding a <Company> element to the project file", DiagnosticSeverity.Warning),
-                new ExpectedDiagnostic(3, 12, "SD1002", "Manifest 'Description' is not defined; consider adding a <Description> element to the project file", DiagnosticSeverity.Warning),
-                new ExpectedDiagnostic(3, 12, "SD1003", "Manifest 'Icon' is not defined; consider setting the 'ManifestAttribute.Icon'", DiagnosticSeverity.Warning),
-                new ExpectedDiagnostic(5, 2, "SD2001", "Action 'Icon' is not defined; consider setting the 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
-                new ExpectedDiagnostic(5, 2, "SD2002", "Action 'StateImage' is not defined; consider setting the 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
+                new ExpectedDiagnostic(3, 12, "SDM01", "Manifest 'Description' not defined; consider setting 'ManifestAttribute.Description'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SDM02", "Manifest 'Icon' not defined; consider setting 'ManifestAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(5, 2, "SDA01", "Action 'Icon' not defined; consider setting 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(5, 2, "SDA02", "Action 'StateImage' not defined; consider setting 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
         }
 
         /// <summary>
@@ -130,8 +129,8 @@ namespace StreamDeck.Generators.Tests
                 sourceText,
                 json,
                 "Test Project",
-                new ExpectedDiagnostic(8, 2, "SD2001", "Action 'Icon' is not defined; consider setting the 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
-                new ExpectedDiagnostic(8, 2, "SD2002", "Action 'StateImage' is not defined; consider setting the 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
+                new ExpectedDiagnostic(8, 2, "SDA01", "Action 'Icon' not defined; consider setting 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(8, 2, "SDA02", "Action 'StateImage' not defined; consider setting 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
         }
 
         /// <summary>

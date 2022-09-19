@@ -45,7 +45,7 @@ namespace StreamDeck.Generators.Analyzers
             // Analyze the actions regardless of the manifest; this allows us to generate as much as we can later.
             foreach (var action in syntaxReceiver.Actions)
             {
-                var actionAnalyzer = new ActionAnalyzer(action, this.Manifest, this.DiagnosticReporter);
+                var actionAnalyzer = new ActionAnalyzer(this.GeneratorContext, action, this.Manifest, this.DiagnosticReporter);
                 this._actionAnalyzers.Add(actionAnalyzer);
 
                 if (this.Manifest != null
@@ -95,11 +95,7 @@ namespace StreamDeck.Generators.Analyzers
             // Author.
             if (string.IsNullOrWhiteSpace(this.Manifest!.Author))
             {
-                this.Manifest.Author = this.GetNamedValueOrDefault<AssemblyCompanyAttribute>(nameof(ManifestAttribute.Author), () =>
-                {
-                    this.DiagnosticReporter.ReportManifestAuthorMissing(this.Context);
-                    return "User";
-                });
+                this.Manifest.Author = this.GetNamedValueOrDefault<AssemblyCompanyAttribute>(nameof(ManifestAttribute.Author), () => this.GeneratorContext.Compilation.Assembly.Identity.Name);
             }
 
             // CodePath.

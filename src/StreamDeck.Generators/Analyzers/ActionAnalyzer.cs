@@ -16,8 +16,9 @@ namespace StreamDeck.Generators.Analyzers
         /// <param name="context">The <see cref="ActionClassContext"/>.</param>
         /// <param name="manifest">The <see cref="Manifest"/>.</param>
         /// <param name="diagnosticReporter">The diagnostic reporter.</param>
-        public ActionAnalyzer(ActionClassContext context, Manifest? manifest, DiagnosticReporter diagnosticReporter)
+        public ActionAnalyzer(GeneratorExecutionContext generatorContext, ActionClassContext context, Manifest? manifest, DiagnosticReporter diagnosticReporter)
         {
+            this.GeneratorContext = generatorContext;
             this.Context = context;
             this.DiagnosticReporter = new DiagnosticReporter(diagnosticReporter);
             this.Action = context.ActionAttribute.Data.CreateInstance<ActionAttribute>();
@@ -47,6 +48,30 @@ namespace StreamDeck.Generators.Analyzers
         private DiagnosticReporter DiagnosticReporter { get; }
 
         /// <summary>
+        /// Gets the generator context.
+        /// </summary>
+        private GeneratorExecutionContext GeneratorContext { get; }
+
+        /// <summary>
+        /// Gets the first safe UUID segment from the specified <paramref name="values"/>, that isn't <see cref="string.Empty"/>.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>The first safe UUID segment; otherwise <see cref="string.Empty"/>.</returns>
+        static string GetUUIDSegment(params string?[] values)
+        {
+            foreach (var value in values)
+            {
+                var safeValue = Regex.Replace(value?.ToLowerInvariant() ?? string.Empty, "[^a-z0-9\\-]+", string.Empty);
+                if (!string.IsNullOrWhiteSpace(safeValue))
+                {
+                    return safeValue;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Assigns the default values to the <see cref="ActionAttribute"/>.
         /// </summary>
         private void SetDefaultValues(Manifest? manifest)
@@ -67,10 +92,7 @@ namespace StreamDeck.Generators.Analyzers
             // UUID.
             if (string.IsNullOrWhiteSpace(this.Action.UUID))
             {
-                static string GetSegmnet(string? value)
-                    => value is null ? string.Empty : Regex.Replace(value.ToLowerInvariant(), "[^a-z0-9\\-]+", string.Empty);
-
-                this.Action.UUID = $"com.{GetSegmnet(manifest?.Author)}.{GetSegmnet(manifest?.Name)}.{GetSegmnet(this.Action.Name)}";
+                this.Action.UUID = $"com.{GetUUIDSegment(manifest?.Author, this.GeneratorContext.Compilation.Assembly.Identity.Name, "user")}.{GetUUIDSegment(manifest?.Name, this.GeneratorContext.Compilation.Assembly.Identity.Name, "plugin")}.{GetUUIDSegment(this.Action.Name)}";
             }
 
             this.HasValidUUID = Regex.IsMatch(this.Action.UUID, @"^[a-z0-9\-]+\.[a-z0-9\-]+\.[a-z0-9\-]+\.[a-z0-9\-]+$");
