@@ -1,20 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
+    <Authors>Richard</Authors>
     <Description>A counter plugin that demonstrates Stream Deck .NET, from Stream Deck Community.</Description>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Company>GeekyEggo</Company>
-    <Product>Counter</Product>
     <Version>1.0.0</Version>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <IsDevelopingLibrary>true</IsDevelopingLibrary>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="StreamDeck" Version="0.0.2-beta1" />
+  <Import Project="..\..\src\StreamDeck\build\StreamDeck.targets" Condition="'$(IsDevelopingLibrary)' == 'true'"/>
+
+  <ItemGroup Condition="'$(IsDevelopingLibrary)' == 'true'">
+    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj"/>
+    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj"/>
+    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj"/>
+    <ProjectReference Include="..\..\src\StreamDeck.Generators\StreamDeck.Generators.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsDevelopingLibrary)' == 'false'">
+    <PackageReference Include="StreamDeck" Version="0.0.4-beta1" />
   </ItemGroup>
 
   <ItemGroup>
