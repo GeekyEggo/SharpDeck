@@ -17,7 +17,6 @@
     -->
     <PropertyGroup>
         <LaunchSettingsFilePath>$(ProjectDir)Properties\launchSettings.json</LaunchSettingsFilePath>
-        <PluginManifestFilePath>$(ProjectDir)\manifest.json</PluginManifestFilePath>
     </PropertyGroup>
 
     <Target Name="WriteDefaultLaunchSettings" BeforeTargets="PreBuildEvent" Condition="!$([System.IO.File]::Exists('$(LaunchSettingsFilePath)'))">
@@ -53,10 +52,10 @@
             <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Company)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_author>
             <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Authors)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_author>
             <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(AssemblyName)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_author>
-            <_author Condition="'$(_author) == ''">user</_author>
+            <_author Condition="'$(_author)' == ''">user</_author>
             <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Product)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_name>
             <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(AssemblyName)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_name>
-            <_name Condition="'$(_name) == ''">plugin</_name>
+            <_name Condition="'$(_name)' == ''">plugin</_name>
             <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(_author).$(_name).sdPlugin\</OutputPath>
             <OutDir>$(OutputPath)</OutDir>
             <TargetDir>$(OutputPath)</TargetDir>
@@ -78,14 +77,14 @@
         Copy the manifest.json to the output path.
         NB. This is deliberately not part of the build process; if it were, the source generator would re-run.
     -->
-    <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent" Condition="$([System.IO.File]::Exists('$(PluginManifestFilePath)'))">
+    <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent" Condition="$([System.IO.File]::Exists('$(ProjectDir)manifest.json'))">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
     </Target>
 
     <!--
         Copy the manifest.json to the publish directory after publishing the plugin.
     -->
-    <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish" Condition="$([System.IO.File]::Exists('$(PluginManifestFilePath)'))">
+    <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish" Condition="$([System.IO.File]::Exists('$(ProjectDir)manifest.json'))">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
     </Target>
 
