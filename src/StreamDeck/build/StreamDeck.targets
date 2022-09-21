@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+    <PropertyGroup>
+        <_invalidUUIDCharsRegex>[^A-Za-z0-9\-\.]+</_invalidUUIDCharsRegex>
+        <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Company)', '$(_invalidUUIDCharsRegex)', '').ToLower())</_author>
+        <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Authors)', '$(_invalidUUIDCharsRegex)', '').ToLower())</_author>
+        <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(AssemblyName)', '$(_invalidUUIDCharsRegex)', '').ToLower())</_author>
+        <_author Condition="'$(_author)' == ''">user</_author>
+        <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Product)', '$(_invalidUUIDCharsRegex)', '').ToLower())</_name>
+        <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Title)', '$(_invalidUUIDCharsRegex)', '').ToLower())</_name>
+        <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(AssemblyName)', '$(_invalidUUIDCharsRegex)', '').ToLower())</_name>
+        <_name Condition="'$(_name)' == ''">plugin</_name>
+
+        <StreamDeckPluginPath>$(APPDATA)\Elgato\StreamDeck\Plugins\</StreamDeckPluginPath>
+        <PluginDirectoryName>com.$(_author).$(_name).sdPlugin</PluginDirectoryName>
+        <PluginPath>$(StreamDeckPluginPath)$(PluginDirectoryName)\</PluginPath>
+    </PropertyGroup>
+
     <!--
         Add the default recommended global usings.
     -->
@@ -15,11 +31,7 @@
         Create the default launchSettings.json file; this enables user to debug more easily.
         NB. Ensure we don't override any existing profiles the user might have.
     -->
-    <PropertyGroup>
-        <LaunchSettingsFilePath>$(ProjectDir)Properties\launchSettings.json</LaunchSettingsFilePath>
-    </PropertyGroup>
-
-    <Target Name="WriteDefaultLaunchSettings" BeforeTargets="PreBuildEvent" Condition="!$([System.IO.File]::Exists('$(LaunchSettingsFilePath)'))">
+    <Target Name="WriteDefaultLaunchSettings" BeforeTargets="PreBuildEvent" Condition="!$([System.IO.File]::Exists('$(ProjectDir)Properties\launchSettings.json'))">
         <PropertyGroup>
             <_launchSettingsContents>
                 <![CDATA[{
@@ -35,57 +47,54 @@
         </PropertyGroup>
 
         <WriteLinesToFile
-          File="$(LaunchSettingsFilePath)"
-          Lines="$(_launchSettingsContents)"
-          Overwrite="false"/>
+            File="$(ProjectDir)Properties\launchSettings.json"
+            Lines="$(_launchSettingsContents)"
+            Overwrite="false"/>
     </Target>
 
     <!--
-        Configure the output path; this enables the plugin to be installed and run seamless during debugging.
-        NB. When an output path is already specified, do nothing.
+        Copy the manifest.json file to the output path.
+        NB. This is intentionally not part of the build process; if it were, the source generator would re-run.
     -->
-    <Target Name="UpdateOutPathToPluginsFolder"
-            BeforeTargets="PrepareForBuild"
-            Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And ('$(OutputPath)' == 'bin\$(Configuration)\$(TargetFramework)\' Or '$(OutputPath)' == 'bin\$(Configuration)\')">
-        <PropertyGroup>
-            <InvalidUUIDCharsRegex>[^A-Za-z0-9\-\.]+</InvalidUUIDCharsRegex>
-            <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Company)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_author>
-            <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Authors)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_author>
-            <_author Condition="'$(_author)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(AssemblyName)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_author>
-            <_author Condition="'$(_author)' == ''">user</_author>
-            <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(Product)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_name>
-            <_name Condition="'$(_name)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(AssemblyName)', '$(InvalidUUIDCharsRegex)', '').ToLower())</_name>
-            <_name Condition="'$(_name)' == ''">plugin</_name>
-            <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.$(_author).$(_name).sdPlugin\</OutputPath>
-            <OutDir>$(OutputPath)</OutDir>
-            <TargetDir>$(OutputPath)</TargetDir>
-            <ProjectDepsFilePath>$(OutputPath)$(ProjectDepsFileName)</ProjectDepsFilePath>
-            <ProjectRuntimeConfigFilePath>$(OutputPath)$(ProjectRuntimeConfigFileName)</ProjectRuntimeConfigFilePath>
-    </PropertyGroup>
-
-        <Message Text="Installing plugin -> $(OutputPath)" Importance="high" />
-    </Target>
-
-    <!--
-        Kill the Stream Deck process when installing directly to the plugins folder.
-    -->
-    <Target Name="KillStreamDeckProcess" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And $(OutputPath.Contains('Elgato\StreamDeck\Plugins'))">
-        <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
-    </Target>
-
-    <!--
-        Copy the manifest.json to the output path.
-        NB. This is deliberately not part of the build process; if it were, the source generator would re-run.
-    -->
-    <Target Name="GeneratePluginManifest" AfterTargets="PostBuildEvent" Condition="$([System.IO.File]::Exists('$(ProjectDir)manifest.json'))">
+    <Target Name="CopyPluginManifest" Condition="$([System.IO.File]::Exists('$(ProjectDir)manifest.json'))">
         <Copy SourceFiles="manifest.json" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
     </Target>
 
     <!--
-        Copy the manifest.json to the publish directory after publishing the plugin.
+        Kills the StreamDeck.exe process, allowing the plugin to be copied to the plugins folder.
     -->
-    <Target Name="GeneratePluginManifestForPublish" AfterTargets="Publish" Condition="$([System.IO.File]::Exists('$(ProjectDir)manifest.json'))">
-        <Copy SourceFiles="manifest.json" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+    <Target Name="KillStreamDeckProcess">
+        <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
     </Target>
 
+    <!--
+        Deletes all previous plugins, installed as part of this project, from the Stream Deck plugins folder.
+    -->
+    <Target Name="CleanPluginsFolder" BeforeTargets="Clean" DependsOnTargets="KillStreamDeckProcess">
+        <ItemGroup>
+            <_previousPluginDirectoryNames Include="$(BaseIntermediateOutputPath)StreamDeck\*.file" />
+            <_previousPluginPaths Include="$(StreamDeckPluginPath)%(_previousPluginDirectoryNames.FileName)\" />
+            <_previousPluginPaths Remove="$(StreamDeckPluginPath)\" />
+            <_previousPluginPaths Remove="$(StreamDeckPluginPath)\..*" />
+        </ItemGroup>
+
+        <Message Text="Removing plugin -> %(_previousPluginPaths.Directory)" Importance="high" Condition="'@(_previousPluginPaths->Count())' &gt; 0" />
+
+        <RemoveDir Directories="@(_previousPluginPaths)" />
+        <Delete Files="@(_previousPluginDirectoryNames)" />
+    </Target>
+
+    <!--
+        Copies the output of the build to the Stream Deck plugins folder.
+    -->
+    <Target Name="CopyFilesToPluginsFolder" AfterTargets="PostBuildEvent" DependsOnTargets="CopyPluginManifest;KillStreamDeckProcess" Condition="'$(PublishProtocol)' == ''">
+        <ItemGroup>
+            <PluginFilesToCopy Include="$(OutputPath)**\*" />
+        </ItemGroup>
+
+        <Message Text="Installing plugin -> $(PluginPath)" Importance="high" />
+
+        <Copy SourceFiles="@(PluginFilesToCopy)" DestinationFiles="$(PluginPath)%(RecursiveDir)%(Filename)%(Extension)" />
+        <WriteLinesToFile File="$(BaseIntermediateOutputPath)StreamDeck\$(PluginDirectoryName).file" Lines="" Overwrite="false"/>
+    </Target>
 </Project>
