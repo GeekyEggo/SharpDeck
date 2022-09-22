@@ -1,7 +1,6 @@
 namespace StreamDeck.Extensions.Hosting
 {
-    using System.Reflection;
-    using System.Runtime.Versioning;
+    using System;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using StreamDeck.Routing;
@@ -11,19 +10,6 @@ namespace StreamDeck.Extensions.Hosting
     /// </summary>
     public static class HostExtensions
     {
-#if NET6_0_OR_GREATER
-        /// <summary>
-        /// Maps the <see cref="IStreamDeckActionIdentifier.UUID"/> to the <typeparamref name="TAction"/> type, allowing for <see cref="IStreamDeckConnection"/> events to be routed to an action instance.
-        /// </summary>
-        /// <typeparam name="TAction">The type of the action to route events to.</typeparam>
-        /// <param name="host">The <see cref="IHost"/>.</param>
-        /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
-        [RequiresPreviewFeatures]
-        public static IHost MapAction<TAction>(this IHost host)
-            where TAction : StreamDeckAction, IStreamDeckActionIdentifier
-            => host.MapAction<TAction>(TAction.UUID);
-#endif
-
         /// <summary>
         /// Maps the specified action <paramref name="uuid"/> to the <typeparamref name="TAction"/> type, allowing for <see cref="IStreamDeckConnection"/> events to be routed to an action instance.
         /// </summary>
