@@ -26,7 +26,7 @@ namespace StreamDeck.Extensions.Hosting
 
                 // Routing.
                 services.TryAddSingleton<IActionFactory, ActivatorUtilitiesActionFactory>();
-                services.TryAddSingleton<IEventDispatcher, AsyncEventDispatcher>();
+                services.TryAddSingleton<IDispatcher, AsyncDispatcher>();
                 services.TryAddSingleton<ActionRouter>();
 
                 // Hosting.

@@ -29,7 +29,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Never);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<KeyPayload>, Task>>(), args), Times.Never);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), It.IsAny<string>()), Times.Never);
             Assert.That(actions, Is.Empty);
         }
 
@@ -41,7 +41,7 @@ namespace StreamDeck.Tests.Routing
         {
             // Arrange.
             var actionFactory = new Mock<IActionFactory>();
-            var eventDispatcher = new Mock<IEventDispatcher>();
+            var eventDispatcher = new Mock<IDispatcher>();
             var connection = new Mock<IStreamDeckConnection>();
             var router = new ActionRouter(actionFactory.Object, eventDispatcher.Object, connection.Object, null);
 
@@ -71,7 +71,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<ActionPayload>, Task>>(), args), Times.Exactly(2)); // This caters for WillAppear.
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnDidReceiveSettings(args), Times.Once);
         }
 
@@ -93,7 +93,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<KeyPayload>, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnKeyDown(args), Times.Once);
         }
 
@@ -115,7 +115,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<KeyPayload>, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnKeyUp(args), Times.Once);
         }
 
@@ -137,7 +137,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnPropertyInspectorDidAppear(args), Times.Once);
         }
 
@@ -159,7 +159,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnPropertyInspectorDidDisappear(args), Times.Once);
         }
 
@@ -181,7 +181,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<PartialActionEventArgs<JsonObject>, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnSendToPlugin(args), Times.Once);
         }
 
@@ -203,7 +203,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<TitlePayload>, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnTitleParametersDidChange(args), Times.Once);
         }
 
@@ -223,7 +223,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<ActionPayload>, Task>>(), args), Times.Once);
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Once);
             actions[args.Context].Verify(a => a.OnWillAppear(args), Times.Once);
         }
 
@@ -245,7 +245,7 @@ namespace StreamDeck.Tests.Routing
 
             // Assert.
             actionFactory.Verify(a => a.CreateInstance(typeof(StreamDeckAction), It.IsAny<ActionInitializationContext>()), Times.Once);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<ActionEventArgs<ActionPayload>, Task>>(), args), Times.Exactly(2));
+            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), args.Context), Times.Exactly(2)); // This caters for WillAppear.
             actions[args.Context].Verify(a => a.OnWillDisappear(args), Times.Once);
         }
 
@@ -253,7 +253,7 @@ namespace StreamDeck.Tests.Routing
         /// Creates the parameters required to construct a <see cref="ActionRouter"/> and execute a test case.
         /// </summary>
         /// <returns>The parameters.</returns>
-        private static (Dictionary<string, Mock<StreamDeckAction>> Actions, Mock<IActionFactory> ActionFactory, Mock<IEventDispatcher> Dispatcher, Mock<IStreamDeckConnection> Connection, ActionRouter router) CreateTestCase()
+        private static (Dictionary<string, Mock<StreamDeckAction>> Actions, Mock<IActionFactory> ActionFactory, Mock<IDispatcher> Dispatcher, Mock<IStreamDeckConnection> Connection, ActionRouter router) CreateTestCase()
         {
             var actions = new Dictionary<string, Mock<StreamDeckAction>>();
             var actionFactory = new Mock<IActionFactory>();
@@ -265,12 +265,10 @@ namespace StreamDeck.Tests.Routing
                     return actions[ctx.ActionInfo.Context].Object;
                 });
 
-            var dispatcher = new Mock<IEventDispatcher>()
-                .SetupInvokeFor<ActionEventArgs>()
-                .SetupInvokeFor<ActionEventArgs<ActionPayload>>()
-                .SetupInvokeFor<ActionEventArgs<KeyPayload>>()
-                .SetupInvokeFor<ActionEventArgs<TitlePayload>>()
-                .SetupInvokeFor<PartialActionEventArgs<JsonObject>>();
+            var dispatcher = new Mock<IDispatcher>();
+            dispatcher
+                .Setup(d => d.Invoke(It.IsAny<Func<Task>>(), It.IsAny<string>()))
+                .Callback<Func<Task>, string>((action, context) => action().Wait());
 
             var connection = new Mock<IStreamDeckConnection>();
             var router = new ActionRouter(actionFactory.Object, dispatcher.Object, connection.Object, null);

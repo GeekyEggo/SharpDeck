@@ -2,12 +2,11 @@ namespace StreamDeck.Routing
 {
     using System;
     using System.Threading.Tasks;
-    using StreamDeck.Events;
 
     /// <summary>
-    /// Provides a <see cref="IEventDispatcher"/> that dispatches events non-blocking asynchronously.
+    /// Provides a <see cref="IDispatcher"/> that dispatches actions, non-blocking asynchronously.
     /// </summary>
-    internal sealed class AsyncEventDispatcher : IEventDispatcher, IAsyncDisposable
+    internal sealed class AsyncDispatcher : IDispatcher, IAsyncDisposable
     {
         /// <summary>
         /// The active task count.
@@ -15,10 +14,10 @@ namespace StreamDeck.Routing
         private int _activeTaskCount = 0;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AsyncEventDispatcher"/> class.
+        /// Initializes a new instance of the <see cref="AsyncDispatcher"/> class.
         /// </summary>
         /// <param name="connection">The connection to the Stream Deck.</param>
-        public AsyncEventDispatcher(IStreamDeckConnection connection)
+        public AsyncDispatcher(IStreamDeckConnection connection)
             => this.Connection = connection;
 
         /// <summary>
@@ -42,63 +41,64 @@ namespace StreamDeck.Routing
         }
 
         /// <inheritdoc/>
-        public void Invoke<TArgs>(Func<TArgs, Task> @event, TArgs args)
-            where TArgs : IActionContext
+        public void Invoke(Func<Task> action, string context = "")
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(AsyncEventDispatcher));
+                throw new ObjectDisposedException(nameof(AsyncDispatcher));
             }
 
             Interlocked.Increment(ref this._activeTaskCount);
             Task.Factory.StartNew(async (state) =>
             {
-                var ctx = (AsyncExecutionContext<TArgs>)state!;
+                var ctx = (AsyncExecutionContext)state!;
 
                 try
                 {
-                    await ctx.Invoke(ctx.Arguments).ConfigureAwait(false);
+                    await ctx.Invoke().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    await this.Connection.ShowAlertAsync(ctx.Arguments.Context);
                     await this.Connection.LogMessageAsync(ex.Message);
+                    if (!string.IsNullOrWhiteSpace(ctx.Context))
+                    {
+                        await this.Connection.ShowAlertAsync(ctx.Context);
+                    }
                 }
                 finally
                 {
                     Interlocked.Decrement(ref this._activeTaskCount);
                 }
             },
-            new AsyncExecutionContext<TArgs>(@event, args),
+            new AsyncExecutionContext(action, context),
             TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         /// <summary>
         /// Provides information about an asynchronous event execution.
         /// </summary>
-        /// <typeparam name="TArgs">The type of event arguments.</typeparam>
-        private struct AsyncExecutionContext<TArgs>
+        private struct AsyncExecutionContext
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="AsyncExecutionContext{TArgs}"/> struct.
+            /// Initializes a new instance of the <see cref="AsyncExecutionContext"/> struct.
             /// </summary>
-            /// <param name="event">The event to invoke.</param>
-            /// <param name="args">The arguments to supply to the <paramref name="event"/>.</param>
-            public AsyncExecutionContext(Func<TArgs, Task> @event, TArgs args)
+            /// <param name="action">The action to invoke.</param>
+            /// <param name="context">The context of the <paramref name="action"/>.</param>
+            public AsyncExecutionContext(Func<Task> action, string context)
             {
-                this.Invoke = @event;
-                this.Arguments = args;
+                this.Context = context;
+                this.Invoke = action;
             }
 
             /// <summary>
-            /// Gets the arguments.
+            /// Gets the context.
             /// </summary>
-            public TArgs Arguments { get; }
+            public string Context { get; }
 
             /// <summary>
             /// Gets the action to invoke.
             /// </summary>
-            public Func<TArgs, Task> Invoke { get; }
+            public Func<Task> Invoke { get; }
         }
     }
 }

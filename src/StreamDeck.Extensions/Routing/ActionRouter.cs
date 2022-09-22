@@ -17,13 +17,13 @@ namespace StreamDeck.Routing
         /// </summary>
         /// <param name="actionFactory">The action factory, used to create new instances of actions.</param>
         /// <param name="connection">The connection with the Stream Deck.</param>
-        /// <param name="eventDispatcher">The event dispatcher responsible for dispatching propagated events delegates.</param>
+        /// <param name="dispatcher">The dispatcher responsible for dispatching propagated event delegates.</param>
         /// <param name="loggerFactory">The optional logger factory.</param>
-        public ActionRouter(IActionFactory actionFactory, IEventDispatcher eventDispatcher, IStreamDeckConnection connection, ILoggerFactory? loggerFactory = null)
+        public ActionRouter(IActionFactory actionFactory, IDispatcher dispatcher, IStreamDeckConnection connection, ILoggerFactory? loggerFactory = null)
         {
             this.ActionFactory = actionFactory;
             this.Connection = connection;
-            this.EventDispatcher = eventDispatcher;
+            this.Dispatcher = dispatcher;
             this.LoggerFactory = loggerFactory;
 
             connection.WillAppear += this.OnWillAppear;
@@ -49,9 +49,9 @@ namespace StreamDeck.Routing
         private IStreamDeckConnection Connection { get; }
 
         /// <summary>
-        /// Gets the event dispatcher responsible for dispatching propagated events delegates.
+        /// Gets the dispatcher responsible for dispatching propagated event delegates.
         /// </summary>
-        private IEventDispatcher EventDispatcher { get; }
+        private IDispatcher Dispatcher { get; }
 
         /// <summary>
         /// Gets the logger factory.
@@ -97,7 +97,7 @@ namespace StreamDeck.Routing
                 return this.ActionFactory.CreateInstance(actionType, initializationContext);
             });
 
-            this.EventDispatcher.Invoke(action.OnWillAppear, args);
+            this.Dispatcher.Invoke(() => action.OnWillAppear(args), args.Context);
         }
 
         /// <summary>
@@ -110,11 +110,11 @@ namespace StreamDeck.Routing
             // Attempt to remove the action, if successful, invoke OnWillDisappear and dispose of the action.
             if (this.Actions.TryRemove(args.Context, out var action))
             {
-                this.EventDispatcher.Invoke(async a =>
+                this.Dispatcher.Invoke(async () =>
                 {
-                    await action.OnWillDisappear(a);
+                    await action.OnWillDisappear(args);
                     action.Dispose();
-                }, args);
+                }, args.Context);
             }
         }
 
@@ -131,7 +131,7 @@ namespace StreamDeck.Routing
             {
                 if (this.Actions.TryGetValue(args.Context, out var action))
                 {
-                    this.EventDispatcher.Invoke(eventHandler(action), args);
+                    this.Dispatcher.Invoke(() => eventHandler(action)(args), args.Context);
                 }
             };
         }
