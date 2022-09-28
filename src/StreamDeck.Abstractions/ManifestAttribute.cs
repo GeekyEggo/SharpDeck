@@ -15,14 +15,19 @@ namespace StreamDeck
     class ManifestAttribute : SerializableSafeAttribute
     {
         /// <summary>
-        /// The default <see cref="SoftwareMinimumVersion"/>.
-        /// </summary>
-        internal const string DEFAULT_SOFTWARE_MINIMUM_VERSION = "5.0";
-
-        /// <summary>
         /// The default <see cref="OSWindowsMinimumVersion"/>
         /// </summary>
         internal const string DEFAULT_OS_WINDOWS_MINIMUM_VERSION = "10";
+
+        /// <summary>
+        /// The default <see cref="SDKVersion"/>.
+        /// </summary>
+        internal const int DEFAULT_SDK_VERSION = 2;
+
+        /// <summary>
+        /// The default <see cref="SoftwareMinimumVersion"/>.
+        /// </summary>
+        internal const string DEFAULT_SOFTWARE_MINIMUM_VERSION = "5.0";
 
         /// <summary>
         /// Gets or sets the list of application identifiers to monitor (applications launched or terminated) on Mac. See the applicationDidLaunch and applicationDidTerminate events.
@@ -109,7 +114,7 @@ namespace StreamDeck
         /// <summary>
         /// Gets or sets the SDK version.
         /// </summary>
-        public int SDKVersion { get; set; } = 2;
+        public int SDKVersion { get; set; } = DEFAULT_SDK_VERSION;
 
         /// <summary>
         /// Gets or sets the value that indicates which version of the Stream Deck application is required to install the plugin.

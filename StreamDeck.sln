@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Abstractions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Generators.Tests", "tests\StreamDeck.Generators.Tests\StreamDeck.Generators.Tests.csproj", "{B6FFA862-3AE6-4FD4-963E-B922FD070C29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamDeck.Abstractions.Tests", "tests\StreamDeck.Abstractions.Tests\StreamDeck.Abstractions.Tests.csproj", "{74867E7D-2C61-413A-A059-28EF7812E4EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,10 @@ Global
 		{B6FFA862-3AE6-4FD4-963E-B922FD070C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6FFA862-3AE6-4FD4-963E-B922FD070C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6FFA862-3AE6-4FD4-963E-B922FD070C29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74867E7D-2C61-413A-A059-28EF7812E4EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74867E7D-2C61-413A-A059-28EF7812E4EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74867E7D-2C61-413A-A059-28EF7812E4EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74867E7D-2C61-413A-A059-28EF7812E4EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +117,7 @@ Global
 		{2FEAACB5-F271-4A6C-BB24-D1C781C7FAD9} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
 		{3230C0E4-0878-41FC-B8BB-8E5FC629634E} = {449D22B4-147A-4F84-B4C3-9587D313F0E3}
 		{B6FFA862-3AE6-4FD4-963E-B922FD070C29} = {0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}
+		{74867E7D-2C61-413A-A059-28EF7812E4EF} = {0FDA08B2-D0DF-4CC3-9C1D-2637207538DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CE7DE09-893D-4603-807D-674413F38D73}
