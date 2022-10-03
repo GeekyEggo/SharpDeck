@@ -1,11 +1,6 @@
-namespace StreamDeck.Tests.Routing
+namespace StreamDeck.Extensions.Tests.Routing
 {
-    using System;
     using System.Text.Json.Nodes;
-    using Moq;
-    using StreamDeck.Events;
-    using StreamDeck.Routing;
-    using StreamDeck.Tests.Helpers;
 
     /// <summary>
     /// Provides assertions for <see cref="ActionRouter"/>.

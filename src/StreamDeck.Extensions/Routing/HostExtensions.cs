@@ -1,17 +1,26 @@
-namespace StreamDeck.Extensions.Hosting
+namespace StreamDeck.Extensions.Routing
 {
-    using System;
     using System.Text.Json.Nodes;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using StreamDeck.Events;
-    using StreamDeck.Routing;
 
     /// <summary>
-    /// Provides extension methods for <see cref="IHost"/>.
+    /// Provides extension methods for <see cref="IHost"/> relating to routing.
     /// </summary>
     public static class HostExtensions
     {
+        /// <summary>
+        /// Applies the delegate to the <see cref="IStreamDeckConnection"/> before connecting to the Stream Deck.
+        /// </summary>
+        /// <param name="host">The <see cref="IHost"/> to configure.</param>
+        /// <param name="configure">The delegate for configuring the <see cref="IHost"/>.</param>
+        /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
+        public static IHost MapConnection(this IHost host, Action<IStreamDeckConnection> configure)
+        {
+            configure(host.Services.GetRequiredService<IStreamDeckConnection>());
+            return host;
+        }
+
         /// <summary>
         /// Maps the specified action <paramref name="uuid"/> to the <typeparamref name="TAction"/> type, allowing for <see cref="IStreamDeckConnection"/> events to be routed to an action instance.
         /// </summary>
@@ -26,18 +35,6 @@ namespace StreamDeck.Extensions.Hosting
                 .GetRequiredService<ActionRouter>()
                 .MapAction<TAction>(uuid);
 
-            return host;
-        }
-
-        /// <summary>
-        /// Applies the delegate to the <see cref="IStreamDeckConnection"/> before connecting to the Stream Deck.
-        /// </summary>
-        /// <param name="host">The <see cref="IHost"/> to configure.</param>
-        /// <param name="configure">The delegate for configuring the <see cref="IHost"/>.</param>
-        /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
-        public static IHost MapConnection(this IHost host, Action<IStreamDeckConnection> configure)
-        {
-            configure(host.Services.GetRequiredService<IStreamDeckConnection>());
             return host;
         }
 

@@ -1,11 +1,9 @@
-namespace StreamDeck.Routing
+namespace StreamDeck.Extensions.Routing
 {
     using System;
     using System.Collections.Concurrent;
     using System.Text.Json.Nodes;
     using Microsoft.Extensions.Logging;
-    using StreamDeck;
-    using StreamDeck.Events;
 
     /// <summary>
     /// Provides routing of <see cref="StreamDeckAction"/> in relation to a <see cref="IStreamDeckConnection"/>.

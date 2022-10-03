@@ -1,8 +1,5 @@
-namespace StreamDeck.Tests.Routing
+namespace StreamDeck.Extensions.Tests.Routing
 {
-    using StreamDeck.Routing;
-    using StreamDeck.Tests.Helpers;
-
     /// <summary>
     /// Provides assertions for <see cref="ActivatorUtilitiesActionFactory"/>.
     /// </summary>

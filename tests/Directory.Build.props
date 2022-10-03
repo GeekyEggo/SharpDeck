@@ -12,6 +12,7 @@
     <ItemGroup>
         <Using Include="Moq" />
         <Using Include="NUnit.Framework" />
+        <Using Include="StreamDeck" />
     </ItemGroup>
 
     <ItemGroup>

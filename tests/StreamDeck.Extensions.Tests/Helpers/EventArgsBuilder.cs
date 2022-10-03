@@ -1,7 +1,6 @@
-namespace StreamDeck.Tests.Helpers
+namespace StreamDeck.Extensions.Tests.Helpers
 {
     using System.Text.Json.Nodes;
-    using StreamDeck.Events;
 
     /// <summary>
     /// Provides helper methods for creating event args.

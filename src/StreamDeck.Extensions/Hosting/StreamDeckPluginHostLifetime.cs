@@ -3,7 +3,6 @@ namespace StreamDeck.Extensions.Hosting
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
-    using StreamDeck;
 
     /// <summary>
     /// Provides a <see cref="IHostLifetime"/> that allows for <see cref="IHostedService"/> to start when a connection has been established with the Stream Deck.

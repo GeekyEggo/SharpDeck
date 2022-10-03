@@ -1,7 +1,6 @@
 namespace StreamDeck
 {
     using Microsoft.Extensions.Logging;
-    using StreamDeck.Events;
 
     /// <summary>
     /// Provides initialization information for a <see cref="StreamDeckAction"/>.

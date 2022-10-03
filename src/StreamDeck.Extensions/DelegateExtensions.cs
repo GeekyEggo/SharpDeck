@@ -18,7 +18,7 @@ namespace StreamDeck.Extensions
         /// <summary>
         /// The method info of <see cref="IServiceProvider.GetService(Type)"/>.
         /// </summary>
-        private static readonly MethodInfo GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService), BindingFlags.Instance | BindingFlags.Public);
+        private static readonly MethodInfo GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService), BindingFlags.Instance | BindingFlags.Public)!;
         /// <summary>
         /// The expression that represents that <see cref="IServiceProvider"/> parameter.
         /// </summary>

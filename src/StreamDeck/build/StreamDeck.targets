@@ -25,6 +25,7 @@
         <Using Include="StreamDeck" />
         <Using Include="StreamDeck.Events" />
         <Using Include="StreamDeck.Extensions.Hosting" />
+        <Using Include="StreamDeck.Extensions.Routing" />
     </ItemGroup>
 
     <!--

@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);BUILDING_SOURCE_GENERATOR</DefineConstants>
   </PropertyGroup>

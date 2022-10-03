@@ -3,7 +3,7 @@ namespace StreamDeck.Extensions.Hosting
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Hosting;
-    using StreamDeck.Routing;
+    using StreamDeck.Extensions.Routing;
 
     /// <summary>
     /// Provides extension methods for <see cref="IHostBuilder"/>.

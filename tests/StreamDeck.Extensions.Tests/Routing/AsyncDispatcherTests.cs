@@ -1,8 +1,5 @@
-namespace StreamDeck.Tests.Routing
+namespace StreamDeck.Extensions.Tests.Routing
 {
-    using StreamDeck.Events;
-    using StreamDeck.Routing;
-
     /// <summary>
     /// Provides assertions for <see cref="AsyncDispatcher"/>.
     /// </summary>

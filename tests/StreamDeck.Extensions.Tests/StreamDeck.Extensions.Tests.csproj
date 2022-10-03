@@ -1,13 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <RootNamespace>StreamDeck.Tests</RootNamespace>
-  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="StreamDeck" />
+    <Using Include="StreamDeck.Extensions" />
+    <Using Include="StreamDeck.Extensions.Hosting" />
+    <Using Include="StreamDeck.Extensions.Routing" />
+    <Using Include="StreamDeck.Extensions.Tests.Helpers" />
+    <Using Include="StreamDeck.Events" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
     <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
     <ProjectReference Include="..\StreamDeck.Core.Tests\StreamDeck.Core.Tests.csproj" />
   </ItemGroup>
+
 
 </Project>

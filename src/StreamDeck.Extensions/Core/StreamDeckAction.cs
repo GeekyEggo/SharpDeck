@@ -3,7 +3,6 @@ namespace StreamDeck
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization.Metadata;
     using Microsoft.Extensions.Logging;
-    using StreamDeck.Events;
 
     /// <summary>
     /// Provides information about an action, and methods invoked throughout its lifetime.

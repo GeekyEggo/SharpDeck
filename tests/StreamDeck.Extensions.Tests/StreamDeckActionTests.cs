@@ -1,8 +1,7 @@
-namespace StreamDeck.Tests
+namespace StreamDeck.Extensions.Tests
 {
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using Moq;
     using StreamDeck.Tests.Helpers;
     using StreamDeck.Tests.Serialization;
 

@@ -1,4 +1,4 @@
-namespace StreamDeck.Routing
+namespace StreamDeck.Extensions.Routing
 {
     /// <summary>
     /// Provides methods for dispatching actions.

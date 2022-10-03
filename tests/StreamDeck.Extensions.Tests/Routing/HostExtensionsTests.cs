@@ -1,11 +1,7 @@
-namespace StreamDeck.Tests.Extensions.Hosting
+namespace StreamDeck.Extensions.Tests.Extensions.Hosting
 {
     using System.Text.Json.Nodes;
     using Microsoft.Extensions.Hosting;
-    using StreamDeck.Events;
-    using StreamDeck.Extensions.Hosting;
-    using StreamDeck.Routing;
-    using StreamDeck.Tests.Helpers;
 
     /// <summary>
     /// Provides assertions for <see cref="HostExtensions"/>.
