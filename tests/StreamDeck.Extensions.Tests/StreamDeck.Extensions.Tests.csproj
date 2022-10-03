@@ -4,6 +4,7 @@
     <Using Include="StreamDeck" />
     <Using Include="StreamDeck.Extensions" />
     <Using Include="StreamDeck.Extensions.Hosting" />
+    <Using Include="StreamDeck.Extensions.PropertyInspectors" />
     <Using Include="StreamDeck.Extensions.Routing" />
     <Using Include="StreamDeck.Extensions.Tests.Helpers" />
     <Using Include="StreamDeck.Events" />

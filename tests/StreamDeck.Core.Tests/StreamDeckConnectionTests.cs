@@ -1,6 +1,7 @@
 namespace StreamDeck.Tests
 {
     using StreamDeck.Net;
+    using StreamDeck.Tests.Helpers;
 
     /// <summary>
     /// Provides assertions for <see cref="StreamDeckConnection"/>.
@@ -18,7 +19,7 @@ namespace StreamDeck.Tests
         /// <summary>
         /// Gets or sets the registration parameters.
         /// </summary>
-        private RegistrationParameters RegistrationParameters { get; } = new RegistrationParameters("-port", "13", "-pluginUUID", "ABCDEF123456", "-registerEvent", "registerPlugin", "-info", "{}");
+        private RegistrationParameters RegistrationParameters { get; } = RegistrationParametersHelper.CreateRegistrationParameters();
 
         /// <summary>
         /// Gets or sets the Stream Deck connection used to assert tests.

@@ -16,6 +16,10 @@
     <None Update="Helpers\Files\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>StreamDeck.Extensions.Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>
