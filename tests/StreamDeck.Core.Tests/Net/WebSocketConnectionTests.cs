@@ -25,6 +25,13 @@ namespace StreamDeck.Tests.Net
         private WebSocketConnection Client { get; } = new WebSocketConnection();
 
         /// <summary>
+        /// Provides setup for the fixture.
+        /// </summary>
+        [OneTimeSetUp]
+        public static void OneTimeSetUp()
+            => Fleck.FleckLog.LogAction = (Fleck.LogLevel level, string message, Exception ex) => { }; // Suppress logging from Fleck.
+
+        /// <summary>
         /// Provides per-test tear down.
         /// </summary>
         [TearDown]
