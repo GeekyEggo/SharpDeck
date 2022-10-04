@@ -24,9 +24,14 @@ namespace StreamDeck.Extensions.PropertyInspectors
         internal static HashSet<string> RegisteredDataSources { get; } = new HashSet<string>();
 
         /// <summary>
+        /// <para>
         /// Maps the delegate as a data source provider to the property inspector. When invoked, parameters are resolved from the host's <see cref="IServiceProvider" />,
         /// except <see cref="IStreamDeckConnection" /> and <see cref="PartialActionEventArgs{JsonObject}" /> which are propagated directly from the <see cref="IStreamDeckConnection.SendToPlugin" />
         /// event that trigger the request for the data source.
+        /// </para>
+        /// <para>
+        /// NB. The delegate must return a <see cref="IEnumerable{DataSourceItem}"/>.
+        /// </para>
         /// </summary>
         /// <param name="host">The <see cref="IHost" /> to configure.</param>
         /// <param name="event">The name of the data source the <paramref name="action"/> responds to.</param>
