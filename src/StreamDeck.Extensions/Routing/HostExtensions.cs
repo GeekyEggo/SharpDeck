@@ -1,14 +1,21 @@
 namespace StreamDeck.Extensions.Routing
 {
+    using System.Linq.Expressions;
     using System.Text.Json.Nodes;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using StreamDeck.Extensions;
 
     /// <summary>
     /// Provides extension methods for <see cref="IHost"/> relating to routing.
     /// </summary>
     public static class HostExtensions
     {
+        /// <summary>
+        /// The expression that represents the <see cref="Task.CompletedTask"/> as a constant.
+        /// </summary>
+        private static readonly ConstantExpression CompletedTaskExpression = Expression.Constant(Task.CompletedTask);
+
         /// <summary>
         /// Applies the delegate to the <see cref="IStreamDeckConnection"/> before connecting to the Stream Deck.
         /// </summary>
@@ -199,13 +206,36 @@ namespace StreamDeck.Extensions.Routing
         /// <returns>The same instance of the <see cref="IHost"/> for chaining.</returns>
         private static IHost MapEvent<TArgs>(this IHost host, Delegate action, Action<IStreamDeckConnection, EventHandler<IStreamDeckConnection, TArgs>> addHandler, Func<TArgs, string>? getContext = null)
         {
-            var handler = action.Compile<TArgs>();
+            var handler = Compile<TArgs>(action);
             var dispatcher = host.Services.GetRequiredService<IDispatcher>();
 
             void eventHandler(IStreamDeckConnection conn, TArgs args) => dispatcher.Invoke(() => handler(host.Services, conn, args), getContext?.Invoke(args) ?? string.Empty);
             addHandler(host.Services.GetRequiredService<IStreamDeckConnection>(), eventHandler);
 
             return host;
+        }
+
+        /// <summary>
+        /// Compiles the specified <paramref name="delegate"/> to an asynchronous method to be invoked by a <see cref="IStreamDeckConnection"/> event handler.
+        /// </summary>
+        /// <typeparam name="TArgs">The type of the event arguments.</typeparam>
+        /// <param name="delegate">The delegate to compile.</param>
+        /// <returns>The compiled delegate.</returns>
+        private static Func<IServiceProvider, IStreamDeckConnection, TArgs, Task> Compile<TArgs>(Delegate @delegate)
+        {
+            // Build the expressions that represent the parameters, reserving the connection and arguments.
+            var argsParameter = Expression.Parameter(typeof(TArgs), "args");
+            var (parameters, serviceProviderParameter, connectionParameter) = @delegate.GetParameterExpressions(argsParameter);
+
+            // When the delegate is not a task, wrap it in a block that returns a completed task.
+            Expression body = Expression.Call(Expression.Constant(@delegate.Target), @delegate.Method, parameters);
+            if (!typeof(Task).IsAssignableFrom(@delegate.Method.ReturnType))
+            {
+                body = Expression.Block(body, CompletedTaskExpression);
+            }
+
+            // Convert the expression and compile it.
+            return Expression.Lambda<Func<IServiceProvider, IStreamDeckConnection, TArgs, Task>>(body, serviceProviderParameter, connectionParameter, argsParameter).Compile();
         }
     }
 }
