@@ -1,19 +1,19 @@
 namespace StreamDeck.Extensions.Tests.PropertyInspectors
 {
     /// <summary>
-    /// Provides assertions for <see cref="DataSourcePayload"/>.
+    /// Provides assertions for <see cref="DataSourceResponse"/>.
     /// </summary>
     [TestFixture]
-    public class DataSourcePayloadTests
+    public class DataSourceResponseTests
     {
         /// <summary>
-        /// Asserts <see cref="DataSourcePayload(string, DataSourceItem[])"/>
+        /// Asserts <see cref="DataSourceResponse(string, DataSourceItem[])"/>
         /// </summary>
         [Test]
         public void Constructor_Params()
         {
             // Arrange, act.
-            var payload = new DataSourcePayload("event_name", new DataSourceItem("val_1", "Value One"), new DataSourceItem("val_2", "Value Two"));
+            var payload = new DataSourceResponse("event_name", new DataSourceItem("val_1", "Value One"), new DataSourceItem("val_2", "Value Two"));
 
             // Assert.
             Assert.Multiple(() =>
@@ -25,7 +25,7 @@ namespace StreamDeck.Extensions.Tests.PropertyInspectors
         }
 
         /// <summary>
-        /// Asserts <see cref="DataSourcePayload(string, IEnumerable{DataSourceItem})"/>.
+        /// Asserts <see cref="DataSourceResponse(string, IEnumerable{DataSourceItem})"/>.
         /// </summary>
         [Test]
         public void Constructor_Enumerable()
@@ -37,7 +37,7 @@ namespace StreamDeck.Extensions.Tests.PropertyInspectors
                 new DataSourceItem("val_2", "Value Two")
             };
 
-            var payload = new DataSourcePayload("event_name", items);
+            var payload = new DataSourceResponse("event_name", items);
 
             // Assert.
             Assert.Multiple(() =>

@@ -21,6 +21,6 @@ namespace StreamDeck.Extensions.PropertyInspectors
         /// Read more about data sources <see href="https://sdpi-components.dev/docs/helpers/data-source" />.
         /// </remarks>
         public static Task SendDataSourceToPropertyInspectorAsync(this StreamDeckAction action, string @event, IEnumerable<DataSourceItem> items, CancellationToken cancellationToken = default)
-            => action.SendToPropertyInspectorAsync(new DataSourcePayload(@event, items), StreamDeckJsonContext.Default.DataSourcePayload, cancellationToken);
+            => action.SendToPropertyInspectorAsync(new DataSourceResponse(@event, items), StreamDeckJsonContext.Default.DataSourceResponse, cancellationToken);
     }
 }

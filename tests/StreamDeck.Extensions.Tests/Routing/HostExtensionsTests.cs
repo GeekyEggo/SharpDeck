@@ -4,7 +4,7 @@ namespace StreamDeck.Extensions.Tests.Extensions.Hosting
     using Microsoft.Extensions.Hosting;
 
     /// <summary>
-    /// Provides assertions for <see cref="HostExtensions"/>.
+    /// Provides assertions for <see cref="StreamDeck.Extensions.Routing.HostExtensions"/>.
     /// </summary>
     [TestFixture]
     public class HostExtensionsTests
@@ -17,13 +17,13 @@ namespace StreamDeck.Extensions.Tests.Extensions.Hosting
         {
             // Arrange.
             IStreamDeckConnection? actualConnection = null;
-            var (host, _, connection, _, _) = CreateTestCase();
+            var host = new MockHost();
 
             // Act.
-            host.MapConnection(c => actualConnection = c);
+            host.Object.MapConnection(c => actualConnection = c);
 
             // Assert.
-            Assert.That(actualConnection, Is.EqualTo(connection.Object));
+            Assert.That(actualConnection, Is.EqualTo(host.Connection.Object));
         }
 
         /// <summary>
@@ -203,55 +203,26 @@ namespace StreamDeck.Extensions.Tests.Extensions.Hosting
         {
             // Arrange.
             var wasInvoked = false;
-            var (host, serviceProvider, connection, dispatcher, service) = CreateTestCase();
+            var host = new MockHost();
 
             // Act.
-            map(host, Handler);
-            connection.Raise(eventExpression, connection.Object, args);
+            map(host.Object, Handler);
+            host.Connection.Raise(eventExpression, host.Connection.Object, args);
 
             // Assert.
             Assert.That(wasInvoked, Is.True);
-            dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), context), Times.Once);
+            host.Dispatcher.Verify(d => d.Invoke(It.IsAny<Func<Task>>(), context), Times.Once);
 
             void Handler(IStreamDeckConnection sender, TArgs actualArgs, IService resolvedService)
             {
                 wasInvoked = true;
                 Assert.Multiple(() =>
                 {
-                    Assert.That(sender, Is.EqualTo(connection.Object));
+                    Assert.That(sender, Is.EqualTo(host.Connection.Object));
                     Assert.That(actualArgs, Is.EqualTo(args));
-                    Assert.That(resolvedService, Is.EqualTo(service));
+                    Assert.That(resolvedService, Is.EqualTo(host.Service));
                 });
             }
         }
-
-        /// <summary>
-        /// Creates typical objects required to assert an extension method on <see cref="IHost"/>.
-        /// </summary>
-        /// <returns>The supporting objects for a test case.</returns>
-        private static (IHost Host, Mock<IServiceProvider> ServiceProvider, Mock<IStreamDeckConnection> Connection, Mock<IDispatcher> Dispatcher, IService Service) CreateTestCase()
-        {
-            var host = new Mock<IHost>();
-            var serviceProvider = new Mock<IServiceProvider>();
-            var connection = new Mock<IStreamDeckConnection>();
-            var service = new Mock<IService>();
-
-            var dispatcher = new Mock<IDispatcher>();
-            dispatcher
-                .Setup(d => d.Invoke(It.IsAny<Func<Task>>(), It.IsAny<string>()))
-                .Callback<Func<Task>, string>((action, context) => action().Wait());
-
-            host.SetupGet(h => h.Services).Returns(() => serviceProvider.Object);
-            serviceProvider.Setup(s => s.GetService(typeof(IDispatcher))).Returns(dispatcher.Object);
-            serviceProvider.Setup(s => s.GetService(typeof(IService))).Returns(service.Object);
-            serviceProvider.Setup(s => s.GetService(typeof(IStreamDeckConnection))).Returns(connection.Object);
-
-            return (host.Object, serviceProvider, connection, dispatcher, service.Object);
-        }
-
-        /// <summary>
-        /// A mock service.
-        /// </summary>
-        public interface IService { }
     }
 }

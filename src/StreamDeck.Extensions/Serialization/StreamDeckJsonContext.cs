@@ -9,6 +9,7 @@ namespace StreamDeck.Extensions.Serialization
     /// </summary>
     [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
     [JsonSerializable(typeof(DataSourcePayload))]
+    [JsonSerializable(typeof(DataSourceResponse))]
 
     [ExcludeFromCodeCoverage]
     internal partial class StreamDeckJsonContext : JsonSerializerContext

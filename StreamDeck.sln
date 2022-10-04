@@ -54,7 +54,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Abstractions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Generators.Tests", "tests\StreamDeck.Generators.Tests\StreamDeck.Generators.Tests.csproj", "{B6FFA862-3AE6-4FD4-963E-B922FD070C29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamDeck.Abstractions.Tests", "tests\StreamDeck.Abstractions.Tests\StreamDeck.Abstractions.Tests.csproj", "{74867E7D-2C61-413A-A059-28EF7812E4EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamDeck.Abstractions.Tests", "tests\StreamDeck.Abstractions.Tests\StreamDeck.Abstractions.Tests.csproj", "{74867E7D-2C61-413A-A059-28EF7812E4EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

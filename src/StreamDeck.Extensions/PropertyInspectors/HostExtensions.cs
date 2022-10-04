@@ -3,13 +3,26 @@ namespace StreamDeck.Extensions.PropertyInspectors
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Text.Json.Nodes;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using StreamDeck.Extensions.Routing;
+    using StreamDeck.Extensions.Serialization;
 
     /// <summary>
     /// Provides extension methods for <see cref="IHost"/> relating to the property inspector.
     /// </summary>
     public static class HostExtensions
     {
+        /// <summary>
+        /// The synchronization root.
+        /// </summary>
+        private static readonly object _syncRoot = new object();
+
+        /// <summary>
+        /// Gets the hash set of registered data sources events.
+        /// </summary>
+        internal static HashSet<string> RegisteredDataSources { get; } = new HashSet<string>();
+
         /// <summary>
         /// Maps the delegate as a data source provider to the property inspector. When invoked, parameters are resolved from the host's <see cref="IServiceProvider" />,
         /// except <see cref="IStreamDeckConnection" /> and <see cref="PartialActionEventArgs{JsonObject}" /> which are propagated directly from the <see cref="IStreamDeckConnection.SendToPlugin" />
@@ -26,12 +39,38 @@ namespace StreamDeck.Extensions.PropertyInspectors
         /// </remarks>
         public static IHost MapPropertyInspectorDataSource(this IHost host, string @event, Delegate action)
         {
-            // todo...
-            return host;
+            lock (_syncRoot)
+            {
+                // Compile the data source before adding the event to the registered data sources.
+                var getItems = Compile(action);
+                if (!RegisteredDataSources.Add(@event))
+                {
+                    throw new DuplicateDataSourceException($"A data source has already been registered with the event '{@event}'.");
+                }
+
+                // Add the compiled handler to the connection SendToPlugin event.
+                var dispatcher = host.Services.GetRequiredService<IDispatcher>();
+                host.Services.GetRequiredService<IStreamDeckConnection>().SendToPlugin += (IStreamDeckConnection connection, PartialActionEventArgs<JsonObject> args) =>
+                {
+                    if (args.GetPayload(StreamDeckJsonContext.Default.DataSourcePayload)?.Event != @event)
+                    {
+                        return;
+                    }
+
+                    dispatcher.Invoke(async () =>
+                        {
+                            var items = await getItems(host.Services, connection, args);
+                            await connection.SendDataSourceToPropertyInspectorAsync(args.Context, args.Action, @event, items);
+                        },
+                        args.Context);
+                };
+
+                return host;
+            }
         }
 
         /// <summary>
-        /// Compiles the specified <paramref name="delegate" /> to an asynchronous method to be invoked when a <see cref="DataSourcePayload" /> was requests from the property inspector.
+        /// Compiles the specified <paramref name="delegate" /> to an asynchronous method to be invoked when a <see cref="DataSourceResponse" /> was requests from the property inspector.
         /// </summary>
         /// <param name="delegate">The delegate to compile.</param>
         /// <returns>The compiled delegate.</returns>
@@ -57,7 +96,7 @@ namespace StreamDeck.Extensions.PropertyInspectors
             {
                 // The delegate is asynchronous, but might not be IEnumerable, so we cast the result of the task.
                 var taskParam = Expression.Parameter(@delegate.Method.ReturnType, "task");
-                var taskResult = Expression.Property(taskParam, @delegate.Method.ReturnType.GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public));
+                var taskResult = Expression.Property(taskParam, @delegate.Method.ReturnType.GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)!);
                 var convertResultToEnumerable = Expression.Convert(taskResult, typeof(IEnumerable<DataSourceItem>));
 
                 // Here, the body becomes a call to the original delegate, followed by a call to .ContinueWith<IEnumerable<DataSourceItem>>(task => task.Result) for the cast.

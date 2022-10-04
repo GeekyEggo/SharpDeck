@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>StreamDeck.Core.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>StreamDeck.Extensions.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
+  </ItemGroup>
+
+</Project>

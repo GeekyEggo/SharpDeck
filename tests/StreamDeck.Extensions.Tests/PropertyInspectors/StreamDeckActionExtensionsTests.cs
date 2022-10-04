@@ -33,7 +33,7 @@ namespace StreamDeck.Extensions.Tests.PropertyInspectors
 
             // Assert.
             webSocket.Verify(ws => ws.SendAsync($$$"""
-                {"action":"{{{action.ActionUUID}}}","context":"{{{action.Context}}}","payload":{"event":"getItems","items":[{"disabled":true,"label":"Value One","value":"val_1"},{"children":[{"label":"Nested One","value":"nested_1"}],"label":"Group 1"}]},"event":"sendToPropertyInspector"}
+                {"action":"{{{action.ActionUUID}}}","context":"{{{action.Context}}}","payload":{"items":[{"disabled":true,"label":"Value One","value":"val_1"},{"children":[{"label":"Nested One","value":"nested_1"}],"label":"Group 1"}],"event":"getItems"},"event":"sendToPropertyInspector"}
                 """, cancellationToken), Times.Once);
         }
     }
