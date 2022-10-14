@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,20 +10,20 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Version>1.0.0</Version>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-    <IsDevelopingLibrary>true</IsDevelopingLibrary>
+    <IsDevelopingLibrary>false</IsDevelopingLibrary>
   </PropertyGroup>
 
-  <Import Project="..\..\src\StreamDeck\build\StreamDeck.targets" Condition="'$(IsDevelopingLibrary)' == 'true'"/>
+  <Import Project="..\..\src\StreamDeck\build\StreamDeck.targets" Condition="'$(IsDevelopingLibrary)' == 'true'" />
 
   <ItemGroup Condition="'$(IsDevelopingLibrary)' == 'true'">
-    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj"/>
-    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj"/>
-    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj"/>
-    <ProjectReference Include="..\..\src\StreamDeck.Generators\StreamDeck.Generators.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\..\src\StreamDeck.Abstractions\StreamDeck.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Core\StreamDeck.Core.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Extensions\StreamDeck.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\StreamDeck.Generators\StreamDeck.Generators.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsDevelopingLibrary)' == 'false'">
-    <PackageReference Include="StreamDeck" Version="0.0.4-beta1" />
+    <PackageReference Include="StreamDeck" Version="0.0.2-beta2" />
   </ItemGroup>
 
   <ItemGroup>
