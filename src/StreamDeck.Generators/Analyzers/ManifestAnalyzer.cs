@@ -1,5 +1,6 @@
 namespace StreamDeck.Generators.Analyzers
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Reflection;
     using Microsoft.CodeAnalysis;
@@ -43,14 +44,13 @@ namespace StreamDeck.Generators.Analyzers
             }
 
             // Analyze the actions regardless of the manifest; this allows us to generate as much as we can later.
-            foreach (var action in syntaxReceiver.Actions)
+            foreach (var action in syntaxReceiver.Actions.Select(a => new ActionAnalyzer(this.GeneratorContext, a, this.Manifest, this.DiagnosticReporter)).OrderBy(a => a.Action.SortIndex).ThenBy(a => a.Action.Name))
             {
-                var actionAnalyzer = new ActionAnalyzer(this.GeneratorContext, action, this.Manifest, this.DiagnosticReporter);
-                this._actionAnalyzers.Add(actionAnalyzer);
+                this._actionAnalyzers.Add(action);
 
                 if (this.Manifest != null
-                    && actionAnalyzer.HasValidUUID
-                    && !this.Manifest.TryAddAction(actionAnalyzer.Action, out var existing))
+                    && action.HasValidUUID
+                    && !this.Manifest.TryAddAction(action.Action, out var existing))
                 {
                     // todo: Warn duplicate uuid found on manifest.
                 }

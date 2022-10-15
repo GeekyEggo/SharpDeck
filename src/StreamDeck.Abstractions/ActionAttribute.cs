@@ -42,6 +42,12 @@ namespace StreamDeck
         public string? PropertyInspectorPath { get; set; }
 
         /// <summary>
+        /// Gets or sets the sort index, used to determine the order actions are shown. By default, actions with a <see cref="SortIndex"/> are shown first, followed by actions in alphabetical order by their <see cref="Name"/>.
+        /// </summary>
+        [IgnoreDataMember]
+        public int SortIndex { get; set; } = int.MaxValue;
+
+        /// <summary>
         /// Gets or sets the default image for the only state; to define more information about a state, or define multiple states, please use the <see cref="StateAttribute"/>.
         /// </summary>
         [IgnoreDataMember]

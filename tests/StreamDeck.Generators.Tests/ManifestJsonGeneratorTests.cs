@@ -279,6 +279,129 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Execute(GeneratorExecutionContext, StreamDeckSyntaxReceiver, Analyzers.ManifestAnalyzer)"/> generates actions in the correct order.
+        /// </summary>
+        [TestCase(TestName = "Generate actions, order by SortIndex and Name")]
+        public void Generate_ActionsInOrder()
+        {
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest(
+                    Author = "Foo",
+                    Name = "Test",
+                    Icon = "Plugin.png",
+                    Description = "Hello world")]
+
+                [Action(Icon = "Icon.png", StateImage = "State.png", Name = "Z-Action")]
+                public class ActionOne
+                {
+                    // Should be 5th, no SortIndex, and alphabetically last by name.
+                }
+
+                [Action(Icon = "Icon.png", StateImage = "State.png", SortIndex = 2)]
+                public class ActionTwo
+                {
+                    // Should be 3rd, before actions without a SortIndex.
+                }
+
+                [Action(Icon = "Icon.png", StateImage = "State.png", SortIndex = 0)]
+                public class ActionThree
+                {
+                    // Should be 1st.
+                }
+
+                [Action(Icon = "Icon.png", StateImage = "State.png", SortIndex = 1)]
+                public class ActionFour
+                {
+                    // Should be 2nd, after ActionThree.
+                }
+
+                [Action(Icon = "Icon.png", StateImage = "State.png")]
+                public class ActionFive
+                {
+                    // Should be 4th, no SortIndex, but alphabetically first by name.
+                }
+
+                """;
+
+            var json = """
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Icon.png",
+                            "Name": "ActionThree",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.actionthree"
+                        },
+                        {
+                            "Icon": "Icon.png",
+                            "Name": "ActionFour",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.actionfour"
+                        },
+                        {
+                            "Icon": "Icon.png",
+                            "Name": "ActionTwo",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.actiontwo"
+                        },
+                        {
+                            "Icon": "Icon.png",
+                            "Name": "ActionFive",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.actionfive"
+                        },
+                        {
+                            "Icon": "Icon.png",
+                            "Name": "Z-Action",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.foo.test.z-action"
+                        }
+                    ],
+                    "Author": "Foo",
+                    "CodePath": "Test Project.exe",
+                    "Description": "Hello world",
+                    "Icon": "Plugin.png",
+                    "Name": "Test",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            VerifySuccess(sourceText, json, "Test Project");
+        }
+
+        /// <summary>
         /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> warns when the StateImage and States are both defined.
         /// </summary>
         [TestCase(TestName = "Warn when action has StateImage and States defined")]
