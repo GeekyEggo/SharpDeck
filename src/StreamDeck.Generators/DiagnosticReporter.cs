@@ -1,7 +1,10 @@
 namespace StreamDeck.Generators
 {
+    using System;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Provides methods for reporting and monitoring diagnostics reported to a <see cref="GeneratorExecutionContext"/>.
@@ -71,7 +74,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Warns when the <see cref="ManifestAttribute.Description"/> has not been specified.
         /// </summary>
-        /// <param name="manifestContext">The manifest attribute context.</param>
+        /// <param name="manifestContext">The <see cref="ManifestAttribute"/> context.</param>
         public void ReportManifestDescriptionMissing(AttributeContext manifestContext)
             => this.ReportWarning(
                 id: "SDM01",
@@ -83,7 +86,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Warns when the <see cref="ManifestAttribute.Icon"/> has not been specified.
         /// </summary>
-        /// <param name="manifestContext">The manifest attribute context.</param>
+        /// <param name="manifestContext">The <see cref="ManifestAttribute"/> context.</param>
         public void ReportManifestIconMissing(AttributeContext manifestContext)
              => this.ReportWarning(
                 id: "SDM02",
@@ -92,6 +95,18 @@ namespace StreamDeck.Generators
                 locations: new[] { manifestContext.Node.GetLocation() },
                 messageArgs: new[] { nameof(ManifestAttribute.Icon), nameof(ManifestAttribute) });
 
+        /// <summary>
+        /// Errors when <see cref="ProfileAttribute.Name"/> is explicitly set to <c>null</c>.
+        /// </summary>
+        /// <param name="context">The <see cref="ProfileAttribute"/> syntax node.</param>
+        public void ReportProfileNameCannotBeNull(AttributeSyntax node)
+            => this.ReportError(
+                id: "SDM11",
+                title: "Profile member cannot be null.",
+                messageFormat: "Profile '{0}' cannot be null.",
+                locations: new[] { node.ArgumentList?.Arguments.FirstOrDefault()?.GetLocation() ?? node.GetLocation() },
+                messageArgs: new[] { nameof(ProfileAttribute.Name) });
+
         #endregion
 
         #region Action Analyzer
@@ -99,7 +114,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Warns when the <see cref="ActionAttribute.Icon"/> has not been specified.
         /// </summary>
-        /// <param name="actionContext">The action attribute context.</param>
+        /// <param name="actionContext">The <see cref="ActionAttribute"/> context.</param>
         public void ReportActionIconMissing(AttributeContext actionContext)
             => this.ReportWarning(
                 id: "SDA01",
@@ -111,7 +126,7 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Warns when the <see cref="ActionAttribute.StateImage"/> has not been specified.
         /// </summary>
-        /// <param name="actionContext">The action attribute context.</param>
+        /// <param name="actionContext">The <see cref="ActionAttribute"/> context.</param>
         public void ReportActionStateImageMissing(AttributeContext actionContext)
             => this.ReportWarning(
                 id: "SDA02",

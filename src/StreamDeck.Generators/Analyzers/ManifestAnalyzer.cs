@@ -4,6 +4,7 @@ namespace StreamDeck.Generators.Analyzers
     using System.Collections.ObjectModel;
     using System.Reflection;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.Models;
 
@@ -40,7 +41,7 @@ namespace StreamDeck.Generators.Analyzers
                 this.Context = new AttributeContext(syntaxReceiver.ManifestAttribute, data);
                 this.Manifest = this.Context.Data.CreateInstance<Manifest>();
                 this.SetDefaultValues();
-                this.SetProfiles();
+                this.SetProfiles(syntaxReceiver.ProfileAttributes);
             }
 
             // Analyze the actions regardless of the manifest; this allows us to generate as much as we can later.
@@ -66,6 +67,11 @@ namespace StreamDeck.Generators.Analyzers
         /// Gets a value indicating whether this instance has a manifest.
         /// </summary>
         public bool HasManifest { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has an error diagnostic.
+        /// </summary>
+        public bool HasErrorDiagnostic => this.DiagnosticReporter.HasErrorDiagnostic;
 
         /// <summary>
         /// Gets the manifest.
@@ -137,11 +143,18 @@ namespace StreamDeck.Generators.Analyzers
         /// <summary>
         /// Sets the <see cref="Manifest.Profiles"/>.
         /// </summary>
-        private void SetProfiles()
+        /// <param name="profileNodes">The <see cref="AttributeSyntax"/> that represent the <see cref="<see cref="ProfileAttribute"/>.</param>
+        private void SetProfiles(List<AttributeSyntax> profileNodes)
         {
             foreach (var profileAttr in this.GeneratorContext.Compilation.Assembly.GetAttributes<ProfileAttribute>())
             {
                 var item = new ProfileAttribute((string)profileAttr.ConstructorArguments[0].Value!, (Device)profileAttr.ConstructorArguments[1].Value!);
+                if (item.Name == null)
+                {
+                    var attrNode = profileNodes.First(n => SyntaxReferenceEqualityComparer.Default.Equals(n.GetReference(), profileAttr.ApplicationSyntaxReference));
+                    this.DiagnosticReporter.ReportProfileNameCannotBeNull(attrNode);
+                }
+
                 this.Manifest!.Profiles.Add(profileAttr.Populate(item));
             }
         }

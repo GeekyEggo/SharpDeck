@@ -556,6 +556,7 @@ namespace StreamDeck.Generators.Tests
              * Manifest.SDKVersion
              * Manifest.Software
              */
+            Assert.Inconclusive();
         }
 
         /// <summary>
@@ -570,6 +571,7 @@ namespace StreamDeck.Generators.Tests
              * Action.StatesImage
              * Action.UUID
              */
+            Assert.Inconclusive();
         }
 
         /// <summary>
@@ -584,6 +586,7 @@ namespace StreamDeck.Generators.Tests
              * Action.StatesImage
              * Action.UUID
              */
+            Assert.Inconclusive();
         }
 
         /// <summary>
@@ -592,10 +595,16 @@ namespace StreamDeck.Generators.Tests
         [TestCase(TestName = "Error when profile has explicitly null required fields")]
         public void Error_Profile_FieldsNull()
         {
-            /*
-             * Profile.Name
-             * Profile.DeviceType?
-             */
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest(Author = "Author", Name = "Name", Icon = "Icon.png", Description = "Description")]
+                [assembly: Profile(null, Device.StreamDeck)]
+                """;
+
+            VerifyFailure(
+                sourceText,
+                new ExpectedDiagnostic(4, 20, "SDM11", "Profile 'Name' cannot be null.", DiagnosticSeverity.Error));
         }
 
         #region Old

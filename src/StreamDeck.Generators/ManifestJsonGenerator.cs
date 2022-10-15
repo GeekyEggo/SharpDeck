@@ -27,7 +27,8 @@ namespace StreamDeck.Generators
         /// <inheritdoc/>
         internal override void Execute(GeneratorExecutionContext context, StreamDeckSyntaxReceiver syntaxReceiver, ManifestAnalyzer manifestAnalyzer)
         {
-            if (!manifestAnalyzer.HasManifest)
+            if (!manifestAnalyzer.HasManifest
+                || manifestAnalyzer.HasErrorDiagnostic)
             {
                 return;
             }

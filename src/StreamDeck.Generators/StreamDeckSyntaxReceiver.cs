@@ -20,13 +20,26 @@ namespace StreamDeck.Generators
         /// </summary>
         public AttributeSyntax? ManifestAttribute { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="AttributeSyntax"/> that represent the <see cref="StreamDeck.StateAttribute"/>.
+        /// </summary>
+        public List<AttributeSyntax> ProfileAttributes { get; } = new List<AttributeSyntax>();
+
         /// <inheritdoc/>
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            if (context.Node is AttributeSyntax attrNode
-                && context.SemanticModel.GetTypeInfo(context.Node).Type?.ToDisplayString(SymbolDisplayFormats.FullName) == "StreamDeck.ManifestAttribute")
+            if (context.Node is AttributeSyntax attrNode)
             {
-                this.ManifestAttribute = attrNode;
+                switch (context.SemanticModel.GetTypeInfo(context.Node).Type?.ToDisplayString(SymbolDisplayFormats.FullName))
+                {
+                    case string type when typeof(ManifestAttribute).FullName == type:
+                        this.ManifestAttribute = attrNode;
+                        break;
+
+                    case string type when typeof(ProfileAttribute).FullName == type:
+                        this.ProfileAttributes.Add(attrNode);
+                        break;
+                }
             }
             else if (context.Node is ClassDeclarationSyntax classNode
                 && context.SemanticModel.GetDeclaredSymbol(context.Node) is INamedTypeSymbol symbol
@@ -54,16 +67,16 @@ namespace StreamDeck.Generators
             foreach (var node in attributeNodes)
             {
                 var nodeRef = node.GetReference();
-                var data = attributeDatas.FirstOrDefault(d => d.ApplicationSyntaxReference?.SyntaxTree == nodeRef?.SyntaxTree && d.ApplicationSyntaxReference?.Span == nodeRef?.Span)!;
+                var data = attributeDatas.First(d => SyntaxReferenceEqualityComparer.Default.Equals(d.ApplicationSyntaxReference, nodeRef));
 
                 switch (data.AttributeClass?.ToDisplayString(SymbolDisplayFormats.FullName))
                 {
-                    case "StreamDeck.ActionAttribute" when !hasActionAttribute:
+                    case string type when typeof(ActionAttribute).FullName == type && !hasActionAttribute:
                         actionClassContext.ActionAttribute = new AttributeContext(node, data);
                         hasActionAttribute = true;
                         break;
 
-                    case "StreamDeck.StateAttribute":
+                    case string type when typeof(StateAttribute).FullName == type:
                         actionClassContext.StateAttributes.Add(new AttributeContext(node, data));
                         break;
                 }
