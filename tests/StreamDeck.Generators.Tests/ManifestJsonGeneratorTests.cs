@@ -66,8 +66,8 @@ namespace StreamDeck.Generators.Tests
                 sourceText,
                 json,
                 "Test Project",
-                new ExpectedDiagnostic(3, 12, "SDM01", "Manifest 'Description' not defined; consider setting 'ManifestAttribute.Description'", DiagnosticSeverity.Warning),
-                new ExpectedDiagnostic(3, 12, "SDM02", "Manifest 'Icon' not defined; consider setting 'ManifestAttribute.Icon'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SDM01", "Stream Deck manifest 'Description' is not defined; consider setting 'ManifestAttribute.Description'", DiagnosticSeverity.Warning),
+                new ExpectedDiagnostic(3, 12, "SDM01", "Stream Deck manifest 'Icon' is not defined; consider setting 'ManifestAttribute.Icon'", DiagnosticSeverity.Warning),
                 new ExpectedDiagnostic(5, 2, "SDA01", "Action 'Icon' not defined; consider setting 'ActionAttribute.Icon'", DiagnosticSeverity.Warning),
                 new ExpectedDiagnostic(5, 2, "SDA02", "Action 'StateImage' not defined; consider setting 'ActionAttribute.StateImage'", DiagnosticSeverity.Warning));
         }
@@ -604,7 +604,7 @@ namespace StreamDeck.Generators.Tests
 
             VerifyFailure(
                 sourceText,
-                new ExpectedDiagnostic(4, 20, "SDM11", "Profile 'Name' cannot be null.", DiagnosticSeverity.Error));
+                new ExpectedDiagnostic(4, 20, "SDP01", "Stream Deck profile 'Name' cannot be null.", DiagnosticSeverity.Error));
         }
 
         #region Old

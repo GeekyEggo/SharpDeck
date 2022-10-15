@@ -1,10 +1,8 @@
 namespace StreamDeck.Generators
 {
-    using System;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck.Generators.Analyzers;
-    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Provides methods for reporting and monitoring diagnostics reported to a <see cref="GeneratorExecutionContext"/>.
@@ -72,40 +70,31 @@ namespace StreamDeck.Generators
         #region Manifest Analyzer
 
         /// <summary>
-        /// Warns when the <see cref="ManifestAttribute.Description"/> has not been specified.
+        /// Reports the <paramref name="propertyName"/> is missing from the <see cref="ManifestAttribute"/>, but is considered a required field.
         /// </summary>
         /// <param name="manifestContext">The <see cref="ManifestAttribute"/> context.</param>
-        public void ReportManifestDescriptionMissing(AttributeContext manifestContext)
+        /// <param name="propertyName">Name of the property.</param>
+        public void ReportManifestPropertyIsNotDefined(AttributeContext manifestContext, string propertyName)
             => this.ReportWarning(
                 id: "SDM01",
-                title: $"Manifest '{nameof(ManifestAttribute.Description)}' is missing",
-                messageFormat: "Manifest '{0}' not defined; consider setting '{1}.{0}'",
+                title: $"Required manifest information is not defined",
+                messageFormat: "Stream Deck manifest '{0}' is not defined; consider setting '{1}.{0}'",
                 locations: new[] { manifestContext.Node.GetLocation() },
-                messageArgs: new[] { nameof(ManifestAttribute.Description), nameof(ManifestAttribute) });
+                messageArgs: new[] { propertyName, nameof(ManifestAttribute) });
 
         /// <summary>
-        /// Warns when the <see cref="ManifestAttribute.Icon"/> has not been specified.
+        /// Reports the <paramref name="propertyName" /> cannot be null when specifying a <see cref="ProfileAttribute" />.
         /// </summary>
-        /// <param name="manifestContext">The <see cref="ManifestAttribute"/> context.</param>
-        public void ReportManifestIconMissing(AttributeContext manifestContext)
-             => this.ReportWarning(
-                id: "SDM02",
-                title: $"Manifest '{nameof(ManifestAttribute.Icon)}' is missing",
-                messageFormat: "Manifest '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { manifestContext.Node.GetLocation() },
-                messageArgs: new[] { nameof(ManifestAttribute.Icon), nameof(ManifestAttribute) });
-
-        /// <summary>
-        /// Errors when <see cref="ProfileAttribute.Name"/> is explicitly set to <c>null</c>.
-        /// </summary>
-        /// <param name="context">The <see cref="ProfileAttribute"/> syntax node.</param>
-        public void ReportProfileNameCannotBeNull(AttributeSyntax node)
+        /// <param name="profileNode">The <see cref="ProfileAttribute"/> syntax node.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="argIndex">The index of the argument.</param>
+        public void ReportProfilePropertyCannotBeNull(AttributeSyntax profileNode, string propertyName, int argIndex)
             => this.ReportError(
-                id: "SDM11",
-                title: "Profile member cannot be null.",
-                messageFormat: "Profile '{0}' cannot be null.",
-                locations: new[] { node.ArgumentList?.Arguments.FirstOrDefault()?.GetLocation() ?? node.GetLocation() },
-                messageArgs: new[] { nameof(ProfileAttribute.Name) });
+                id: "SDP01",
+                title: "Required profile information cannot be null",
+                messageFormat: "Stream Deck profile '{0}' cannot be null.",
+                locations: new[] { profileNode.ArgumentList?.Arguments.ElementAt(argIndex)?.GetLocation() ?? profileNode.GetLocation() },
+                messageArgs: new[] { propertyName });
 
         #endregion
 

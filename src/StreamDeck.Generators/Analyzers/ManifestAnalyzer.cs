@@ -115,7 +115,7 @@ namespace StreamDeck.Generators.Analyzers
             {
                 this.Manifest.Description = this.GetNamedValueOrDefault<AssemblyDescriptionAttribute>(nameof(ManifestAttribute.Description), () =>
                 {
-                    this.DiagnosticReporter.ReportManifestDescriptionMissing(this.Context);
+                    this.DiagnosticReporter.ReportManifestPropertyIsNotDefined(this.Context, nameof(ManifestAttribute.Description));
                     return string.Empty;
                 });
             }
@@ -124,7 +124,7 @@ namespace StreamDeck.Generators.Analyzers
             if (string.IsNullOrWhiteSpace(this.Manifest.Icon))
             {
                 this.Manifest.Icon = this.Context.Data.GetNamedArgumentValueOrDefault(nameof(ManifestAttribute.Icon), () => string.Empty);
-                this.DiagnosticReporter.ReportManifestIconMissing(this.Context);
+                this.DiagnosticReporter.ReportManifestPropertyIsNotDefined(this.Context, nameof(ManifestAttribute.Icon));
             }
 
             // Name.
@@ -152,7 +152,7 @@ namespace StreamDeck.Generators.Analyzers
                 if (item.Name == null)
                 {
                     var attrNode = profileNodes.First(n => SyntaxReferenceEqualityComparer.Default.Equals(n.GetReference(), profileAttr.ApplicationSyntaxReference));
-                    this.DiagnosticReporter.ReportProfileNameCannotBeNull(attrNode);
+                    this.DiagnosticReporter.ReportProfilePropertyCannotBeNull(attrNode, nameof(ProfileAttribute.Name), 0);
                 }
 
                 this.Manifest!.Profiles.Add(profileAttr.Populate(item));
