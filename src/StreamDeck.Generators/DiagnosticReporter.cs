@@ -67,85 +67,75 @@ namespace StreamDeck.Generators
         /// </summary>
         private GeneratorExecutionContext Context { get; }
 
-        #region Manifest Analyzer
+        /// <summary>
+        /// Reports a <see cref="DiagnosticSeverity.Error"/> due to a required value field within the manifest being null.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute that contains the data.</typeparam>
+        /// <param name="node">The node of the attribute.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        public void ReportValueCannotBeNull<TAttribute>(AttributeSyntax node, string propertyName)
+            => this.ReportValueCannotBeNull<TAttribute>(node.GetLocation(), propertyName);
+
+        #region Manifest
 
         /// <summary>
-        /// Reports the <paramref name="propertyName"/> is missing from the <see cref="ManifestAttribute"/>, but is considered a required field.
+        /// Reports a <see cref="DiagnosticSeverity.Error"/> due to a required value field within the manifest being null.
         /// </summary>
-        /// <param name="manifestContext">The <see cref="ManifestAttribute"/> context.</param>
+        /// <typeparam name="TAttribute">The type of the attribute that contains the data.</typeparam>
+        /// <param name="location">The location the error occured.</param>
         /// <param name="propertyName">Name of the property.</param>
-        public void ReportManifestPropertyIsNotDefined(AttributeContext manifestContext, string propertyName)
-            => this.ReportWarning(
-                id: "SDM01",
-                title: $"Required manifest information is not defined",
-                messageFormat: "Stream Deck manifest '{0}' is not defined; consider setting '{1}.{0}'",
-                locations: new[] { manifestContext.Node.GetLocation() },
-                messageArgs: new[] { propertyName, nameof(ManifestAttribute) });
-
-        /// <summary>
-        /// Reports the <paramref name="propertyName" /> cannot be null when specifying a <see cref="ProfileAttribute" />.
-        /// </summary>
-        /// <param name="profileNode">The <see cref="ProfileAttribute"/> syntax node.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <param name="argIndex">The index of the argument.</param>
-        public void ReportProfilePropertyCannotBeNull(AttributeSyntax profileNode, string propertyName, int argIndex)
+        public void ReportValueCannotBeNull<TAttribute>(Location location, string propertyName)
             => this.ReportError(
-                id: "SDP01",
-                title: "Required profile information cannot be null",
-                messageFormat: "Stream Deck profile '{0}' cannot be null.",
-                locations: new[] { profileNode.ArgumentList?.Arguments.ElementAt(argIndex)?.GetLocation() ?? profileNode.GetLocation() },
-                messageArgs: new[] { propertyName });
-
-        #endregion
-
-        #region Action Analyzer
+                id: "SDM001",
+                title: $"Required manifest information cannot be null",
+                messageFormat: "Stream Deck {0} '{1}' cannot be null",
+                locations: new[] { location },
+                messageArgs: new[]
+                {
+                    typeof(TAttribute).Name.Substring(0, typeof(TAttribute).Name.Length - 9).ToLowerInvariant(),
+                    propertyName,
+                });
 
         /// <summary>
-        /// Warns when the <see cref="ActionAttribute.Icon"/> has not been specified.
+        /// Reports a <see cref="DiagnosticSeverity.Warning"/> due to a required value field within the manifest not being defined.
         /// </summary>
-        /// <param name="actionContext">The <see cref="ActionAttribute"/> context.</param>
-        public void ReportActionIconMissing(AttributeContext actionContext)
+        /// <param name="node">The <see cref="AttributeSyntax"/> that contains the data.</param>
+        /// /// <param name="propertyName">Name of the property.</param>
+        public void ReportValueNotDefined<TAttribute>(AttributeSyntax node, string propertyName)
             => this.ReportWarning(
-                id: "SDA01",
-                title: $"Action '{nameof(ActionAttribute.Icon)}' is missing",
-                messageFormat: "Action '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { actionContext.Node.GetLocation() },
-                messageArgs: new[] { nameof(ActionAttribute.Icon), nameof(ActionAttribute) });
+                id: "SDM051",
+                title: $"Required manifest information is not defined",
+                messageFormat: "Stream Deck {0} '{1}' is not defined; consider setting '{2}.{1}'",
+                locations: new[] { node.GetLocation() },
+                messageArgs: new[]
+                {
+                    typeof(TAttribute).Name.Substring(0, typeof(TAttribute).Name.Length - 9).ToLowerInvariant(),
+                    propertyName,
+                    typeof(TAttribute).Name
+                });
 
         /// <summary>
-        /// Warns when the <see cref="ActionAttribute.StateImage"/> has not been specified.
-        /// </summary>
-        /// <param name="actionContext">The <see cref="ActionAttribute"/> context.</param>
-        public void ReportActionStateImageMissing(AttributeContext actionContext)
-            => this.ReportWarning(
-                id: "SDA02",
-                title: $"Action '{nameof(ActionAttribute.StateImage)}' is missing",
-                messageFormat: "Action '{0}' not defined; consider setting '{1}.{0}'",
-                locations: new[] { actionContext.Node.GetLocation() },
-                messageArgs: new[] { nameof(ActionAttribute.StateImage), nameof(ActionAttribute) });
-
-        /// <summary>
-        /// Warns when the <see cref="ActionAttribute"/> has more than two <see cref="StateAttribute"/>.
-        /// </summary>
-        /// <param name="stateContext">The context that contains information about the state.</param>
-        public void ReportActionStateIgnored(AttributeContext stateContext)
-            => this.ReportWarning(
-                id: "SDA03",
-                title: "Action state ignored; too many states",
-                messageFormat: "Actions cannot have more than 2 states",
-                locations: new[] { stateContext.Node.GetLocation() });
-
-        /// <summary>
-        /// Warns when the <see cref="ActionAttribute.StateImage"/> is not required as the <see cref="StateAttribute"/> is present.
+        /// Reports a <see cref="DiagnosticSeverity.Warning"/> due to the <see cref="ActionAttribute.StateImage"/> not being required as <see cref="StateAttribute"/> is present.
         /// </summary>
         /// <param name="location">The location of the definition.</param>
         public void ReportActionStateImageNotRequired(Location location)
             => this.ReportWarning(
-                id: "SDA04",
-                title: $"Unnecessary '{nameof(ActionAttribute.StateImage)}'",
-                messageFormat: "Action '{0}' can be removed as one or more '{1}' are present",
+                id: "SDM052",
+                title: $"'{nameof(ActionAttribute)}.{nameof(ActionAttribute.StateImage)}' is not required",
+                messageFormat: "Stream Deck action '{0}' can be removed as one or more '{1}' are present",
                 locations: new[] { location },
                 messageArgs: new[] { nameof(ActionAttribute.StateImage), nameof(StateAttribute) });
+
+        /// <summary>
+        /// Reports a <see cref="DiagnosticSeverity.Warning"/> due to the <see cref="ActionAttribute"/> having too many <see cref="StateAttribute"/>.
+        /// </summary>
+        /// <param name="stateContext">The context that contains information about the state.</param>
+        public void ReportActionStateIgnored(AttributeContext stateContext)
+            => this.ReportWarning(
+                id: "SDM053",
+                title: "Action has too many states",
+                messageFormat: "Stream Deck actions cannot have more than 2 states",
+                locations: new[] { stateContext.Node.GetLocation() });
 
         #endregion
 
@@ -157,7 +147,7 @@ namespace StreamDeck.Generators
         /// <param name="locations">The locations associated with the assembly that attempted to generate the manifest.json file..</param>
         public void ReportProjectDirectoryNotFoundForManifestJson(IEnumerable<Location> locations)
             => this.ReportError(
-                id: "SDP01",
+                id: "SDP001",
                 title: "Generating a manifest.json requires a project directory",
                 messageFormat: "Failed to generate manifest JSON file as the project's directory is unknown. Consider creating a manifest.json file manually.",
                 MANIFEST_HELP_LINK,

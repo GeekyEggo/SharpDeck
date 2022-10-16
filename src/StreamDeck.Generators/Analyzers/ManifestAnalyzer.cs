@@ -115,7 +115,7 @@ namespace StreamDeck.Generators.Analyzers
             {
                 this.Manifest.Description = this.GetNamedValueOrDefault<AssemblyDescriptionAttribute>(nameof(ManifestAttribute.Description), () =>
                 {
-                    this.DiagnosticReporter.ReportManifestPropertyIsNotDefined(this.Context, nameof(ManifestAttribute.Description));
+                    this.DiagnosticReporter.ReportValueNotDefined<ManifestAttribute>(this.Context.Node, nameof(ManifestAttribute.Description));
                     return string.Empty;
                 });
             }
@@ -124,7 +124,7 @@ namespace StreamDeck.Generators.Analyzers
             if (string.IsNullOrWhiteSpace(this.Manifest.Icon))
             {
                 this.Manifest.Icon = this.Context.Data.GetNamedArgumentValueOrDefault(nameof(ManifestAttribute.Icon), () => string.Empty);
-                this.DiagnosticReporter.ReportManifestPropertyIsNotDefined(this.Context, nameof(ManifestAttribute.Icon));
+                this.DiagnosticReporter.ReportValueNotDefined<ManifestAttribute>(this.Context.Node, nameof(ManifestAttribute.Icon));
             }
 
             // Name.
@@ -151,8 +151,8 @@ namespace StreamDeck.Generators.Analyzers
                 var item = new ProfileAttribute((string)profileAttr.ConstructorArguments[0].Value!, (Device)profileAttr.ConstructorArguments[1].Value!);
                 if (item.Name == null)
                 {
-                    var attrNode = profileNodes.First(n => SyntaxReferenceEqualityComparer.Default.Equals(n.GetReference(), profileAttr.ApplicationSyntaxReference));
-                    this.DiagnosticReporter.ReportProfilePropertyCannotBeNull(attrNode, nameof(ProfileAttribute.Name), 0);
+                    var profileNode = profileNodes.First(n => SyntaxReferenceEqualityComparer.Default.Equals(n.GetReference(), profileAttr.ApplicationSyntaxReference));
+                    this.DiagnosticReporter.ReportValueCannotBeNull<ProfileAttribute>(profileNode?.ArgumentList?.Arguments[0].GetLocation() ?? this.Context.Node.GetLocation(), nameof(ProfileAttribute.Name));
                 }
 
                 this.Manifest!.Profiles.Add(profileAttr.Populate(item));

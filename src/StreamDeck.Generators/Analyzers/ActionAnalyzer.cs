@@ -80,7 +80,7 @@ namespace StreamDeck.Generators.Analyzers
             if (string.IsNullOrWhiteSpace(this.Action.Icon))
             {
                 this.Action.Icon = string.Empty;
-                this.DiagnosticReporter.ReportActionIconMissing(this.Context.ActionAttribute);
+                this.DiagnosticReporter.ReportValueNotDefined<ActionAttribute>(this.Context.ActionAttribute.Node, nameof(ActionAttribute.Icon));
             }
 
             // Name.
@@ -109,7 +109,7 @@ namespace StreamDeck.Generators.Analyzers
                 if (this.Action.States.Count == 0)
                 {
                     this.Action.StateImage = string.Empty;
-                    this.DiagnosticReporter.ReportActionStateImageMissing(this.Context.ActionAttribute);
+                    this.DiagnosticReporter.ReportValueNotDefined<ActionAttribute>(this.Context.ActionAttribute.Node, nameof(ActionAttribute.StateImage));
                 }
 
                 return;
