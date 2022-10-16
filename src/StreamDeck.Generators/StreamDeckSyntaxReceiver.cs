@@ -4,6 +4,7 @@ namespace StreamDeck.Generators
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using StreamDeck.Generators.Analyzers;
+    using StreamDeck.PropertyInspectors;
 
     /// <summary>
     /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relating to a Stream Deck plugin.
@@ -21,9 +22,14 @@ namespace StreamDeck.Generators
         public AttributeSyntax? ManifestAttribute { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="AttributeSyntax"/> that represent the <see cref="StreamDeck.StateAttribute"/>.
+        /// Gets the <see cref="AttributeSyntax"/> that represent the <see cref="StateAttribute"/>.
         /// </summary>
         public List<AttributeSyntax> ProfileAttributes { get; } = new List<AttributeSyntax>();
+
+        /// <summary>
+        /// Gets the <see cref="AttributeSyntax"/> that represent the collection of defined <see cref="PropertyInspectors.PropertyInspectorAttribute"/>.
+        /// </summary>
+        public List<AttributeSyntax> PropertyInspectors { get; } = new List<AttributeSyntax>();
 
         /// <inheritdoc/>
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
@@ -38,6 +44,10 @@ namespace StreamDeck.Generators
 
                     case string type when typeof(ProfileAttribute).FullName == type:
                         this.ProfileAttributes.Add(attrNode);
+                        break;
+
+                    case string type when typeof(PropertyInspectorAttribute).FullName == type:
+                        this.PropertyInspectors.Add(attrNode);
                         break;
                 }
             }

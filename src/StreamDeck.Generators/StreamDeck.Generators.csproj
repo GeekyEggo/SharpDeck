@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\InputAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\InputAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\PropertyInspectorAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\PropertyInspectorAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\TextfieldAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\TextfieldAttribute.cs" />
+
     <Compile Include="..\StreamDeck.Abstractions\ActionAttribute.cs" Link="StreamDeck.Abstractions\ActionAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\Device.cs" Link="StreamDeck.Abstractions\Device.cs" />
     <Compile Include="..\StreamDeck.Abstractions\DoNotMapAttribute.cs" Link="StreamDeck.Abstractions\DoNotMapAttribute.cs" />

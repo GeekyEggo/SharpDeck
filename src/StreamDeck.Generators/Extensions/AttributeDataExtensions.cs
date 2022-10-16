@@ -69,7 +69,7 @@ namespace StreamDeck.Generators.Extensions
                         var elementType = property.PropertyType.GetElementType();
                         property.SetValue(obj, namedArgument.Value.Values.Select(x => x.Value).CastArray(elementType));
                     }
-                    else
+                    else if (property.PropertyType != typeof(Type))
                     {
                         property.SetValue(obj, namedArgument.Value.Value);
                     }
