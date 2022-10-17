@@ -7,7 +7,7 @@ namespace StreamDeck.Generators.IO
     /// <summary>
     /// Provides a <see cref="IndentedTextWriter"/>, that utilizes a <see cref="StringWriter"/>.
     /// </summary>
-    internal sealed class IndentedStringWriter : IndentedTextWriter
+    internal class IndentedStringWriter : IndentedTextWriter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IndentedStringWriter"/> class.
