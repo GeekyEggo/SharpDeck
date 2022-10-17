@@ -67,8 +67,10 @@ namespace StreamDeck.Generators
         {
             var actions = new Dictionary<string, ActionAnalyzer>();
 
-            using var writer = new IndentedTextWriter(new StringWriter());
-            writer.Indent = 3;
+            using var stringWriter = new StringWriter();
+            using var source = new IndentedTextWriter(stringWriter);
+
+            source.Indent = 3;
 
             foreach (var actionAnalyzer in manifestAnalyzer.ActionAnalyzers.Where(CanAutoGenerate))
             {
@@ -79,11 +81,11 @@ namespace StreamDeck.Generators
                 else
                 {
                     actions.Add(actionAnalyzer.Action.UUID, actionAnalyzer);
-                    writer.WriteLine($"host.MapAction<{actionAnalyzer.Context.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}>(\"{actionAnalyzer.Action.UUID}\");");
+                    source.WriteLine($"host.MapAction<{actionAnalyzer.Context.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}>(\"{actionAnalyzer.Action.UUID}\");");
                 }
             }
 
-            return writer.InnerWriter.ToString();
+            return stringWriter.ToString();
         }
 
         /// <summary>

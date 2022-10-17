@@ -1,13 +1,25 @@
 namespace StreamDeck.Generators.Serialization
 {
+    using System.CodeDom.Compiler;
     using System.Collections.Generic;
 
     /// <summary>
     /// Provides a basic <see cref="StringWriter"/> capable of writing HTML.
     /// NB. As this is used as part of source generation, no HTML encoding occurs, and the ownice is put on the consumer.
     /// </summary>
-    internal class HtmlTextWriter : StringWriter
+    internal sealed class HtmlTextWriter : IDisposable
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HtmlTextWriter"/> class.
+        /// </summary>
+        public HtmlTextWriter()
+            => this.Writer = new IndentedTextWriter(new StringWriter());
+
+        /// <summary>
+        /// Gets the writer.
+        /// </summary>
+        private IndentedTextWriter Writer { get; }
+
         /// <summary>
         /// Gets the open tags.
         /// </summary>
@@ -21,12 +33,12 @@ namespace StreamDeck.Generators.Serialization
         {
             if (this.TryPeek(out var tag))
             {
-                this.Write(">");
+                this.Writer.Write(">");
                 tag!.IsBeginTagOpen = false;
             }
 
             this.OpenTags.Push(new HtmlTag(tagName));
-            this.Write($"<{tagName}");
+            this.Writer.Write($"<{tagName}");
         }
 
         /// <summary>
@@ -40,12 +52,12 @@ namespace StreamDeck.Generators.Serialization
             {
                 if (value is bool and true)
                 {
-                    this.Write($" {name}");
+                    this.Writer.Write($" {name}");
                 }
                 else if (value is not bool and not null
                     && (value.ToString() is string strValue and not ""))
                 {
-                    this.Write($" {name}=\"{strValue}\"");
+                    this.Writer.Write($" {name}=\"{strValue}\"");
                 }
             }
         }
@@ -59,13 +71,22 @@ namespace StreamDeck.Generators.Serialization
             {
                 if (tag!.IsBeginTagOpen)
                 {
-                    this.Write(">");
+                    this.Writer.Write(">");
                     tag.IsBeginTagOpen = false;
                 }
 
-                this.Write($"</{tag.Name}>");
+                this.Writer.Write($"</{tag.Name}>");
                 this.OpenTags.Pop();
             }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            this.Writer.InnerWriter.Dispose();
+            this.Writer.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
