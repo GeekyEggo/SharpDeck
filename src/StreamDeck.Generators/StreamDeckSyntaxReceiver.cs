@@ -26,11 +26,6 @@ namespace StreamDeck.Generators
         /// </summary>
         public List<AttributeSyntax> ProfileAttributes { get; } = new List<AttributeSyntax>();
 
-        /// <summary>
-        /// Gets the <see cref="AttributeSyntax"/> that represent the collection of defined <see cref="PropertyInspectors.PropertyInspectorAttribute"/>.
-        /// </summary>
-        public List<AttributeSyntax> PropertyInspectors { get; } = new List<AttributeSyntax>();
-
         /// <inheritdoc/>
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
@@ -44,10 +39,6 @@ namespace StreamDeck.Generators
 
                     case string type when typeof(ProfileAttribute).FullName == type:
                         this.ProfileAttributes.Add(attrNode);
-                        break;
-
-                    case string type when typeof(PropertyInspectorAttribute).FullName == type:
-                        this.PropertyInspectors.Add(attrNode);
                         break;
                 }
             }

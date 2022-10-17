@@ -25,12 +25,12 @@ namespace StreamDeck.Generators.Analyzers
 
             this.SetDefaultValues(manifest);
             this.AddStates();
-        }
 
-        /// <summary>
-        /// Gets the context.
-        /// </summary>
-        public ActionClassContext Context { get; }
+            if (context.ActionAttribute.Data.TryGetNamedArgument(nameof(ActionAttribute.PropertyInspectorType), out INamedTypeSymbol? piType))
+            {
+                this.PropertyInspectorType = piType;
+            }
+        }
 
         /// <summary>
         /// Gets the action.
@@ -38,9 +38,19 @@ namespace StreamDeck.Generators.Analyzers
         public ActionAttribute Action { get; }
 
         /// <summary>
+        /// Gets the context.
+        /// </summary>
+        public ActionClassContext Context { get; }
+
+        /// <summary>
         /// Gets a value indicating whether this instance has a valid UUID.
         /// </summary>
         public bool HasValidUUID { get; private set; }
+
+        /// <summary>
+        /// Gets or sets <see cref="INamedTypeSymbol"/> that defines the settings that can be set within the property inspector.
+        /// </summary>
+        public INamedTypeSymbol? PropertyInspectorType { get; }
 
         /// <summary>
         /// Gets the diagnostic reporter.

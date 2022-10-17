@@ -42,6 +42,11 @@ namespace StreamDeck
         public string? PropertyInspectorPath { get; set; }
 
         /// <summary>
+        /// Gets or sets <see cref="Type"/> that defines the settings that can be set within the property inspector; this will generate the accompanying property inspector HTML file for the action.
+        /// </summary>
+        public Type? PropertyInspectorType { get; set; }
+
+        /// <summary>
         /// Gets or sets the sort index, used to determine the order actions are shown. By default, actions with a <see cref="SortIndex"/> are shown first, followed by actions in alphabetical order by their <see cref="Name"/>.
         /// </summary>
         [IgnoreDataMember]

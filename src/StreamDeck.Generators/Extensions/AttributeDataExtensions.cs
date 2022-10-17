@@ -25,26 +25,16 @@ namespace StreamDeck.Generators.Extensions
         }
 
         /// <summary>
-        /// Gets the named argument value, otherwise the result of <paramref name="defaultFactory" />.
+        /// Gets the named argument value as a <see cref="string"/>, otherwise the result of <paramref name="defaultFactory" />.
         /// </summary>
         /// <param name="data">The <see cref="AttributeData"/> that contains the named arguments.</param>
         /// <param name="name">The name of the named argument whose value should be retrieved.</param>
         /// <param name="defaultFactory">The factory responsible for creating the default value.</param>
         /// <returns>The value of the named argument; otherwise the result of <paramref name="defaultFactory"/></returns>
         public static string GetNamedArgumentValueOrDefault(this AttributeData data, string name, Func<string> defaultFactory)
-        {
-            if (data.NamedArguments.FirstOrDefault(na => na.Key == name) is KeyValuePair<string, TypedConstant> arg
-                && arg.Key == name)
-            {
-                if (arg.Value.Value?.ToString() is string value
-                    && !string.IsNullOrWhiteSpace(value))
-                {
-                    return value;
-                }
-            }
-
-            return defaultFactory();
-        }
+            => data.TryGetNamedArgument(name, out string? value) && !string.IsNullOrWhiteSpace(value)
+                ? value!
+                : defaultFactory();
 
         /// <summary>
         /// Populates the specified <paramref name="obj"/> from the <paramref name="data"/>.
@@ -77,6 +67,28 @@ namespace StreamDeck.Generators.Extensions
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// Tries the get the frist named argument that matches the <paramref name="name"/>.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the argument value.</typeparam>
+        /// <param name="data">The <see cref="AttributeData"/> whose arguments should be searched.</param>
+        /// <param name="name">The name of the argument.</param>
+        /// <param name="value">The result value of the argument.</param>
+        /// <returns><c>true</c> when a named argument was found that matches the <paramref name="name"/>, and has a value of type <typeparamref name="T"/>; otherwise <c>false</c>.</returns>
+        public static bool TryGetNamedArgument<T>(this AttributeData data, string name, out T? value)
+        {
+            if (data.NamedArguments.FirstOrDefault(a => a.Key == name) is KeyValuePair<string, TypedConstant> arg
+                && arg.Key == name
+                && arg.Value.Value is T _value)
+            {
+                value = _value;
+                return true;
+            }
+
+            value = default;
+            return false;
         }
     }
 }
