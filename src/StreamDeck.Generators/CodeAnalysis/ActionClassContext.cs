@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators.Analyzers
+namespace StreamDeck.Generators.CodeAnalysis
 {
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;

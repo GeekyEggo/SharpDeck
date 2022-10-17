@@ -3,8 +3,8 @@ namespace StreamDeck.Generators
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using StreamDeck.Generators.Analyzers;
-    using StreamDeck.PropertyInspectors;
+    using StreamDeck.Generators.CodeAnalysis;
+    using StreamDeck.Generators.Extensions;
 
     /// <summary>
     /// Provides a <see cref="ISyntaxContextReceiver"/> that is capable of discovering information relating to a Stream Deck plugin.
@@ -31,7 +31,7 @@ namespace StreamDeck.Generators
         {
             if (context.Node is AttributeSyntax attrNode)
             {
-                switch (context.SemanticModel.GetTypeInfo(context.Node).Type?.ToDisplayString(SymbolDisplayFormats.FullName))
+                switch (context.SemanticModel.GetTypeInfo(context.Node).Type?.ToFullNameString())
                 {
                     case string type when typeof(ManifestAttribute).FullName == type:
                         this.ManifestAttribute = attrNode;
@@ -70,7 +70,7 @@ namespace StreamDeck.Generators
                 var nodeRef = node.GetReference();
                 var data = attributeDatas.First(d => SyntaxReferenceEqualityComparer.Default.Equals(d.ApplicationSyntaxReference, nodeRef));
 
-                switch (data.AttributeClass?.ToDisplayString(SymbolDisplayFormats.FullName))
+                switch (data.AttributeClass?.ToFullNameString())
                 {
                     case string type when typeof(ActionAttribute).FullName == type && !hasActionAttribute:
                         actionClassContext.ActionAttribute = new AttributeContext(node, data);

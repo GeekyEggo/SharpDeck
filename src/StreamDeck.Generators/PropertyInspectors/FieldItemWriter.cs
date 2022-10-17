@@ -2,7 +2,7 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
 {
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
-    using StreamDeck.Generators.Serialization;
+    using StreamDeck.Generators.IO;
     using StreamDeck.PropertyInspectors;
 
     /// <summary>
@@ -27,7 +27,7 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        public virtual void Write(HtmlTextWriter writer, AttributeData data)
+        public virtual void Write(HtmlStringWriter writer, AttributeData data)
         {
             writer.RenderBeginTag("sdpi-item");
             writer.AddAttribute("label", data.GetNamedArgumentValueOrDefault(nameof(InputAttribute.Label), () => string.Empty));
@@ -42,7 +42,7 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        protected virtual void WriteInput(HtmlTextWriter writer, AttributeData data)
+        protected virtual void WriteInput(HtmlStringWriter writer, AttributeData data)
         {
             writer.RenderBeginTag(this.TagName);
             foreach (var attr in data.NamedArguments.Where(a => this.CanWriteProperty(a.Key, a.Value)))

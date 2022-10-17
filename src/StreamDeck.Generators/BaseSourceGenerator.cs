@@ -1,7 +1,7 @@
 namespace StreamDeck.Generators
 {
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.CodeAnalysis;
 
     /// <summary>
     /// Provides a base <see cref="ISourceGenerator"/> that relies on a <see cref="ManifestAnalyzer"/>.

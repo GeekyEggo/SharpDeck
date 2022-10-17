@@ -1,8 +1,8 @@
-namespace StreamDeck.Generators
+namespace StreamDeck.Generators.CodeAnalysis
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using StreamDeck.Generators.Analyzers;
+    using StreamDeck;
 
     /// <summary>
     /// Provides methods for reporting and monitoring diagnostics reported to a <see cref="GeneratorExecutionContext"/>.

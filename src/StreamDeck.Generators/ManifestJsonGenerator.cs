@@ -2,10 +2,9 @@ namespace StreamDeck.Generators
 {
     using System.Text;
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.IO;
-    using StreamDeck.Generators.Serialization;
 
     /// <summary>
     /// Generates the manifest.json file that accompanies a Stream Deck plugin.
@@ -43,7 +42,7 @@ namespace StreamDeck.Generators
 
             this.FileSystem.WriteAllText(
                 path: Path.Combine(projectDirectory, "manifest.json"),
-                contents: JsonSerializer.Serialize(manifestAnalyzer.Manifest!),
+                contents: JsonStringWriter.Serialize(manifestAnalyzer.Manifest!),
                 encoding: Encoding.UTF8);
         }
     }

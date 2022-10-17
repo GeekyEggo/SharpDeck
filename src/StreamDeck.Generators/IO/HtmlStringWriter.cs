@@ -1,24 +1,23 @@
-namespace StreamDeck.Generators.Serialization
+namespace StreamDeck.Generators.IO
 {
-    using System.CodeDom.Compiler;
     using System.Collections.Generic;
 
     /// <summary>
     /// Provides a basic <see cref="StringWriter"/> capable of writing HTML.
     /// NB. As this is used as part of source generation, no HTML encoding occurs, and the ownice is put on the consumer.
     /// </summary>
-    internal sealed class HtmlTextWriter : IDisposable
+    internal sealed class HtmlStringWriter : IDisposable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HtmlTextWriter"/> class.
+        /// Initializes a new instance of the <see cref="HtmlStringWriter"/> class.
         /// </summary>
-        public HtmlTextWriter()
-            => this.Writer = new IndentedTextWriter(new StringWriter());
+        public HtmlStringWriter()
+            => this.Html = new IndentedStringWriter();
 
         /// <summary>
         /// Gets the writer.
         /// </summary>
-        private IndentedTextWriter Writer { get; }
+        private IndentedStringWriter Html { get; }
 
         /// <summary>
         /// Gets the open tags.
@@ -33,12 +32,12 @@ namespace StreamDeck.Generators.Serialization
         {
             if (this.TryPeek(out var tag))
             {
-                this.Writer.Write(">");
+                this.Html.Write(">");
                 tag!.IsBeginTagOpen = false;
             }
 
             this.OpenTags.Push(new HtmlTag(tagName));
-            this.Writer.Write($"<{tagName}");
+            this.Html.Write($"<{tagName}");
         }
 
         /// <summary>
@@ -52,12 +51,12 @@ namespace StreamDeck.Generators.Serialization
             {
                 if (value is bool and true)
                 {
-                    this.Writer.Write($" {name}");
+                    this.Html.Write($" {name}");
                 }
                 else if (value is not bool and not null
-                    && (value.ToString() is string strValue and not ""))
+                    && value.ToString() is string strValue and not "")
                 {
-                    this.Writer.Write($" {name}=\"{strValue}\"");
+                    this.Html.Write($" {name}=\"{strValue}\"");
                 }
             }
         }
@@ -71,11 +70,11 @@ namespace StreamDeck.Generators.Serialization
             {
                 if (tag!.IsBeginTagOpen)
                 {
-                    this.Writer.Write(">");
+                    this.Html.Write(">");
                     tag.IsBeginTagOpen = false;
                 }
 
-                this.Writer.Write($"</{tag.Name}>");
+                this.Html.Write($"</{tag.Name}>");
                 this.OpenTags.Pop();
             }
         }
@@ -83,9 +82,7 @@ namespace StreamDeck.Generators.Serialization
         /// <inheritdoc/>
         public void Dispose()
         {
-            this.Writer.InnerWriter.Dispose();
-            this.Writer.Dispose();
-
+            this.Html.Dispose();
             GC.SuppressFinalize(this);
         }
 

@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators.Analyzers
+namespace StreamDeck.Generators.CodeAnalysis
 {
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;

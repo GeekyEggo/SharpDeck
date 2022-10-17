@@ -1,10 +1,11 @@
 namespace StreamDeck.Generators
 {
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.CodeAnalysis;
+    using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.Generators.PropertyInspectors;
+    using StreamDeck.Generators.IO;
     using StreamDeck.Generators.PropertyInspectors;
-    using StreamDeck.Generators.Serialization;
     using StreamDeck.PropertyInspectors;
 
     /// <summary>
@@ -25,11 +26,12 @@ namespace StreamDeck.Generators
         {
             foreach (var action in manifestAnalyzer.ActionAnalyzers.Where(a => a.PropertyInspectorType is not null))
             {
-                using var htmlWriter = new HtmlTextWriter();
+                using var htmlWriter = new HtmlStringWriter();
                 foreach (var propAttr in action.PropertyInspectorType!.GetMembers().OfType<IPropertySymbol>().SelectMany(p => p.GetAttributes()))
                 {
-                    var attrClass = propAttr.AttributeClass?.ToDisplayString(SymbolDisplayFormats.FullName) ?? string.Empty;
-                    if (this.ComponentWriters.TryGetValue(attrClass, out var writer))
+                    if (propAttr.AttributeClass?.ToFullNameString() is string attrClass
+                        && attrClass is not null
+                        && this.ComponentWriters.TryGetValue(attrClass, out var writer))
                     {
                         writer.Write(htmlWriter, propAttr);
                     }

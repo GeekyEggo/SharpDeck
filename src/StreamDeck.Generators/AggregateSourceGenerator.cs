@@ -1,7 +1,7 @@
 namespace StreamDeck.Generators
 {
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.IO;
 
     /// <summary>

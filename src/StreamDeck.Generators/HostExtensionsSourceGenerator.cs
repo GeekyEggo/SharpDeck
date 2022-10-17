@@ -1,10 +1,10 @@
 namespace StreamDeck.Generators
 {
-    using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
-    using StreamDeck.Generators.Analyzers;
+    using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
+    using StreamDeck.Generators.IO;
 
     /// <summary>
     /// Generates extension methods on 'IHost'.
@@ -66,11 +66,7 @@ namespace StreamDeck.Generators
         private static string GenerateMapActions(ManifestAnalyzer manifestAnalyzer)
         {
             var actions = new Dictionary<string, ActionAnalyzer>();
-
-            using var stringWriter = new StringWriter();
-            using var source = new IndentedTextWriter(stringWriter);
-
-            source.Indent = 3;
+            using var source = new IndentedStringWriter(indent: 3);
 
             foreach (var actionAnalyzer in manifestAnalyzer.ActionAnalyzers.Where(CanAutoGenerate))
             {
@@ -85,7 +81,7 @@ namespace StreamDeck.Generators
                 }
             }
 
-            return stringWriter.ToString();
+            return source.ToString();
         }
 
         /// <summary>
@@ -121,7 +117,7 @@ namespace StreamDeck.Generators
             var baseType = actionAnalyzer.Context.Symbol.BaseType;
             while (baseType != null)
             {
-                if (baseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::StreamDeck.StreamDeckAction")
+                if (baseType.ToFullNameString() == "StreamDeck.StreamDeckAction")
                 {
                     return true;
                 }

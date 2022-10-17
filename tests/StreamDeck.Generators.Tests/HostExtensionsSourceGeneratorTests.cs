@@ -51,11 +51,43 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="HostExtensionsSourceGenerator"/> does not map when nothing can be mapped.
         /// </summary>
         [TestCase(TestName = "No manifest or actions")]
-        [Test]
         public void Empty()
         {
             // Arrange, act.
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText: "");
+
+            // Assert.
+            SourceGeneratorTests.VerifySyntaxTrees(
+                compilation,
+                (
+                    HintName: HINT_HAME,
+                    SourceText: EMPTY_SOURCE_TEXT
+                ));
+        }
+
+        /// <summary>
+        /// Asserts <see cref="HostExtensionsSourceGenerator"/> does not map when nothing can be mapped.
+        /// </summary>
+        [TestCase(TestName = "Incorrect base class")]
+        [Test]
+        public void IncorrectBaseClass()
+        {
+            // Arrange
+            const string sourceText = """
+                    using StreamDeck;
+
+                    namespace Foo
+                    {
+                        [Action]
+                        public class MyAction
+                        {
+                            public MyAction(ActionInitializationContext context) { }
+                        }
+                    }
+                    """;
+
+            // Act.
+            var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
             SourceGeneratorTests.VerifySyntaxTrees(

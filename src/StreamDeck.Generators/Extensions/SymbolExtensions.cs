@@ -25,6 +25,17 @@ namespace StreamDeck.Generators.Extensions
         }
 
         /// <summary>
+        /// Gets the fully qualified name of the type, including its namespace but not its assembly.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/>.</param>
+        /// <returns>The full name of the <see cref="ISymbol"/>; otherwise <c>null</c>.</returns>
+        public static string? ToFullNameString(this ISymbol? symbol)
+            => symbol?.ToDisplayString(
+                new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers));
+
+        /// <summary>
         /// Attempts to get the first attribute that matches the type <typeparamref name="TAttribute"/>.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>

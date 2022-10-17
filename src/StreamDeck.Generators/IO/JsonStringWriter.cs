@@ -1,4 +1,4 @@
-namespace StreamDeck.Generators.Serialization
+namespace StreamDeck.Generators.IO
 {
     using System;
     using System.Collections;
@@ -13,24 +13,19 @@ namespace StreamDeck.Generators.Serialization
     /// Provides a basic JSON serialization; this can be used to prevent external requirements and dependencies.
     /// </summary>
     /// <remarks>Serialization is predominantly based on Json.NET's serialization guide (https://www.newtonsoft.com/json/help/html/SerializationGuide.htm).</remarks>
-    internal class JsonSerializer
+    internal sealed class JsonStringWriter : IDisposable
     {
         /// <summary>
-        /// Prevents a default instance of the <see cref="JsonSerializer"/> class from being created.
+        /// Prevents a default instance of the <see cref="JsonStringWriter"/> class from being created.
         /// </summary>
-        private JsonSerializer()
+        private JsonStringWriter()
         {
         }
 
         /// <summary>
-        /// Gets or sets the indentation.
-        /// </summary>
-        private string Indentation { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets the underlying JSON string.
         /// </summary>
-        private StringBuilder Json { get; } = new StringBuilder();
+        private IndentedStringWriter Json { get; } = new IndentedStringWriter();
 
         /// <summary>
         /// Gets the properties that can be serialized, indexed by their parent type.
@@ -44,15 +39,18 @@ namespace StreamDeck.Generators.Serialization
         /// <returns>The JSON representation of <paramref name="value"/>.</returns>
         public static string Serialize(object value)
         {
-            var json = new JsonSerializer();
+            using var json = new JsonStringWriter();
             json.Write(value);
 
-            return json.ToString();
+            return json.Json.ToString();
         }
 
         /// <inheritdoc/>
-        public override string ToString()
-            => this.Json.ToString();
+        public void Dispose()
+        {
+            this.Json.Dispose();
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// Determines whether the specified property value can be written.
@@ -84,7 +82,7 @@ namespace StreamDeck.Generators.Serialization
             {
                 // Null.
                 case null:
-                    this.Json.Append("null");
+                    this.Json.Write("null");
                     return;
 
                 // Strings.
@@ -113,7 +111,7 @@ namespace StreamDeck.Generators.Serialization
 
                 // Boolean.
                 case bool boolean:
-                    this.Json.Append(boolean.ToString().ToLower());
+                    this.Json.Write(boolean.ToString().ToLower());
                     return;
 
                 // Date times.
@@ -135,7 +133,7 @@ namespace StreamDeck.Generators.Serialization
                 case decimal _:
                 case IntPtr _:
                 case UIntPtr _:
-                    this.Json.Append(value);
+                    this.Json.Write(value);
                     return;
             }
 
@@ -144,7 +142,7 @@ namespace StreamDeck.Generators.Serialization
             // Enum.
             if (type.IsEnum)
             {
-                this.Json.Append((int)value);
+                this.Json.Write((int)value);
                 return;
             }
 
@@ -167,8 +165,6 @@ namespace StreamDeck.Generators.Serialization
         {
             this.WriteWrapped('[', ']', () =>
             {
-                this.Json.Append(this.Indentation);
-
                 var enumerator = array.GetEnumerator();
                 if (enumerator.MoveNext())
                 {
@@ -177,8 +173,7 @@ namespace StreamDeck.Generators.Serialization
 
                 while (enumerator.MoveNext())
                 {
-                    this.Json.AppendLine(",");
-                    this.Json.Append(this.Indentation);
+                    this.Json.WriteLine(",");
                     this.Write(enumerator.Current);
                 }
             });
@@ -205,7 +200,7 @@ namespace StreamDeck.Generators.Serialization
         private void WriteObject(object obj)
         {
             var type = obj.GetType();
-            if (type.GetCustomAttribute<IgnoreDataMemberAttribute> () != null)
+            if (type.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
             {
                 return;
             }
@@ -233,7 +228,7 @@ namespace StreamDeck.Generators.Serialization
         {
             this.WriteWrapped('{', '}', () =>
             {
-                var validProperties = properties.Where(p => this.CanWriteProperty(p.Value)).GetEnumerator(); ;
+                var validProperties = properties.Where(p => this.CanWriteProperty(p.Value)).GetEnumerator();
                 if (validProperties.MoveNext())
                 {
                     Write(validProperties.Current);
@@ -241,16 +236,15 @@ namespace StreamDeck.Generators.Serialization
 
                 while (validProperties.MoveNext())
                 {
-                    this.Json.AppendLine(",");
+                    this.Json.WriteLine(",");
                     Write(validProperties.Current);
                 }
             });
 
             void Write(KeyValuePair<string, object> property)
             {
-                this.Json.Append(this.Indentation);
                 this.WriteString(property.Key);
-                this.Json.Append(": ");
+                this.Json.Write(": ");
                 this.Write(property.Value);
             }
         }
@@ -263,14 +257,14 @@ namespace StreamDeck.Generators.Serialization
         /// <param name="action">The action responsible for writing the JSON.</param>
         private void WriteWrapped(char open, char close, Action action)
         {
-            this.Json.AppendLine(open.ToString());
-            this.Indentation = new string(' ', this.Indentation.Length + 4);
+            this.Json.WriteLine(open.ToString());
+            this.Json.Indent++;
 
             action();
 
-            this.Indentation = new string(' ', this.Indentation.Length - 4);
-            this.Json.AppendLine();
-            this.Json.Append(this.Indentation + close);
+            this.Json.Indent--;
+            this.Json.WriteLine();
+            this.Json.Write(close);
         }
 
         /// <summary>
@@ -297,7 +291,7 @@ namespace StreamDeck.Generators.Serialization
                 });
             }
 
-            this.Json.Append($"\"{escaped}\"");
+            this.Json.Write($"\"{escaped}\"");
         }
 
         /// <summary>
