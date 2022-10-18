@@ -23,34 +23,38 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         private string TagName { get; }
 
         /// <summary>
-        /// Writes the component <paramref name="data"/> to the specified <paramref name="writer"/>.
+        /// Writes the component <paramref name="data"/> to the specified <paramref name="parent"/>.
         /// </summary>
-        /// <param name="writer">The writer to write to.</param>
+        /// <param name="parent">The parent HTML element to write to.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        public virtual void Write(HtmlStringWriter writer, AttributeData data)
+        public virtual void Write(HtmlStringWriter parent, AttributeData data)
         {
-            writer.RenderBeginTag("sdpi-item");
-            writer.AddAttribute("label", data.GetNamedArgumentValueOrDefault(nameof(InputAttribute.Label), () => string.Empty));
-
-            this.WriteInput(writer, data);
-
-            writer.RenderEndTag();
+            parent.Add("sdpi-item", item =>
+            {
+                item.AddAttribute("label", data.GetNamedArgumentValueOrDefault(nameof(InputAttribute.Label), () => string.Empty));
+                this.WriteInput(item, data);
+            });
         }
 
         /// <summary>
-        /// Writes the input associated with the <paramref name="data"/>, to the specified <paramref name="writer"/>.
+        /// Writes the input associated with the <paramref name="data"/>, to the specified <paramref name="parent"/>.
         /// </summary>
-        /// <param name="writer">The writer to write to.</param>
+        /// <param name="parent">The parent HTML element to write to.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        protected virtual void WriteInput(HtmlStringWriter writer, AttributeData data)
+        protected virtual void WriteInput(HtmlStringWriter parent, AttributeData data)
+            => parent.Add(this.TagName, elem => this.WriteAttributes(elem, data));
+
+        /// <summary>
+        /// Writes the attributes contained within <paramref name="data"/>, to the specified <paramref name="element"/>.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
+        private void WriteAttributes(HtmlStringWriter element, AttributeData data)
         {
-            writer.RenderBeginTag(this.TagName);
             foreach (var attr in data.NamedArguments.Where(a => this.CanWriteProperty(a.Key, a.Value)))
             {
-                writer.AddAttribute(this.GetAttributeName(attr.Key), attr.Value.Value);
+                element.AddAttribute(this.GetAttributeName(attr.Key), attr.Value.Value);
             }
-
-            writer.RenderEndTag();
         }
 
         /// <summary>

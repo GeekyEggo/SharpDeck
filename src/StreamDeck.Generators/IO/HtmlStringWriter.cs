@@ -1,119 +1,127 @@
 namespace StreamDeck.Generators.IO
 {
     using System.Collections.Generic;
+    using System.Web;
 
     /// <summary>
-    /// Provides a basic <see cref="StringWriter"/> capable of writing HTML.
-    /// NB. As this is used as part of source generation, no HTML encoding occurs, and the ownice is put on the consumer.
+    /// Provides a basic structure for creating and writing HTML elements.
     /// </summary>
-    internal class HtmlStringWriter : IndentedStringWriter
+    internal class HtmlStringWriter
     {
         /// <summary>
-        /// Gets the open tags.
+        /// All element tags that represent a void element.
+        /// <see href="https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-element"/>.
         /// </summary>
-        private Stack<HtmlTag> OpenTags { get; } = new Stack<HtmlTag>();
+        private static readonly string[] VOID_ELEMENTS = new[] { "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" };
 
         /// <summary>
-        /// Renders the begin tag.
+        /// Initializes a new instance of the <see cref="HtmlStringWriter"/> class.
         /// </summary>
-        /// <param name="tagName">Name of the tag.</param>
-        public void RenderBeginTag(string tagName)
+        public HtmlStringWriter()
         {
-            if (this.TryPeek(out var tag))
-            {
-                this.WriteLine(">");
-                this.Indent++;
-
-                tag!.IsBeginTagOpen = false;
-            }
-
-            this.OpenTags.Push(new HtmlTag(tagName));
-            this.Write($"<{tagName}");
         }
 
         /// <summary>
-        /// Adds the attribute to the current tag.
+        /// Initializes a new instance of the <see cref="HtmlStringWriter"/> class.
         /// </summary>
-        /// <param name="name">The name of the attribute.</param>
-        /// <param name="value">The value of the attribute.</param>
-        public void AddAttribute(string name, object? value)
+        /// <param name="tagName">The name of the HTML tag.</param>
+        private HtmlStringWriter(string tagName)
+            => this.TagName = tagName;
+
+        /// <summary>
+        /// Gets the attributes associated with the element.
+        /// </summary>
+        private IDictionary<string, object?> Attributes { get; } = new Dictionary<string, object?>();
+
+        /// <summary>
+        /// Gets the children.
+        /// </summary>
+        private List<HtmlStringWriter> Children { get; } = new List<HtmlStringWriter>();
+
+        /// <summary>
+        /// Gets the name of the HTML tag.
+        /// </summary>
+        private string? TagName { get; }
+
+        /// <summary>
+        /// Adds the specified tag name to this element as a child.
+        /// </summary>
+        /// <param name="tagName">Name of the child tag.</param>
+        /// <param name="build">The action used to build the child element.</param>
+        /// <returns>This <see cref="HtmlStringWriter"/> for chaining.</returns>
+        public HtmlStringWriter Add(string tagName, Action<HtmlStringWriter> build)
         {
-            if (this.TryPeek(out var _))
+            if (VOID_ELEMENTS.Contains(this.TagName))
             {
-                if (value is bool and true)
-                {
-                    this.Write($" {name}");
-                }
-                else if (value is not bool and not null
-                    && value.ToString() is string strValue and not "")
-                {
-                    this.Write($" {name}=\"{strValue}\"");
-                }
+                throw new InvalidOperationException("Void elements cannot have children.");
             }
+
+            var elem = new HtmlStringWriter(tagName);
+            build(elem);
+
+            this.Children.Add(elem);
+            return this;
         }
 
         /// <summary>
-        /// Renders the end tag of the open element..
+        /// Adds an attribute to this <see cref="HtmlStringWriter"/>.
         /// </summary>
-        public void RenderEndTag()
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>This <see cref="HtmlStringWriter"/> for chaining.</returns>
+        public HtmlStringWriter AddAttribute(string name, object? value)
         {
-            if (this.TryPeek(out var tag))
-            {
-                if (tag!.IsBeginTagOpen)
-                {
-                    this.Write($">");
-                    tag.IsBeginTagOpen = false;
-                }
-                else
-                {
-                    this.Indent--;
-                }
+            this.Attributes.Add(name, value);
+            return this;
+        }
 
-                this.WriteLine($"</{tag.Name}>");
-                this.OpenTags.Pop();
-            }
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            using var writer = new IndentedStringWriter();
+
+            writer.WriteLine("<!doctype html>");
+            this.Children.ForEach(c => c.Write(writer));
+
+            return writer.ToString();
         }
 
         /// <summary>
-        /// Peeks <see cref="OpenTags"/>, returning <c>true</c> when a tag is open.
+        /// Writes this HTMl element to the specified <paramref name="writer"/>.
         /// </summary>
-        /// <param name="tag">The open tag.</param>
-        /// <returns><c>true</c> when there is an open tag; otherwise <c>false</c>.</returns>
-        private bool TryPeek(out HtmlTag? tag)
+        /// <param name="writer">The writer to write to.</param>
+        private void Write(IndentedStringWriter writer)
         {
-            if (this.OpenTags.Count > 0)
+            writer.Write($"<{this.TagName}");
+            foreach (var attr in this.Attributes)
             {
-                tag = this.OpenTags.Peek();
-                return true;
+                if (attr.Value is bool and true)
+                {
+                    writer.Write($" {attr.Key}");
+                }
+                else if (attr.Value is not bool and not null
+                    && attr.Value.ToString() is string strValue and not "")
+                {
+                    writer.Write($" {attr.Key}=\"{HttpUtility.HtmlEncode(strValue)}\"");
+                }
+            }
+
+            if (this.Children.Count > 0)
+            {
+                writer.WriteLine(">");
+                writer.Indent++;
+                this.Children.ForEach(c => c.Write(writer));
+                writer.Indent--;
+                writer.WriteLine($"</{this.TagName}>");
+            }
+            else if (VOID_ELEMENTS.Contains(this.TagName))
+            {
+                writer.WriteLine(" />");
             }
             else
             {
-                tag = default;
-                return false;
+                writer.WriteLine($"></{this.TagName}>");
             }
-        }
-
-        /// <summary>
-        /// Provides basic information about an HTML tag.
-        /// </summary>
-        private class HtmlTag
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="HtmlTag"/> class.
-            /// </summary>
-            /// <param name="name">The tag name.</param>
-            public HtmlTag(string name)
-                => this.Name = name;
-
-            /// <summary>
-            /// Gets the name.
-            /// </summary>
-            public string Name { get; }
-
-            /// <summary>
-            /// Gets or sets a value indicating whether this instance's begin tag is open.
-            /// </summary>
-            public bool IsBeginTagOpen { get; set; } = true;
         }
     }
 }
