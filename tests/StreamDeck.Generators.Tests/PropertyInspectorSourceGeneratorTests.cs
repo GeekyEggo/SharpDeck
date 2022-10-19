@@ -2,11 +2,22 @@ namespace StreamDeck.Generators.Tests
 {
     using StreamDeck.Generators.IO;
     using StreamDeck.Generators.Tests.Helpers;
+    using StreamDeck.PropertyInspectors;
 
+    /// <summary>
+    /// Provides assertions for <see cref="PropertyInspectorSourceGenerator"/>.
+    /// </summary>
     [TestFixture]
     internal class PropertyInspectorSourceGeneratorTests
     {
+        /// <summary>
+        /// The sdpi-components source location.
+        /// </summary>
         private const string SDPI_COMPONENTS_SRC = "https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v2/dist/sdpi-components.js";
+
+        /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextfieldAttribute"/> component correctly.
+        /// </summary>
         [Test]
         public void Textfield()
         {
