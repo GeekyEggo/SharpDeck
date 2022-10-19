@@ -74,6 +74,7 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         protected virtual string GetAttributeName(string propertyName)
             => propertyName switch
             {
+                nameof(InputAttribute.IsDisabled) => "disabled",
                 nameof(InputAttribute.IsGlobal) => "global",
                 _ => propertyName.ToLowerInvariant()
             };

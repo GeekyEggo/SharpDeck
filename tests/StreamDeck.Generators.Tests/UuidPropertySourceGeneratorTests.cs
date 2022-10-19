@@ -23,7 +23,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText: string.Empty);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(compilation);
+            SourceGeneratorTests.VerifySources(compilation);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(compilation);
+            SourceGeneratorTests.VerifySources(compilation);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(compilation);
+            SourceGeneratorTests.VerifySources(compilation);
         }
 
             /// <summary>
@@ -87,7 +87,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(compilation);
+            SourceGeneratorTests.VerifySources(compilation);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: $"{HINT_PREFIX}MyAction.0.g.cs",
@@ -144,7 +144,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: $"{HINT_PREFIX}MyAction.0.g.cs",
@@ -188,7 +188,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: $"{HINT_PREFIX}MyAction.0.g.cs",
@@ -244,7 +244,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new UuidPropertySourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: $"{HINT_PREFIX}MyAction.0.g.cs",

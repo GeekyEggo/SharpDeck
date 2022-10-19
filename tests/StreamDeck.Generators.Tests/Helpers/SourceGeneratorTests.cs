@@ -1,9 +1,11 @@
 namespace StreamDeck.Generators.Tests.Helpers
 {
     using System.Collections.Immutable;
+    using System.Text;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
+    using StreamDeck.Generators.IO;
 
     /// <summary>
     /// Provides a base class responsible for testing a <see cref="ISourceGenerator"/>.
@@ -13,12 +15,17 @@ namespace StreamDeck.Generators.Tests.Helpers
         /// <summary>
         /// The default assembly name.
         /// </summary>
-        internal const string DEFAULT_ASSEMBLY_NAME = "TestProject";
+        internal const string ASSEMBLY_NAME = "TestProject";
+
+        /// <summary>
+        /// The default project directory.
+        /// </summary>
+        internal const string PROJECT_DIRECTORY = @"C:\temp\";
 
         /// <summary>
         /// Gets the default <see cref="AnalyzerConfigOptionsProvider"/>.
         /// </summary>
-        internal static AnalyzerConfigOptionsProvider DEFAULT_OPTIONS_PROVIDER => new MockAnalyzerConfigOptionsProvider(("build_property.projectdir", "C:\\temp\\"));
+        internal static AnalyzerConfigOptionsProvider DEFAULT_OPTIONS_PROVIDER => new MockAnalyzerConfigOptionsProvider(("build_property.projectdir", PROJECT_DIRECTORY));
 
         /// <summary>
         /// Runs the <paramref name="sourceText"/> as CSharp against the provided <paramref name="generator"/>.
@@ -31,7 +38,7 @@ namespace StreamDeck.Generators.Tests.Helpers
         internal static (Compilation? OutputCompilation, ImmutableArray<Diagnostic> Diagnostics) Run(
             ISourceGenerator generator,
             string sourceText,
-            string? assemblyName = DEFAULT_ASSEMBLY_NAME,
+            string? assemblyName = ASSEMBLY_NAME,
             AnalyzerConfigOptionsProvider? optionsProvider = null)
         {
             // Parse the provided source text into a C# syntax tree.
@@ -48,7 +55,7 @@ namespace StreamDeck.Generators.Tests.Helpers
 
             // Create a Roslyn compilation for the syntax tree and references; we can always assert against a console application.
             var compilation = CSharpCompilation.Create(
-                assemblyName ?? DEFAULT_ASSEMBLY_NAME,
+                assemblyName ?? ASSEMBLY_NAME,
                 syntaxTrees,
                 references,
                 options: new CSharpCompilationOptions(OutputKind.ConsoleApplication));
@@ -65,11 +72,31 @@ namespace StreamDeck.Generators.Tests.Helpers
         }
 
         /// <summary>
-        /// Verifies <see cref="Compilation.SyntaxTrees"/> against the expected <paramref name="sources"/>.
+        /// Verifies <see cref="IFileSystem.WriteAllText(string, string, Encoding)"/> was invoked once per <paramref name="sources"/>.
         /// </summary>
-        /// <param name="compilation">The compilation containing the syntax trees..</param>
+        /// <param name="fileSystem">The file system to verify against.</param>
         /// <param name="sources">The expected sources.</param>
-        internal static void VerifySyntaxTrees(Compilation? compilation, params (string HintName, string SourceText)[] sources)
+        internal static void VerifyFiles(Mock<IFileSystem> fileSystem, params (string HintName, string SourceText)[] sources)
+        {
+            if (sources.Length == 0)
+            {
+                fileSystem.Verify(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>()), Times.Never);
+            }
+            else
+            {
+                foreach (var (HintName, SourceText) in sources)
+                {
+                    fileSystem.Verify(f => f.WriteAllText($"{PROJECT_DIRECTORY}{HintName}", SourceText, Encoding.UTF8), Times.Once);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Verifies <see cref="Compilation.SyntaxTrees"/> as generated files against the expected <paramref name="sources"/>.
+        /// </summary>
+        /// <param name="compilation">The compilation containing the syntax trees.</param>
+        /// <param name="sources">The expected sources.</param>
+        internal static void VerifySources(Compilation? compilation, params (string HintName, string SourceText)[] sources)
         {
             Assert.That(compilation, Is.Not.Null);
 

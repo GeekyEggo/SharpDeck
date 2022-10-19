@@ -57,7 +57,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText: "");
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -90,7 +90,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -122,7 +122,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -184,7 +184,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -248,7 +248,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -313,7 +313,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -383,7 +383,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,
@@ -450,7 +450,7 @@ namespace StreamDeck.Generators.Tests
             var (compilation, _) = SourceGeneratorTests.Run(new HostExtensionsSourceGenerator(), sourceText);
 
             // Assert.
-            SourceGeneratorTests.VerifySyntaxTrees(
+            SourceGeneratorTests.VerifySources(
                 compilation,
                 (
                     HintName: HINT_HAME,

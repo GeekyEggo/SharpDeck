@@ -80,7 +80,7 @@ namespace StreamDeck.Generators.IO
         {
             using var writer = new IndentedStringWriter();
 
-            writer.WriteLine("<!doctype html>");
+            writer.WriteLine("<!DOCTYPE html>");
             this.Children.ForEach(c => c.Write(writer));
 
             return writer.ToString();

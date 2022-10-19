@@ -13,7 +13,7 @@ namespace StreamDeck.PropertyInspectors
         /// <summary>
         /// Gets or sets a value indicating whether the input is disabled.
         /// </summary>
-        public bool Disabled { get; set; } = false;
+        public bool IsDisabled { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether the value will be persisted to the global settings.

@@ -1,5 +1,6 @@
 namespace StreamDeck.Generators
 {
+    using System.Text;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
@@ -14,6 +15,18 @@ namespace StreamDeck.Generators
     internal class PropertyInspectorSourceGenerator : BaseSourceGenerator
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyInspectorSourceGenerator"/> class.
+        /// </summary>
+        /// <param name="fileSystem">The file system.</param>
+        public PropertyInspectorSourceGenerator(IFileSystem fileSystem)
+            => this.FileSystem = fileSystem;
+
+        /// <summary>
+        /// Gets the file system.
+        /// </summary>
+        private IFileSystem FileSystem { get; }
+
+        /// <summary>
         /// Gets the component writers.
         /// </summary>
         private IReadOnlyDictionary<string, FieldItemWriter> ComponentWriters { get; } = new Dictionary<string, FieldItemWriter>
@@ -24,9 +37,18 @@ namespace StreamDeck.Generators
         /// <inheritdoc/>
         internal override void Execute(GeneratorExecutionContext context, StreamDeckSyntaxReceiver syntaxReceiver, ManifestAnalyzer manifestAnalyzer)
         {
+            if (!context.TryGetProjectDirectory(out var projectDirectory))
+            {
+                // todo: warn.
+                throw new InvalidOperationException();
+            }
+
             foreach (var action in manifestAnalyzer.ActionAnalyzers.Where(a => a.PropertyInspectorType is not null))
             {
+                var path = Path.Combine(projectDirectory, "pi", $"{action.Action.UUID}.g.html");
                 var html = this.GetPropertyInspectorHtml(action);
+
+                this.FileSystem.WriteAllText(path, html, Encoding.UTF8);
             }
         }
 

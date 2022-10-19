@@ -626,7 +626,7 @@ namespace StreamDeck.Generators.Tests
                 assemblyName);
 
             // Assert.
-            fileSystem.Verify(f => f.WriteAllText(@"C:\temp\manifest.json", expectedJson, Encoding.UTF8), Times.Once);
+            SourceGeneratorTests.VerifyFiles(fileSystem, ("manifest.json", expectedJson));
             DiagnosticAssert.AreEqual(actualDiagnostics, expectedDiagnostics);
         }
 
@@ -656,7 +656,7 @@ namespace StreamDeck.Generators.Tests
                 optionsProvider: optionsProvider);
 
             // Assert.
-            fileSystem.Verify(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>()), Times.Never);
+            SourceGeneratorTests.VerifyFiles(fileSystem);
             DiagnosticAssert.AreEqual(actualDiagnostics, expectedDiagnostics);
         }
     }
