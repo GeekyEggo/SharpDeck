@@ -402,6 +402,70 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
+        /// Asserts <see cref="ManifestJsonGenerator.Execute(GeneratorExecutionContext, StreamDeckSyntaxReceiver, Analyzers.ManifestAnalyzer)"/> generates actions with a property inspector path
+        /// if their property inspector will be automatically generated.
+        /// </summary>
+        [TestCase(TestName = "Generate action, set property inspector path")]
+        public void Generate_ActionPropertyInspectorPath()
+        {
+            const string sourceText = """
+                using StreamDeck;
+
+                [assembly: Manifest(
+                    Author = "User",
+                    Name = "Product",
+                    Icon = "Plugin.png",
+                    Description = "Hello world")]
+
+                [Action(
+                    Icon = "Icon.png",
+                    StateImage = "State.png",
+                    UUID = "com.user.product.action",
+                    PropertyInspectorType = typeof(Settings))]
+                public class ActionOne {}
+
+                public class Settings {}
+
+                """;
+
+            var json = """
+                {
+                    "Actions": [
+                        {
+                            "Icon": "Icon.png",
+                            "Name": "ActionOne",
+                            "PropertyInspectorPath": "pi\\com.user.product.action.g.html",
+                            "States": [
+                                {
+                                    "Image": "State.png"
+                                }
+                            ],
+                            "UUID": "com.user.product.action"
+                        }
+                    ],
+                    "Author": "User",
+                    "CodePath": "Test Project.exe",
+                    "Description": "Hello world",
+                    "Icon": "Plugin.png",
+                    "Name": "Product",
+                    "OS": [
+                        {
+                            "MinimumVersion": "10",
+                            "Platform": "windows"
+                        }
+                    ],
+                    "SDKVersion": 2,
+                    "Software": {
+                        "MinimumVersion": "5.0"
+                    },
+                    "Version": "0.0.0"
+                }
+                """;
+
+            VerifySuccess(sourceText, json, "Test Project");
+        }
+
+        /// <summary>
         /// Asserts <see cref="ManifestJsonGenerator.Generate(GeneratorExecutionContext, Analyzers.ManifestAnalyzer, IFileSystem)"/> warns when the StateImage and States are both defined.
         /// </summary>
         [TestCase(TestName = "Warn when action has StateImage and States defined")]

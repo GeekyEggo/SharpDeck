@@ -43,19 +43,19 @@ namespace StreamDeck.Generators
                 throw new InvalidOperationException();
             }
 
-            foreach (var action in manifestAnalyzer.ActionAnalyzers.Where(a => a.PropertyInspectorType is not null))
+            foreach (var actionAnalyzer in manifestAnalyzer.ActionAnalyzers.Where(a => a.PropertyInspectorType is not null))
             {
-                var path = Path.Combine(projectDirectory, "pi", $"{action.Action.UUID}.g.html");
-                var html = this.GetPropertyInspectorHtml(action);
-
-                this.FileSystem.WriteAllText(path, html, Encoding.UTF8);
+                this.FileSystem.WriteAllText(
+                    path: Path.Combine(projectDirectory, actionAnalyzer.Action.PropertyInspectorPath),
+                    contents: this.GetPropertyInspectorHtml(actionAnalyzer),
+                    encoding: Encoding.UTF8);
             }
         }
 
         /// <summary>
         /// Gets the property inspector HTML for the <paramref name="action"/>.
         /// </summary>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The action analysis.</param>
         /// <returns>The HTML of the property inspector.</returns>
         private string GetPropertyInspectorHtml(ActionAnalyzer action)
         {

@@ -29,6 +29,10 @@ namespace StreamDeck.Generators.CodeAnalysis
             if (context.ActionAttribute.Data.TryGetNamedArgument(nameof(ActionAttribute.PropertyInspectorType), out INamedTypeSymbol? piType))
             {
                 this.PropertyInspectorType = piType;
+                if (string.IsNullOrWhiteSpace(this.Action.PropertyInspectorPath))
+                {
+                    this.Action.PropertyInspectorPath = @$"pi\{this.Action.UUID}.g.html";
+                }
             }
         }
 
