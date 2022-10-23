@@ -18,7 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\CalendarAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\CalendarAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\CalendarType.cs" Link="StreamDeck.Abstractions\PropertyInspectors\CalendarType.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\InputAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\InputAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\TextareaAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\TextareaAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\TextfieldAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\TextfieldAttribute.cs" />
 
     <Compile Include="..\StreamDeck.Abstractions\ActionAttribute.cs" Link="StreamDeck.Abstractions\ActionAttribute.cs" />

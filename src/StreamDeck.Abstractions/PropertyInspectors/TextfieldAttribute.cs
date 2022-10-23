@@ -1,9 +1,9 @@
 namespace StreamDeck.PropertyInspectors
 {
     /// <summary>
-    /// Provides information about a <see href="https://sdpi-components.dev/docs/components/textfield">textfield</see> to be rendered within a property inspector.
+    /// Provides information about a <see href="https://sdpi-components.dev/docs/components/textfield">sdpi-textfield</see> to be rendered within a property inspector.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
 #if BUILDING_SOURCE_GENERATOR
     internal
 #else
@@ -12,11 +12,6 @@ namespace StreamDeck.PropertyInspectors
     class TextfieldAttribute : InputAttribute
     {
         /// <summary>
-        /// The zero <see cref="MaxLength"/>.
-        /// </summary>
-        internal const int ZERO_MAX_LENGTH = -1;
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is required; when <c>true</c>, an icon is shown in the input if the value is empty.
         /// </summary>
         public bool IsRequired { get; set; } = false;
@@ -24,7 +19,7 @@ namespace StreamDeck.PropertyInspectors
         /// <summary>
         /// Gets or sets maximum length of the value.
         /// </summary>
-        public int MaxLength { get; set; } = ZERO_MAX_LENGTH;
+        public int MaxLength { get; set; } = default;
 
         /// <summary>
         /// Gets or sets regular expression used to validate the input.

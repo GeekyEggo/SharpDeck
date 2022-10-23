@@ -31,6 +31,17 @@ namespace StreamDeck.Generators
         /// </summary>
         private IReadOnlyDictionary<string, FieldItemWriter> ComponentWriters { get; } = new Dictionary<string, FieldItemWriter>
         {
+            // Button
+            { typeof(CalendarAttribute).FullName, new FieldItemWriter("sdpi-calendar") },
+            // Checkbox
+            // Checkbox List
+            // Color
+            // File
+            // Password
+            // Radio
+            // Range
+            // Select
+            { typeof(TextareaAttribute).FullName, new FieldItemWriter("sdpi-textarea") },
             { typeof(TextfieldAttribute).FullName, new TextfieldWriter() }
         };
 

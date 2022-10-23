@@ -31,6 +31,63 @@ namespace StreamDeck.Generators.Tests
             """;
 
         /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextareaAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void Textarea()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Textarea(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Description",
+                        MaxLength = 250,
+                        Rows = 3,
+                        Setting = "description"
+                        ShowLength = true)]
+                    public string Description { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Description">
+                                <sdpi-textarea disabled global maxlength="250" rows="3" setting="description" showlength></sdpi-textarea>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextfieldAttribute"/> component correctly.
         /// </summary>
         [Test]

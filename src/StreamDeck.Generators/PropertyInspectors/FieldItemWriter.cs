@@ -64,7 +64,9 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> when the property can be written as an attribute; otherwise <c>false</c>.</returns>
         protected virtual bool CanWriteProperty(string propertyName, object? value)
-            => propertyName != nameof(InputAttribute.Label);
+            => value is int intValue
+                ? intValue > default(int)
+                : propertyName != nameof(InputAttribute.Label);
 
         /// <summary>
         /// Gets the transformed name of the attribute.

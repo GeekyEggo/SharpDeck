@@ -17,18 +17,6 @@ namespace StreamDeck.Generators.PropertyInspectors
         }
 
         /// <inheritdoc/>
-        protected override bool CanWriteProperty(string propertyName, object? value)
-        {
-            if (propertyName == nameof(TextfieldAttribute.MaxLength)
-                && value is int maxLength)
-            {
-                return maxLength != TextfieldAttribute.ZERO_MAX_LENGTH;
-            }
-
-            return base.CanWriteProperty(propertyName, value);
-        }
-
-        /// <inheritdoc/>
         protected override string GetAttributeName(string propertyName)
             => propertyName switch
             {
