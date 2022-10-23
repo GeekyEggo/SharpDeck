@@ -31,6 +31,69 @@ namespace StreamDeck.Generators.Tests
             """;
 
         /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="CalendarAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        [TestCase("CalendarType.Date", "date")]
+        [TestCase("CalendarType.DateTimeLocal", "datetime-local")]
+        [TestCase("CalendarType.Month", "month")]
+        [TestCase("CalendarType.Week", "week")]
+        [TestCase("CalendarType.Time", "time")]
+        public void Calendar(string calendarType, string expectedType)
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            var sourceText = $$"""
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Calendar(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Calendar",
+                        Max = "2022-12-31",
+                        Min = "2022-12-25",
+                        Setting = "calendar"
+                        Step = 1,
+                        Type = {{calendarType}})]
+                    public string Description { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Calendar">
+                                <sdpi-calendar disabled global max="2022-12-31" min="2022-12-25" setting="calendar" step="1" type="{expectedType}"></sdpi-calendar>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="CheckboxAttribute"/> component correctly.
         /// </summary>
         [Test]
@@ -86,15 +149,10 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="CalendarAttribute"/> component correctly.
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="ColorAttribute"/> component correctly.
         /// </summary>
         [Test]
-        [TestCase("CalendarType.Date", "date")]
-        [TestCase("CalendarType.DateTimeLocal", "datetime-local")]
-        [TestCase("CalendarType.Month", "month")]
-        [TestCase("CalendarType.Week", "week")]
-        [TestCase("CalendarType.Time", "time")]
-        public void Calendar(string calendarType, string expectedType)
+        public void Color()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -109,16 +167,12 @@ namespace StreamDeck.Generators.Tests
 
                 public class Settings
                 {
-                    [Calendar(
+                    [Color(
                         IsDisabled = true,
                         IsGlobal = true,
-                        Label = "Calendar",
-                        Max = "2022-12-31",
-                        Min = "2022-12-25",
-                        Setting = "calendar"
-                        Step = 1,
-                        Type = {{calendarType}})]
-                    public string Description { get; set; }
+                        Label = "Color"
+                        Setting = "color")]
+                    public string Color { get; set; }
                 }
             """;
 
@@ -138,8 +192,64 @@ namespace StreamDeck.Generators.Tests
                             <script src="{SDPI_COMPONENTS_SRC}"></script>
                         </head>
                         <body>
-                            <sdpi-item label="Calendar">
-                                <sdpi-calendar disabled global max="2022-12-31" min="2022-12-25" setting="calendar" step="1" type="{expectedType}"></sdpi-calendar>
+                            <sdpi-item label="Color">
+                                <sdpi-color disabled global setting="color"></sdpi-color>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="FileAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void File()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            var sourceText = $$"""
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [File(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "File"
+                        Accept = "image/png, image/jpeg",
+                        ButtonLabel = "Choose",
+                        Setting = "avatar")]
+                    public string FilePath { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="File">
+                                <sdpi-file disabled global accept="image/png, image/jpeg" label="Choose" setting="avatar"></sdpi-file>
                             </sdpi-item>
                         </body>
                     </html>

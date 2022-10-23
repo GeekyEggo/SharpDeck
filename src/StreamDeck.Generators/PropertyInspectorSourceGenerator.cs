@@ -35,8 +35,8 @@ namespace StreamDeck.Generators
             { typeof(CalendarAttribute).FullName, new CalendarWriter() },
             { typeof(CheckboxAttribute).FullName, new CheckboxWriter() },
             // Checkbox List
-            // Color
-            // File
+            { typeof(ColorAttribute).FullName, new FieldItemWriter("sdpi-color") },
+            { typeof(FileAttribute).FullName, new FileWriter() },
             // Password
             // Radio
             // Range
