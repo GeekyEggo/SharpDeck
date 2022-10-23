@@ -53,7 +53,8 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         {
             foreach (var attr in data.NamedArguments.Where(a => this.CanWriteProperty(a.Key, a.Value)))
             {
-                element.AddAttribute(this.GetAttributeName(attr.Key), attr.Value.Value);
+                var (key, value) = this.GetAttribute(attr.Key, attr.Value.Value);
+                element.AddAttribute(key, value);
             }
         }
 
@@ -69,16 +70,17 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
                 : propertyName != nameof(InputAttribute.Label);
 
         /// <summary>
-        /// Gets the transformed name of the attribute.
+        /// Gets the transformed name and value of the attribute.
         /// </summary>
         /// <param name="propertyName">The name of the property that represents the attribute.</param>
-        /// <returns>The transformed name.</returns>
-        protected virtual string GetAttributeName(string propertyName)
+        /// <param name="value">The value of the property.</param>
+        /// <returns>The transformed name and value.</returns>
+        protected virtual (string PropertyName, object? Value) GetAttribute(string propertyName, object? value)
             => propertyName switch
             {
-                nameof(InputAttribute.IsDisabled) => "disabled",
-                nameof(InputAttribute.IsGlobal) => "global",
-                _ => propertyName.ToLowerInvariant()
+                nameof(InputAttribute.IsDisabled) => ("disabled", value),
+                nameof(InputAttribute.IsGlobal) => ("global", value),
+                _ => (propertyName.ToLowerInvariant(), value)
             };
     }
 }

@@ -17,11 +17,11 @@ namespace StreamDeck.Generators.PropertyInspectors
         }
 
         /// <inheritdoc/>
-        protected override string GetAttributeName(string propertyName)
+        protected override (string PropertyName, object? Value) GetAttribute(string propertyName, object? value)
             => propertyName switch
             {
-                nameof(TextfieldAttribute.IsRequired) => "required",
-                _ => base.GetAttributeName(propertyName)
+                nameof(TextfieldAttribute.IsRequired) => ("required", value),
+                _ => base.GetAttribute(propertyName, value)
             };
     }
 }

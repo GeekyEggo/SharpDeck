@@ -32,7 +32,7 @@ namespace StreamDeck.Generators
         private IReadOnlyDictionary<string, FieldItemWriter> ComponentWriters { get; } = new Dictionary<string, FieldItemWriter>
         {
             // Button
-            { typeof(CalendarAttribute).FullName, new FieldItemWriter("sdpi-calendar") },
+            { typeof(CalendarAttribute).FullName, new CalendarWriter() },
             // Checkbox
             // Checkbox List
             // Color
