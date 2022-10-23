@@ -31,6 +31,61 @@ namespace StreamDeck.Generators.Tests
             """;
 
         /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="CheckboxAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void Checkbox()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            var sourceText = $$"""
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Checkbox(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Checkbox",
+                        CheckboxLabel = "True?",
+                        Setting = "is_true")]
+                    public bool IsTrue { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Checkbox">
+                                <sdpi-checkbox disabled global label="True?" setting="is_true"></sdpi-checkbox>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="CalendarAttribute"/> component correctly.
         /// </summary>
         [Test]
@@ -58,8 +113,8 @@ namespace StreamDeck.Generators.Tests
                         IsDisabled = true,
                         IsGlobal = true,
                         Label = "Calendar",
-                        Min = "2022-12-25",
                         Max = "2022-12-31",
+                        Min = "2022-12-25",
                         Setting = "calendar"
                         Step = 1,
                         Type = {{calendarType}})]
@@ -84,7 +139,7 @@ namespace StreamDeck.Generators.Tests
                         </head>
                         <body>
                             <sdpi-item label="Calendar">
-                                <sdpi-calendar disabled global min="2022-12-25" max="2022-12-31" setting="calendar" step="1" type="{expectedType}"></sdpi-calendar>
+                                <sdpi-calendar disabled global max="2022-12-31" min="2022-12-25" setting="calendar" step="1" type="{expectedType}"></sdpi-calendar>
                             </sdpi-item>
                         </body>
                     </html>

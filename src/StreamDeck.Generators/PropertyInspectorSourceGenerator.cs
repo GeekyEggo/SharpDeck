@@ -33,7 +33,7 @@ namespace StreamDeck.Generators
         {
             // Button
             { typeof(CalendarAttribute).FullName, new CalendarWriter() },
-            // Checkbox
+            { typeof(CheckboxAttribute).FullName, new CheckboxWriter() },
             // Checkbox List
             // Color
             // File
