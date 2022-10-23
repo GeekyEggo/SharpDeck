@@ -31,15 +31,14 @@ namespace StreamDeck.Generators
         /// </summary>
         private IReadOnlyDictionary<string, InputWriter> ComponentWriters { get; } = new Dictionary<string, InputWriter>
         {
-            // Button
             { typeof(CalendarAttribute).FullName, new CalendarInputWriter() },
             { typeof(CheckboxAttribute).FullName, new CheckboxInputWriter() },
             // Checkbox List
             { typeof(ColorAttribute).FullName, new InputWriter("sdpi-color") },
             { typeof(FileAttribute).FullName, new FileInputWriter() },
-            // Password
+            { typeof(PasswordAttribute).FullName, new InputWriter("sdpi-password") },
             // Radio
-            // Range
+            { typeof(RangeAttribute).FullName, new RangeInputWriter() },
             // Select
             { typeof(TextareaAttribute).FullName, new InputWriter("sdpi-textarea") },
             { typeof(TextfieldAttribute).FullName, new TextfieldInputWriter() }

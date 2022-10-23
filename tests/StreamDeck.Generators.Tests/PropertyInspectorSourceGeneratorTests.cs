@@ -259,6 +259,119 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="PasswordAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void Password()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Password(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Password",
+                        MaxLength = 100,
+                        Setting = "password")]
+                    public string Password { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Password">
+                                <sdpi-password disabled global maxlength="100" setting="password"></sdpi-password>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="RangeAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void Range()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Range(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Max = 100,
+                        Min = 0,
+                        Label = "Volume",
+                        Setting = "volume",
+                        ShowLabels = true,
+                        Step = 5)]
+                    public string Volume { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Volume">
+                                <sdpi-range disabled global max="100" min="0" setting="volume" showlabels step="5"></sdpi-range>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextareaAttribute"/> component correctly.
         /// </summary>
         [Test]
