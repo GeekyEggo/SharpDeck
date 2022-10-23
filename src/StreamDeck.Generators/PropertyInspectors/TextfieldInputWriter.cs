@@ -4,15 +4,15 @@ namespace StreamDeck.Generators.PropertyInspectors
     using StreamDeck.PropertyInspectors;
 
     /// <summary>
-    /// Provides an HTML writer capable of writing an <see href="https://sdpi-components.dev/docs/components/file">sdpi-file</see>.
+    /// Provides an HTML writer capable of writing an <see href="https://sdpi-components.dev/docs/components/textfield">sdpi-textfield</see>.
     /// </summary>
-    internal class FileWriter : FieldItemWriter
+    internal class TextfieldInputWriter : InputWriter
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextfieldWriter"/> class.
+        /// Initializes a new instance of the <see cref="TextfieldInputWriter"/> class.
         /// </summary>
-        public FileWriter()
-            : base("sdpi-file")
+        public TextfieldInputWriter()
+            : base("sdpi-textfield")
         {
         }
 
@@ -20,7 +20,7 @@ namespace StreamDeck.Generators.PropertyInspectors
         protected override (string PropertyName, object? Value) GetAttribute(string propertyName, object? value)
             => propertyName switch
             {
-                nameof(FileAttribute.ButtonLabel) => ("label", value),
+                nameof(TextfieldAttribute.IsRequired) => ("required", value),
                 _ => base.GetAttribute(propertyName, value)
             };
     }

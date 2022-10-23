@@ -11,12 +11,12 @@ namespace StreamDeck.Generators.PropertyInspectors
     /// <see href="https://sdpi-components.dev/docs/components/calendar/week">week</see>,
     /// <see href="https://sdpi-components.dev/docs/components/calendar/time">time</see>.
     /// </summary>
-    internal class CalendarWriter : FieldItemWriter
+    internal class CalendarInputWriter : InputWriter
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CalendarWriter"/> class.
+        /// Initializes a new instance of the <see cref="CalendarInputWriter"/> class.
         /// </summary>
-        public CalendarWriter()
+        public CalendarInputWriter()
             : base("sdpi-calendar")
         {
         }

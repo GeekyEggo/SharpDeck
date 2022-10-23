@@ -29,20 +29,20 @@ namespace StreamDeck.Generators
         /// <summary>
         /// Gets the component writers.
         /// </summary>
-        private IReadOnlyDictionary<string, FieldItemWriter> ComponentWriters { get; } = new Dictionary<string, FieldItemWriter>
+        private IReadOnlyDictionary<string, InputWriter> ComponentWriters { get; } = new Dictionary<string, InputWriter>
         {
             // Button
-            { typeof(CalendarAttribute).FullName, new CalendarWriter() },
-            { typeof(CheckboxAttribute).FullName, new CheckboxWriter() },
+            { typeof(CalendarAttribute).FullName, new CalendarInputWriter() },
+            { typeof(CheckboxAttribute).FullName, new CheckboxInputWriter() },
             // Checkbox List
-            { typeof(ColorAttribute).FullName, new FieldItemWriter("sdpi-color") },
-            { typeof(FileAttribute).FullName, new FileWriter() },
+            { typeof(ColorAttribute).FullName, new InputWriter("sdpi-color") },
+            { typeof(FileAttribute).FullName, new FileInputWriter() },
             // Password
             // Radio
             // Range
             // Select
-            { typeof(TextareaAttribute).FullName, new FieldItemWriter("sdpi-textarea") },
-            { typeof(TextfieldAttribute).FullName, new TextfieldWriter() }
+            { typeof(TextareaAttribute).FullName, new InputWriter("sdpi-textarea") },
+            { typeof(TextfieldAttribute).FullName, new TextfieldInputWriter() }
         };
 
         /// <inheritdoc/>

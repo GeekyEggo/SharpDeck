@@ -4,15 +4,15 @@ namespace StreamDeck.Generators.PropertyInspectors
     using StreamDeck.PropertyInspectors;
 
     /// <summary>
-    /// Provides an HTML writer capable of writing an <see href="https://sdpi-components.dev/docs/components/checkbox">sdpi-checkbox</see>.
+    /// Provides an HTML writer capable of writing an <see href="https://sdpi-components.dev/docs/components/file">sdpi-file</see>.
     /// </summary>
-    internal class CheckboxWriter : FieldItemWriter
+    internal class FileInputWriter : InputWriter
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CheckboxWriter"/> class.
+        /// Initializes a new instance of the <see cref="TextfieldInputWriter"/> class.
         /// </summary>
-        public CheckboxWriter()
-            : base("sdpi-checkbox")
+        public FileInputWriter()
+            : base("sdpi-file")
         {
         }
 
@@ -20,7 +20,7 @@ namespace StreamDeck.Generators.PropertyInspectors
         protected override (string PropertyName, object? Value) GetAttribute(string propertyName, object? value)
             => propertyName switch
             {
-                nameof(CheckboxAttribute.CheckboxLabel) => ("label", value),
+                nameof(FileAttribute.ButtonLabel) => ("label", value),
                 _ => base.GetAttribute(propertyName, value)
             };
     }

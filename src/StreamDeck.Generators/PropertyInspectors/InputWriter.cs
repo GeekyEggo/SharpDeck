@@ -8,13 +8,13 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
     /// <summary>
     /// Provides an HTML writer capable of writing an <see href="https://sdpi-components.dev/docs/components/item">sdpi-item</see>, with a nested input.
     /// </summary>
-    internal class FieldItemWriter
+    internal class InputWriter
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldItemWriter"/> class.
+        /// Initializes a new instance of the <see cref="InputWriter"/> class.
         /// </summary>
         /// <param name="tagName">Name of the HTML tag.</param>
-        public FieldItemWriter(string tagName)
+        public InputWriter(string tagName)
             => this.TagName = tagName;
 
         /// <summary>
