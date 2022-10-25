@@ -22,10 +22,14 @@
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\CalendarType.cs" Link="StreamDeck.Abstractions\PropertyInspectors\CalendarType.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\CheckboxAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\CheckboxAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\ColorAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\ColorAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\DataSourceInputAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\DataSourceInputAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\FileAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\FileAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\InputAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\InputAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\InputValueType.cs" Link="StreamDeck.Abstractions\PropertyInspectors\InputValueType.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\OptionAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\OptionAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\PasswordAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\PasswordAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\RangeAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\RangeAttribute.cs" />
+    <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\SelectAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\SelectAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\TextareaAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\TextareaAttribute.cs" />
     <Compile Include="..\StreamDeck.Abstractions\PropertyInspectors\TextfieldAttribute.cs" Link="StreamDeck.Abstractions\PropertyInspectors\TextfieldAttribute.cs" />
 

@@ -1,5 +1,6 @@
-namespace StreamDeck.Generators.Generators.PropertyInspectors
+namespace StreamDeck.Generators.PropertyInspectors
 {
+    using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.IO;
@@ -20,19 +21,20 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         /// <summary>
         /// Gets the name of the HTML tag.
         /// </summary>
-        private string TagName { get; }
+        protected string TagName { get; }
 
         /// <summary>
         /// Writes the component <paramref name="data"/> to the specified <paramref name="parent"/>.
         /// </summary>
         /// <param name="parent">The parent HTML element to write to.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        public virtual void Write(HtmlStringWriter parent, AttributeData data)
+        /// <param name="propertyAttributes">The <see cref="AttributeData"/> associated with the property the <paramref name="data"/> is assigned to.</param>
+        public virtual void Write(HtmlStringWriter parent, AttributeData data, ImmutableArray<AttributeData> propertyAttributes)
         {
             parent.Add("sdpi-item", item =>
             {
                 item.AddAttribute("label", data.GetNamedArgumentValueOrDefault(nameof(InputAttribute.Label), () => string.Empty));
-                this.WriteInput(item, data);
+                this.WriteInput(item, data, propertyAttributes);
             });
         }
 
@@ -41,7 +43,8 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         /// </summary>
         /// <param name="parent">The parent HTML element to write to.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        protected virtual void WriteInput(HtmlStringWriter parent, AttributeData data)
+        /// <param name="propertyAttributes">The <see cref="AttributeData"/> associated with the property the <paramref name="data"/> is assigned to.</param>
+        protected virtual void WriteInput(HtmlStringWriter parent, AttributeData data, ImmutableArray<AttributeData> propertyAttributes)
             => parent.Add(this.TagName, elem => this.WriteAttributes(elem, data));
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace StreamDeck.Generators.Generators.PropertyInspectors
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        private void WriteAttributes(HtmlStringWriter element, AttributeData data)
+        protected void WriteAttributes(HtmlStringWriter element, AttributeData data)
         {
             foreach (var attr in data.NamedArguments.Where(a => this.CanWriteProperty(a.Key, a.Value)))
             {

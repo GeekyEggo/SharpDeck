@@ -1,6 +1,5 @@
 namespace StreamDeck.Generators.PropertyInspectors
 {
-    using StreamDeck.Generators.Generators.PropertyInspectors;
     using StreamDeck.PropertyInspectors;
 
     /// <summary>

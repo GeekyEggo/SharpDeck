@@ -372,6 +372,76 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="SelectAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void Select()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(
+                    PropertyInspectorType = typeof(Settings),
+                    UUID = "com.user.product.action")]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Select(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Select"
+                        DataSource = "GetNumbers",
+                        HotReload = true,
+                        Loading = "Loading...",
+                        Placeholder = "Please select",
+                        Setting = "number"
+                        ValueType = InputValueType.Number)]
+                    [Option(Value = "1", Label = "One", Group = "Prime")]
+                    [Option(Value = "2", Label = "Two", Group = "Prime")]
+                    [Option(Value = "3", Label = "Three", IsDisabled = true, Group = "Prime")]
+                    [Option(Value = "4", Label = "Four")]
+                    public int Number { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\com.user.product.action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Select">
+                                <sdpi-select disabled global datasource="GetNumbers" hot-reload loading="Loading..." placeholder="Please select" setting="number" value-type="number">
+                                    <optgroup label="Prime">
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3" disabled>Three</option>
+                                    </optgroup>
+                                    <option value="4">Four</option>
+                                </sdpi-select>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextareaAttribute"/> component correctly.
         /// </summary>
         [Test]

@@ -17,31 +17,29 @@ namespace StreamDeck.Generators.IO
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlStringWriter"/> class.
         /// </summary>
-        public HtmlStringWriter()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HtmlStringWriter"/> class.
-        /// </summary>
         /// <param name="tagName">The name of the HTML tag.</param>
-        private HtmlStringWriter(string tagName)
+        public HtmlStringWriter(string? tagName = null)
             => this.TagName = tagName;
 
         /// <summary>
         /// Gets the attributes associated with the element.
         /// </summary>
-        private IDictionary<string, object?> Attributes { get; } = new Dictionary<string, object?>();
+        public IDictionary<string, object?> Attributes { get; } = new Dictionary<string, object?>();
+
+        /// <summary>
+        /// Gets or sets the inner text.
+        /// </summary>
+        public string? InnerText { get; set; }
+
+        /// <summary>
+        /// Gets the name of the HTML tag.
+        /// </summary>
+        public string? TagName { get; }
 
         /// <summary>
         /// Gets the children.
         /// </summary>
         private List<HtmlStringWriter> Children { get; } = new List<HtmlStringWriter>();
-
-        /// <summary>
-        /// Gets the name of the HTML tag.
-        /// </summary>
-        private string? TagName { get; }
 
         /// <summary>
         /// Adds the specified tag name to this element as a child.
@@ -59,6 +57,16 @@ namespace StreamDeck.Generators.IO
             var elem = new HtmlStringWriter(tagName);
             build(elem);
 
+            return this.Add(elem);
+        }
+
+        /// <summary>
+        /// Adds the specified <paramref name="elem"/> to this instance as a child element.
+        /// </summary>
+        /// <param name="elem">The <see cref="HtmlStringWriter"/> that contains the element to add as a child.</param>
+        /// <returns>This <see cref="HtmlStringWriter"/> for chaining.</returns>
+        public HtmlStringWriter Add(HtmlStringWriter elem)
+        {
             this.Children.Add(elem);
             return this;
         }
@@ -72,6 +80,17 @@ namespace StreamDeck.Generators.IO
         public HtmlStringWriter AddAttribute(string name, object? value)
         {
             this.Attributes.Add(name, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the <paramref name="innerText"/> of this <see cref="HtmlStringWriter"/>"/>.
+        /// </summary>
+        /// <param name="innerText">The inner text.</param>
+        /// <returns>This <see cref="HtmlStringWriter"/> for chaining.</returns>
+        public HtmlStringWriter SetInnerText(string innerText)
+        {
+            this.InnerText = innerText;
             return this;
         }
 
@@ -90,7 +109,7 @@ namespace StreamDeck.Generators.IO
         /// Writes this HTMl element to the specified <paramref name="writer"/>.
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
-        private void Write(IndentedStringWriter writer)
+        protected virtual void Write(IndentedStringWriter writer)
         {
             writer.Write($"<{this.TagName}");
             foreach (var attr in this.Attributes)
@@ -106,7 +125,11 @@ namespace StreamDeck.Generators.IO
                 }
             }
 
-            if (this.Children.Count > 0)
+            if (!string.IsNullOrEmpty(this.InnerText))
+            {
+                writer.WriteLine($">{HttpUtility.HtmlEncode(this.InnerText)}</{this.TagName}>");
+            }
+            else if (this.Children.Count > 0)
             {
                 writer.WriteLine(">");
                 writer.Indent++;

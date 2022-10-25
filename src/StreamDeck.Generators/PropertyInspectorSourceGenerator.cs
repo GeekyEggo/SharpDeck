@@ -4,7 +4,6 @@ namespace StreamDeck.Generators
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
-    using StreamDeck.Generators.Generators.PropertyInspectors;
     using StreamDeck.Generators.IO;
     using StreamDeck.Generators.PropertyInspectors;
     using StreamDeck.PropertyInspectors;
@@ -39,7 +38,7 @@ namespace StreamDeck.Generators
             { typeof(PasswordAttribute).FullName, new InputWriter("sdpi-password") },
             // Radio
             { typeof(RangeAttribute).FullName, new RangeInputWriter() },
-            // Select
+            { typeof(SelectAttribute).FullName, new SelectInputWriter() },
             { typeof(TextareaAttribute).FullName, new InputWriter("sdpi-textarea") },
             { typeof(TextfieldAttribute).FullName, new TextfieldInputWriter() }
         };
@@ -74,7 +73,6 @@ namespace StreamDeck.Generators
             {
                 html.Add("head", head =>
                 {
-
                     head.AddAttribute("lang", "en");
                     head.Add("meta", meta => meta.AddAttribute("charset", "utf-8"));
                     head.Add("script", script => script.AddAttribute("src", "https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v2/dist/sdpi-components.js"));
@@ -82,13 +80,17 @@ namespace StreamDeck.Generators
 
                 html.Add("body", body =>
                 {
-                    foreach (var propAttr in action.PropertyInspectorType!.GetMembers().OfType<IPropertySymbol>().SelectMany(p => p.GetAttributes()))
+                    foreach (var prop in action.PropertyInspectorType!.GetMembers().OfType<IPropertySymbol>())
                     {
-                        if (propAttr.AttributeClass?.ToFullNameString() is string attrClass
-                            && attrClass is not null
-                            && this.ComponentWriters.TryGetValue(attrClass, out var componentWriter))
+                        var propAttrs = prop.GetAttributes();
+                        foreach (var attr in propAttrs)
                         {
-                            componentWriter!.Write(body, propAttr);
+                            if (attr.AttributeClass?.ToFullNameString() is string attrClass
+                                && attrClass is not null
+                                && this.ComponentWriters.TryGetValue(attrClass, out var componentWriter))
+                            {
+                                componentWriter!.Write(body, attr, propAttrs);
+                            }
                         }
                     }
                 });
