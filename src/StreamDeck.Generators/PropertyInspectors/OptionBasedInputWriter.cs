@@ -2,6 +2,7 @@ namespace StreamDeck.Generators.PropertyInspectors
 {
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
+    using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.IO;
     using StreamDeck.PropertyInspectors;
@@ -34,12 +35,12 @@ namespace StreamDeck.Generators.PropertyInspectors
             };
 
         /// <inheritdoc/>
-        protected override void WriteInput(HtmlStringWriter parent, AttributeData data, ImmutableArray<AttributeData> propertyAttributes)
+        protected override void WriteInput(HtmlStringWriter parent, PropertyInspectorPropertyContext context)
         {
             parent.Add(this.TagName, select =>
             {
-                this.WriteAttributes(select, data);
-                foreach (var (option, _) in this.GetOptions(propertyAttributes))
+                this.WriteAttributes(select, context);
+                foreach (var (option, _) in this.GetOptions(context.Attributes))
                 {
                     select.Add(option);
                 }

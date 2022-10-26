@@ -1,7 +1,7 @@
 namespace StreamDeck.Generators.PropertyInspectors
 {
-    using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
+    using StreamDeck.Generators.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
     using StreamDeck.Generators.IO;
     using StreamDeck.PropertyInspectors;
@@ -27,14 +27,13 @@ namespace StreamDeck.Generators.PropertyInspectors
         /// Writes the component <paramref name="data"/> to the specified <paramref name="parent"/>.
         /// </summary>
         /// <param name="parent">The parent HTML element to write to.</param>
-        /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        /// <param name="propertyAttributes">The <see cref="AttributeData"/> associated with the property the <paramref name="data"/> is assigned to.</param>
-        public virtual void Write(HtmlStringWriter parent, AttributeData data, ImmutableArray<AttributeData> propertyAttributes)
+        /// <param name="context">The <see cref="PropertyInspectorPropertyContext"/> that contains information about the property and component being written.</param>
+        public virtual void Write(HtmlStringWriter parent, PropertyInspectorPropertyContext context)
         {
             parent.Add("sdpi-item", item =>
             {
-                item.AddAttribute("label", data.GetNamedArgumentValueOrDefault(nameof(InputAttribute.Label), () => string.Empty));
-                this.WriteInput(item, data, propertyAttributes);
+                item.AddAttribute("label", context.Component.GetNamedArgumentValueOrDefault(nameof(InputAttribute.Label), string.Empty));
+                this.WriteInput(item, context);
             });
         }
 
@@ -42,22 +41,32 @@ namespace StreamDeck.Generators.PropertyInspectors
         /// Writes the input associated with the <paramref name="data"/>, to the specified <paramref name="parent"/>.
         /// </summary>
         /// <param name="parent">The parent HTML element to write to.</param>
-        /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        /// <param name="propertyAttributes">The <see cref="AttributeData"/> associated with the property the <paramref name="data"/> is assigned to.</param>
-        protected virtual void WriteInput(HtmlStringWriter parent, AttributeData data, ImmutableArray<AttributeData> propertyAttributes)
-            => parent.Add(this.TagName, elem => this.WriteAttributes(elem, data));
+        /// <param name="context">The <see cref="PropertyInspectorPropertyContext"/> that contains information about the property and component being written.</param>
+        protected virtual void WriteInput(HtmlStringWriter parent, PropertyInspectorPropertyContext context)
+            => parent.Add(this.TagName, elem => this.WriteAttributes(elem, context));
 
         /// <summary>
         /// Writes the attributes contained within <paramref name="data"/>, to the specified <paramref name="element"/>.
         /// </summary>
         /// <param name="element">The element.</param>
-        /// <param name="data">The <see cref="AttributeData"/> containing information about the component.</param>
-        protected void WriteAttributes(HtmlStringWriter element, AttributeData data)
+        /// <param name="context">The <see cref="PropertyInspectorPropertyContext"/> that contains information about the property and component being written.</param>
+        protected void WriteAttributes(HtmlStringWriter element, PropertyInspectorPropertyContext context)
         {
-            foreach (var attr in data.NamedArguments.Where(a => this.CanWriteProperty(a.Key, a.Value)))
+            var isSettingDefined = false;
+            foreach (var attr in context.Component.NamedArguments.Where(a => this.CanWriteProperty(a.Key, a.Value)))
             {
                 var (key, value) = this.GetAttribute(attr.Key, attr.Value.Value);
                 element.AddAttribute(key, value);
+
+                if (attr.Key == nameof(InputAttribute.Setting))
+                {
+                    isSettingDefined = true;
+                }
+            }
+
+            if (!isSettingDefined)
+            {
+                this.GenerateAndWriteSetting(element, context);
             }
         }
 
@@ -85,5 +94,24 @@ namespace StreamDeck.Generators.PropertyInspectors
                 nameof(InputAttribute.IsGlobal) => ("global", value),
                 _ => (propertyName.ToLowerInvariant(), value)
             };
+
+        /// <summary>
+        /// Generates the "setting" attribute from the <paramref name="context"/>.
+        /// </summary>
+        /// <param name="element">The to element to write the "setting" attribute to.</param>
+        /// <param name="context">The <see cref="PropertyInspectorPropertyContext"/> that contains information about the property and component being written.</param>
+        private void GenerateAndWriteSetting(HtmlStringWriter element, PropertyInspectorPropertyContext context)
+        {
+            if (context.Property.TryGetOnlyValueOfAttribute("System.Text.Json.Serialization.JsonPropertyNameAttribute", out var value)
+                && value is string jsonPropertyName
+                && !string.IsNullOrWhiteSpace(jsonPropertyName))
+            {
+                element.AddAttribute("setting", jsonPropertyName);
+            }
+            else
+            {
+                element.AddAttribute("setting", JsonStringWriter.ToCamalCase(context.Property.Name));
+            }
+        }
     }
 }

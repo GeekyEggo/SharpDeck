@@ -5,6 +5,7 @@ namespace StreamDeck.Generators.IO
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Runtime.Serialization;
     using System.Text;
     using StreamDeck.Serialization;
@@ -31,6 +32,40 @@ namespace StreamDeck.Generators.IO
         /// Gets the properties that can be serialized, indexed by their parent type.
         /// </summary>
         private IDictionary<Type, IEnumerable<JsonPropertyInfo>> SerializableProperties { get; } = new Dictionary<Type, IEnumerable<JsonPropertyInfo>>();
+
+        /// <summary>
+        /// Converts to <paramref name="value"/> to a camel-case string, e.g. "IsChecked" becomes "isChecked".
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The camel-case value.</returns>
+        public static string ToCamalCase(string value)
+        {
+            // Ref: https://github.com/dotnet/runtime/blob/24813dc41dd3d573458e710292a109f8ffa4f415/src/libraries/System.Text.Json/Common/JsonCamelCaseNamingPolicy.cs#L32-L57
+            var chars = value.ToCharArray();
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (i == 1 && !char.IsUpper(chars[i]))
+                {
+                    break;
+                }
+
+                // Stop when next char is already lowercase.
+                if (i > 0 && (i + 1 < chars.Length) && !char.IsUpper(chars[i + 1]))
+                {
+                    // If the next char is a space, lowercase current char before exiting.
+                    if (chars[i + 1] == ' ')
+                    {
+                        chars[i] = char.ToLowerInvariant(chars[i]);
+                    }
+
+                    break;
+                }
+
+                chars[i] = char.ToLowerInvariant(chars[i]);
+            }
+
+            return new string(chars);
+        }
 
         /// <summary>
         /// Serializes the specified value.

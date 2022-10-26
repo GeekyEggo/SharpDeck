@@ -68,8 +68,8 @@ namespace StreamDeck.Generators
         /// <returns>The HTML of the property inspector.</returns>
         private string GetPropertyInspectorHtml(ActionAnalyzer action)
         {
-            var htmlWriter = new HtmlStringWriter();
-            htmlWriter.Add("html", html =>
+            var propertyInspector = new HtmlStringWriter();
+            propertyInspector.Add("html", html =>
             {
                 html.Add("head", head =>
                 {
@@ -89,14 +89,14 @@ namespace StreamDeck.Generators
                                 && attrClass is not null
                                 && this.ComponentWriters.TryGetValue(attrClass, out var componentWriter))
                             {
-                                componentWriter!.Write(body, attr, propAttrs);
+                                componentWriter!.Write(body, new PropertyInspectorPropertyContext(prop, attr, propAttrs));
                             }
                         }
                     }
                 });
             });
 
-            return htmlWriter.ToString();
+            return propertyInspector.ToString();
         }
     }
 }

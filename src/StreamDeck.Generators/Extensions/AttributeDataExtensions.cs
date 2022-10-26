@@ -43,6 +43,7 @@ namespace StreamDeck.Generators.Extensions
         /// <param name="name">The name of the named argument whose value should be retrieved.</param>
         /// <param name="defaultFactory">The factory responsible for creating the default value.</param>
         /// <returns>The value of the named argument; otherwise the result of <paramref name="defaultFactory"/></returns>
+        [Obsolete("This is a duplicate of GetNamedArgumentValueOrDefault<T>")]
         public static string GetNamedArgumentValueOrDefault(this AttributeData data, string name, Func<string> defaultFactory)
             => data.TryGetNamedArgument(name, out string? value) && !string.IsNullOrWhiteSpace(value)
                 ? value!

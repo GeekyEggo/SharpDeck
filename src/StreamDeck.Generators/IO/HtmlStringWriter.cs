@@ -1,11 +1,13 @@
 namespace StreamDeck.Generators.IO
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Web;
 
     /// <summary>
     /// Provides a basic structure for creating and writing HTML elements.
     /// </summary>
+    [DebuggerDisplay("TagName = {TagName}, Attributes = {Attributes.Count}, Children = {Children.Count}", Name = "HTML Element")]
     internal class HtmlStringWriter
     {
         /// <summary>

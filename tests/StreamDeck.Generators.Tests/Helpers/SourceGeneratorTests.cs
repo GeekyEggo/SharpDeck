@@ -2,6 +2,7 @@ namespace StreamDeck.Generators.Tests.Helpers
 {
     using System.Collections.Immutable;
     using System.Text;
+    using System.Text.Json.Serialization;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -51,6 +52,7 @@ namespace StreamDeck.Generators.Tests.Helpers
                 .Concat(new[]
                 {
                     MetadataReference.CreateFromFile(typeof(FontFamily).Assembly.Location), // StreamDeck.Abstractions
+                    MetadataReference.CreateFromFile(typeof(JsonPropertyNameAttribute).Assembly.Location), // System.Text.Json
                 });
 
             // Create a Roslyn compilation for the syntax tree and references; we can always assert against a console application.

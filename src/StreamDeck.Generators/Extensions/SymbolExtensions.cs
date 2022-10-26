@@ -36,6 +36,27 @@ namespace StreamDeck.Generators.Extensions
                     miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers));
 
         /// <summary>
+        /// Attempts to get the only value from the first attribute that matches <paramref name="typeName"/>; it is expected the value was supplied as a constructor parameter.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/>.</param>
+        /// <param name="typeName">Name of the attribute type to search for.</param>
+        /// <param name="value">The only-value, supplied as a constructor parameter.</param>
+        /// <returns><c>true</c> when the attribute was present on the <paramref name="symbol"/>, the there was only a single constructor parameter supplied; otherwise <c>false</c>.</returns>
+        public static bool TryGetOnlyValueOfAttribute(this ISymbol symbol, string typeName, out object? value)
+        {
+            if (symbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.ToString() == typeName) is AttributeData attr
+                and not null
+                and { ConstructorArguments.Length: 1 })
+            {
+                value = attr.ConstructorArguments[0].Value;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        /// <summary>
         /// Attempts to get the first attribute that matches the type <typeparamref name="TAttribute"/>.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>

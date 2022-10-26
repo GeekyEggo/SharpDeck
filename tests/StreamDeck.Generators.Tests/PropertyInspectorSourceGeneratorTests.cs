@@ -39,7 +39,7 @@ namespace StreamDeck.Generators.Tests
         [TestCase("CalendarType.Month", "month")]
         [TestCase("CalendarType.Week", "week")]
         [TestCase("CalendarType.Time", "time")]
-        public void Calendar(string calendarType, string expectedType)
+        public void GenerateCalendar(string calendarType, string expectedType)
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -47,9 +47,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -97,7 +95,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="CheckboxAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Checkbox()
+        public void GenerateCheckbox()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -105,9 +103,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -152,7 +148,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="ColorAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Color()
+        public void GenerateColor()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -160,9 +156,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -206,7 +200,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="FileAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void File()
+        public void GenerateFile()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -214,9 +208,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -262,7 +254,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="PasswordAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Password()
+        public void GeneratePassword()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -270,9 +262,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -317,7 +307,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="RangeAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Range()
+        public void GenerateRange()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -325,9 +315,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -375,7 +363,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="SelectAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Select()
+        public void GenerateSelect()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -383,9 +371,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -445,7 +431,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextareaAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Textarea()
+        public void GenerateTextarea()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -453,9 +439,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -502,7 +486,7 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="TextfieldAttribute"/> component correctly.
         /// </summary>
         [Test]
-        public void Textfield()
+        public void GenerateTextfield()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -510,9 +494,7 @@ namespace StreamDeck.Generators.Tests
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
-                [Action(
-                    PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                [Action(PropertyInspectorType = typeof(Settings))]
                 public class Action { }
 
                 public class Settings
@@ -548,6 +530,153 @@ namespace StreamDeck.Generators.Tests
                         <body>
                             <sdpi-item label="Name">
                                 <sdpi-textfield disabled global required maxlength="100" pattern="[A-Za-z]" placeholder="Please enter your name" setting="name"></sdpi-textfield>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
+        /// Asserts the <see cref="InputAttribute.Setting"/> is inferred from the name of the property.
+        /// </summary>
+        [Test]
+        public void InferSetting_FromPropertyName()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(PropertyInspectorType = typeof(Settings))]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Checkbox]
+                    public bool IsChecked { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item>
+                                <sdpi-checkbox setting="isChecked"></sdpi-checkbox>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
+        /// Asserts the <see cref="InputAttribute.Setting"/> is inferred from the <see cref="T:System.Text.Json.Serialization.JsonPropertyNameAttribute"/> when defined.
+        /// </summary>
+        [Test]
+        public void InferSetting_FromJsonPropertyName()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            var sourceText = $$"""
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+                using System.Text.Json.Serialization;
+
+                [Action(PropertyInspectorType = typeof(Settings))]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Checkbox]
+                    [JsonPropertyName("IS_CHECKED")]
+                    public bool IsChecked { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item>
+                                <sdpi-checkbox setting="IS_CHECKED"></sdpi-checkbox>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
+        /// Asserts the <see cref="InputAttribute.Setting"/> is not written when it is explicitly defined.
+        /// </summary>
+        [TestCase(null)]
+        [TestCase("\"\"")]
+        public void InferSetting_WhenPropertyInspectorDefined(string setting)
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            var sourceText = $$"""
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(PropertyInspectorType = typeof(Settings))]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Checkbox(Setting = {{setting}}]
+                    public bool IsChecked { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item>
+                                <sdpi-checkbox></sdpi-checkbox>
                             </sdpi-item>
                         </body>
                     </html>
