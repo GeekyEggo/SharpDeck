@@ -74,7 +74,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -129,7 +129,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -183,7 +183,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -239,7 +239,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -294,7 +294,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -352,7 +352,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -415,7 +415,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -479,7 +479,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -537,7 +537,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\action.g.html",
                     SourceText: $"""
                     <!DOCTYPE html>
                     <html>
@@ -589,10 +589,10 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
-        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> writes the property inspector to the <see cref="ActionAttribute.UUID"/> when the <see cref="ActionAttribute.PropertyInspectorPath"/> is not defined.
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> writes the property inspector to the <see cref="ActionAttribute.Name"/> when the <see cref="ActionAttribute.PropertyInspectorPath"/> is not defined.
         /// </summary>
         [Test]
-        public void WriteTo_UUID()
+        public void WriteTo_Name()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
@@ -602,7 +602,7 @@ namespace StreamDeck.Generators.Tests
 
                 [Action(
                     PropertyInspectorType = typeof(Settings),
-                    UUID = "com.user.product.action")]
+                    Name = "my/action")]
                 public class Action { }
 
                 public class Settings { }
@@ -615,7 +615,7 @@ namespace StreamDeck.Generators.Tests
             SourceGeneratorTests.VerifyFiles(
                 fileSystem,
                 (
-                    HintName: @"pi\com.user.product.action.g.html",
+                    HintName: @"pi\myaction.g.html",
                     SourceText: EMPTY_PI
                 ));
         }

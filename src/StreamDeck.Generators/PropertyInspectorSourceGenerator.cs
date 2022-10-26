@@ -55,7 +55,7 @@ namespace StreamDeck.Generators
             foreach (var actionAnalyzer in manifestAnalyzer.ActionAnalyzers.Where(a => a.PropertyInspectorType is not null))
             {
                 this.FileSystem.WriteAllText(
-                    path: Path.Combine(projectDirectory, actionAnalyzer.Action.PropertyInspectorPath),
+                    path: Path.Combine(projectDirectory, actionAnalyzer.Action.PropertyInspectorPath).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar),
                     contents: this.GetPropertyInspectorHtml(actionAnalyzer),
                     encoding: Encoding.UTF8);
             }

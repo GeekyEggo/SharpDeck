@@ -434,7 +434,7 @@ namespace StreamDeck.Generators.Tests
                         {
                             "Icon": "Icon.png",
                             "Name": "ActionOne",
-                            "PropertyInspectorPath": "pi\\com.user.product.action.g.html",
+                            "PropertyInspectorPath": "pi/actionone.g.html",
                             "States": [
                                 {
                                     "Image": "State.png"

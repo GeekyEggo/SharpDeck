@@ -25,15 +25,16 @@ namespace StreamDeck.Generators.Extensions
         }
 
         /// <summary>
-        /// Gets the named argument value as a <see cref="string"/>, otherwise <c>null</c>.
+        /// Gets the named argument value, otherwise <paramref name="default"/>
         /// </summary>
         /// <param name="data">The <see cref="AttributeData"/> that contains the named arguments.</param>
         /// <param name="name">The name of the named argument whose value should be retrieved.</param>
-        /// <returns>The value of the named argument; otherwise <c>null</c>.</returns>
-        public static string? GetNamedArgumentValueOrDefault(this AttributeData data, string name)
-            => data.TryGetNamedArgument(name, out string? value) && !string.IsNullOrWhiteSpace(value)
-                ? value!
-                : default;
+        /// <param name="default">The default value.</param>
+        /// <returns>The value of the named argument; otherwise <paramref name="default"/>.</returns>
+        public static T GetNamedArgumentValueOrDefault<T>(this AttributeData data, string name, T @default)
+            => data.TryGetNamedArgument<T>(name, out var value) && value is not null
+                ? value
+                : @default;
 
         /// <summary>
         /// Gets the named argument value as a <see cref="string"/>, otherwise the result of <paramref name="defaultFactory" />.

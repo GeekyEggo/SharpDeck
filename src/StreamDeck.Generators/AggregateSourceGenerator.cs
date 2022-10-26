@@ -27,6 +27,7 @@ namespace StreamDeck.Generators
             {
                 new HostExtensionsSourceGenerator(),
                 new ManifestJsonGenerator(fileSystem),
+                new PropertyInspectorSourceGenerator(fileSystem),
                 new UuidPropertySourceGenerator()
             };
         }

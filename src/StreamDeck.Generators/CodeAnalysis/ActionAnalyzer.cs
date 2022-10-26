@@ -3,6 +3,7 @@ namespace StreamDeck.Generators.CodeAnalysis
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using StreamDeck.Generators.Extensions;
+    using StreamDeck.Generators.IO;
     using StreamDeck.Generators.Models;
 
     /// <summary>
@@ -31,7 +32,7 @@ namespace StreamDeck.Generators.CodeAnalysis
                 this.PropertyInspectorType = piType;
                 if (string.IsNullOrWhiteSpace(this.Action.PropertyInspectorPath))
                 {
-                    this.Action.PropertyInspectorPath = @$"pi\{this.Action.UUID}.g.html";
+                    this.Action.PropertyInspectorPath = @$"pi/{FileSystem.RemoveInvalidFileNameChars(this.Action.Name.ToLowerInvariant())}.g.html";
                 }
             }
         }
