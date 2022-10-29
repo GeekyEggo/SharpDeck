@@ -20,11 +20,6 @@ namespace StreamDeck.Generators.CodeAnalysis
         private const string DIAGNOSTIC_CATEGORY = "StreamDeck";
 
         /// <summary>
-        /// Private member field for <see cref="HasErrorDiagnostic"/>.
-        /// </summary>
-        private bool _hasErrorDiagnostic = false;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DiagnosticReporter"/> struct.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -32,30 +27,9 @@ namespace StreamDeck.Generators.CodeAnalysis
             => this.Context = context;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DiagnosticReporter"/> struct.
-        /// </summary>
-        /// <param name="innerReporter">The inner reporter; when an error is reported, it is propagated to this reporter.</param>
-        public DiagnosticReporter(DiagnosticReporter innerReporter)
-        {
-            this.Context = innerReporter.Context;
-            this.InnerReporter = innerReporter;
-        }
-
-        /// <summary>
         /// Gets a value indicating whether this instance has reported a diagnostic of type <see cref="DiagnosticSeverity.Error"/>.
         /// </summary>
-        public bool HasErrorDiagnostic
-        {
-            get => this._hasErrorDiagnostic;
-            private set
-            {
-                this._hasErrorDiagnostic = value;
-                if (this.InnerReporter is not null)
-                {
-                    this.InnerReporter.HasErrorDiagnostic = value;
-                }
-            }
-        }
+        public bool HasErrorDiagnostic { get; private set; }
 
         /// <summary>
         /// Gets the inner <see cref="DiagnosticReporter"/>.
@@ -66,15 +40,6 @@ namespace StreamDeck.Generators.CodeAnalysis
         /// Gets the <see cref="GeneratorExecutionContext"/>.
         /// </summary>
         private GeneratorExecutionContext Context { get; }
-
-        /// <summary>
-        /// Reports a <see cref="DiagnosticSeverity.Error"/> due to a required value field within the manifest being null.
-        /// </summary>
-        /// <typeparam name="TAttribute">The type of the attribute that contains the data.</typeparam>
-        /// <param name="node">The node of the attribute.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        public void ReportValueCannotBeNull<TAttribute>(AttributeSyntax node, string propertyName)
-            => this.ReportValueCannotBeNull<TAttribute>(node.GetLocation(), propertyName);
 
         #region Manifest
 

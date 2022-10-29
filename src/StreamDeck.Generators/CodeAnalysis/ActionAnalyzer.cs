@@ -21,7 +21,7 @@ namespace StreamDeck.Generators.CodeAnalysis
         {
             this.GeneratorContext = generatorContext;
             this.Context = context;
-            this.DiagnosticReporter = new DiagnosticReporter(diagnosticReporter);
+            this.DiagnosticReporter = diagnosticReporter;
             this.Action = context.ActionAttribute.Data.CreateInstance<ActionAttribute>();
 
             this.SetDefaultValues(manifest);
