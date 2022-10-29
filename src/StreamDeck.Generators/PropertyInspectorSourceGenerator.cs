@@ -32,11 +32,11 @@ namespace StreamDeck.Generators
         {
             { typeof(CalendarAttribute).FullName, new CalendarInputWriter() },
             { typeof(CheckboxAttribute).FullName, new CheckboxInputWriter() },
-            // Checkbox List
+            { typeof(CheckboxListAttribute).FullName, new OptionBasedInputWriter("sdpi-checkbox-list") },
             { typeof(ColorAttribute).FullName, new InputWriter("sdpi-color") },
             { typeof(FileAttribute).FullName, new FileInputWriter() },
             { typeof(PasswordAttribute).FullName, new InputWriter("sdpi-password") },
-            // Radio
+            { typeof(RadioAttribute).FullName, new OptionBasedInputWriter("sdpi-radio") },
             { typeof(RangeAttribute).FullName, new RangeInputWriter() },
             { typeof(SelectAttribute).FullName, new SelectInputWriter() },
             { typeof(TextareaAttribute).FullName, new InputWriter("sdpi-textarea") },

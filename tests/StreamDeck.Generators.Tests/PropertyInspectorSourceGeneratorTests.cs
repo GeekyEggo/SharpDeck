@@ -99,7 +99,7 @@ namespace StreamDeck.Generators.Tests
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
-            var sourceText = $$"""
+            const string sourceText = $$"""
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
@@ -148,11 +148,73 @@ namespace StreamDeck.Generators.Tests
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="ColorAttribute"/> component correctly.
         /// </summary>
         [Test]
+        public void GenerateCheckboxList()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(PropertyInspectorType = typeof(Settings))]
+                public class Action { }
+
+                public class Settings
+                {
+                    [CheckboxList(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Checkbox List",
+                        Columns = 2,
+                        DataSource = "GetValues",
+                        HotReload = true,
+                        Loading = "Loading...",
+                        Setting = "msg",
+                        ValueType = InputValueType.String)]
+                    [Option(Value = "hello", Label = "Hello")]
+                    [Option(Value = "world", Label = "World")]
+                    public string[] Message { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Checkbox List">
+                                <sdpi-checkbox-list disabled global columns="2" datasource="GetValues" hot-reload loading="Loading..." setting="msg" value-type="string">
+                                    <option value="hello">Hello</option>
+                                    <option value="world">World</option>
+                                </sdpi-checkbox-list>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="ColorAttribute"/> component correctly.
+        /// </summary>
+        [Test]
         public void GenerateColor()
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
-            var sourceText = $$"""
+            const string sourceText = $$"""
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
@@ -204,7 +266,7 @@ namespace StreamDeck.Generators.Tests
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
-            var sourceText = $$"""
+            const string sourceText = $$"""
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
 
@@ -304,6 +366,68 @@ namespace StreamDeck.Generators.Tests
         }
 
         /// <summary>
+        /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="RadioAttribute"/> component correctly.
+        /// </summary>
+        [Test]
+        public void GenerateRadio()
+        {
+            // Arrange.
+            var fileSystem = new Mock<IFileSystem>();
+            const string sourceText = """
+                using StreamDeck;
+                using StreamDeck.PropertyInspectors;
+
+                [Action(PropertyInspectorType = typeof(Settings))]
+                public class Action { }
+
+                public class Settings
+                {
+                    [Radio(
+                        IsDisabled = true,
+                        IsGlobal = true,
+                        Label = "Radio",
+                        Columns = 2,
+                        DataSource = "GetValues",
+                        HotReload = true,
+                        Loading = "Loading...",
+                        Setting = "yes_or_no",
+                        ValueType = InputValueType.Boolean)]
+                    [Option(Value = "true", Label = "Yes")]
+                    [Option(Value = "false", Label = "No")]
+                    public string YesOrNo { get; set; }
+                }
+            """;
+
+            // Act
+            SourceGeneratorTests.Run(new PropertyInspectorSourceGenerator(fileSystem.Object), sourceText);
+
+            // Assert.
+            SourceGeneratorTests.VerifyFiles(
+                fileSystem,
+                (
+                    HintName: @"pi\action.g.html",
+                    SourceText: $"""
+                    <!DOCTYPE html>
+                    <html>
+                        <head lang="en">
+                            <meta charset="utf-8" />
+                            <script src="{SDPI_COMPONENTS_SRC}"></script>
+                        </head>
+                        <body>
+                            <sdpi-item label="Radio">
+                                <sdpi-radio disabled global columns="2" datasource="GetValues" hot-reload loading="Loading..." setting="yes_or_no" value-type="boolean">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </sdpi-radio>
+                            </sdpi-item>
+                        </body>
+                    </html>
+
+                    """
+                ));
+        }
+
+        /// <summary>
         /// Asserts <see cref="PropertyInspectorSourceGenerator"/> generates a <see cref="RangeAttribute"/> component correctly.
         /// </summary>
         [Test]
@@ -379,12 +503,12 @@ namespace StreamDeck.Generators.Tests
                     [Select(
                         IsDisabled = true,
                         IsGlobal = true,
-                        Label = "Select"
+                        Label = "Select",
                         DataSource = "GetNumbers",
                         HotReload = true,
                         Loading = "Loading...",
                         Placeholder = "Please select",
-                        Setting = "number"
+                        Setting = "number",
                         ValueType = InputValueType.Number)]
                     [Option(Value = "1", Label = "One", Group = "Prime")]
                     [Option(Value = "2", Label = "Two", Group = "Prime")]
@@ -594,7 +718,7 @@ namespace StreamDeck.Generators.Tests
         {
             // Arrange.
             var fileSystem = new Mock<IFileSystem>();
-            var sourceText = $$"""
+            const string sourceText = $$"""
                 using StreamDeck;
                 using StreamDeck.PropertyInspectors;
                 using System.Text.Json.Serialization;
