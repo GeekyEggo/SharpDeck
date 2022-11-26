@@ -42,12 +42,15 @@ namespace SharpDeck.Connectivity
             connection.WillAppear += this.Action_WillAppear;
 
             // action propagation
+            connection.DialPress                        += (_, e) => this.InvokeOnAction(e, a => a.OnDialPress);
+            connection.DialRotate                       += (_, e) => this.InvokeOnAction(e, a => a.OnDialRotate);
             connection.DidReceiveSettings               += (_, e) => this.InvokeOnAction(e, a => a.OnDidReceiveSettings);
             connection.KeyDown                          += (_, e) => this.InvokeOnAction(e, a => a.OnKeyDown);
             connection.KeyUp                            += (_, e) => this.InvokeOnAction(e, a => a.OnKeyUp);
             connection.PropertyInspectorDidAppear       += (_, e) => this.InvokeOnAction(e, a => a.OnPropertyInspectorDidAppear);
             connection.PropertyInspectorDidDisappear    += (_, e) => this.InvokeOnAction(e, a => a.OnPropertyInspectorDidDisappear);
             connection.SendToPlugin                     += (_, e) => this.InvokeOnAction(e, a => a.OnSendToPlugin);
+            connection.TouchTap                         += (_, e) => this.InvokeOnAction(e, a => a.OnTouchTap);
             connection.TitleParametersDidChange         += (_, e) => this.InvokeOnAction(e, a => a.OnTitleParametersDidChange);
             connection.WillDisappear                    += (_, e) => this.InvokeOnAction(e, a => a.OnWillDisappear);
         }
@@ -216,6 +219,8 @@ namespace SharpDeck.Connectivity
                 }
                 catch (Exception ex)
                 {
+                    this.Logger?.LogError(ex, $"Failed to invoke action \"{args.Action}\".");
+
                     await this.Connection.LogMessageAsync(ex.Message);
                     await this.Connection.ShowAlertAsync(action.Context);
                 }

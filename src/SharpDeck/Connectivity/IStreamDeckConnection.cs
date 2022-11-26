@@ -38,6 +38,16 @@ namespace SharpDeck.Connectivity
         event EventHandler<DeviceEventArgs> DeviceDidDisconnect;
 
         /// <summary>
+        /// Occurs when a dial is pressed, or released.
+        /// </summary>
+        event EventHandler<ActionEventArgs<DialPayload>> DialPress;
+
+        /// <summary>
+        /// Occurs when a dial rotates.
+        /// </summary>
+        event EventHandler<ActionEventArgs<DialRotatePayload>> DialRotate;
+
+        /// <summary>
         /// Occurs when <see cref="IStreamDeckConnection.GetGlobalSettingsAsync(CancellationToken)"/> has been called to retrieve the persistent global data stored for the plugin.
         /// </summary>
         event EventHandler<StreamDeckEventArgs<SettingsPayload>> DidReceiveGlobalSettings;
@@ -85,6 +95,11 @@ namespace SharpDeck.Connectivity
         /// Occurs when the user changes the title or title parameters.
         /// </summary>
         event EventHandler<ActionEventArgs<TitlePayload>> TitleParametersDidChange;
+
+        /// <summary>
+        /// Occurs when a touchscreen is tapped.
+        /// </summary>
+        event EventHandler<ActionEventArgs<TouchTapPayload>> TouchTap;
 
         /// <summary>
         /// Occurs when an instance of an action appears.
@@ -152,6 +167,15 @@ namespace SharpDeck.Connectivity
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task of setting the global settings.</returns>
         Task SetGlobalSettingsAsync(object settings, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Dynamically change the feedback provided by the touchscreen; this corresponds with the layout associated with the action.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="feedback">The feedback object that contains information about the feedback.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The task of setting the feedback.</returns>
+        Task SetFeedbackAsync(string context, object feedback, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Dynamically change the image displayed by an instance of an action; starting with Stream Deck 4.5.1, this API accepts svg images.

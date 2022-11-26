@@ -154,6 +154,22 @@ namespace SharpDeck
         }
 
         /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.DialPress"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{DialPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnDialPress(ActionEventArgs<DialPayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.DialRotate"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{DialRotatePayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnDialRotate(ActionEventArgs<DialRotatePayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
         /// Occurs when <see cref="IStreamDeckConnection.DidReceiveSettings"/> is received for this instance.
         /// </summary>
         /// <param name="args">The <see cref="ActionEventArgs{ActionPayload}" /> instance containing the event data.</param>
@@ -289,6 +305,14 @@ namespace SharpDeck
         /// <param name="args">The <see cref="ActionEventArgs{KeyPayload}"/> instance containing the event data.</param>
         /// <returns>The task of handling the event.</returns>
         protected virtual Task OnKeyPress(ActionEventArgs<KeyPayload> args)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when <see cref="IStreamDeckConnection.TouchTap"/> is received for this instance.
+        /// </summary>
+        /// <param name="args">The <see cref="ActionEventArgs{TouchTapPayload}" /> instance containing the event data.</param>
+        /// <returns>The task of handling the event.</returns>
+        protected internal virtual Task OnTouchTap(ActionEventArgs<TouchTapPayload> args)
             => Task.CompletedTask;
 
         /// <summary>

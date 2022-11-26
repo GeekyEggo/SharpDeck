@@ -55,6 +55,18 @@ namespace SharpDeck.Interactivity
         }
 
         /// <summary>
+        /// Dynamically change the feedback provided by the touchscreen; this corresponds with the layout associated with the action.
+        /// </summary>
+        /// <param name="feedback">The feedback object that contains information about the feedback.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The task of setting the feedback.</returns>
+        public Task SetFeedbackAsync(object feedback, CancellationToken cancellationToken = default)
+        {
+            this.ThrowIfDisposed();
+            return this.StreamDeck.SetFeedbackAsync(this.Context, feedback, cancellationToken);
+        }
+
+        /// <summary>
         /// Dynamically change the image displayed by an instance of an action.
         /// </summary>
         /// <param name="image">The image to display encoded in base64 with the image format declared in the mime type (PNG, JPEG, BMP, ...). If no image is passed, the image is reset to the default image from the manifest.</param>
