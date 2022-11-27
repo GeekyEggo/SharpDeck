@@ -29,7 +29,7 @@ namespace SharpDeck.Extensions.DependencyInjection
 
                 // Actions and interactivity.
                 .AddSingleton<IDynamicProfileFactory, DynamicProfileFactory>()
-                .AddSingleton(provider =>
+                .AddSingleton<IStreamDeckActionRegistry>(provider =>
                 {
                     // Construct the default action registry.
                     var actionRegistry = ActivatorUtilities.CreateInstance<StreamDeckActionRegistry>(provider);
