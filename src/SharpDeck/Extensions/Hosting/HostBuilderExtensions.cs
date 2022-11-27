@@ -33,7 +33,7 @@ namespace SharpDeck.Extensions.Hosting
         /// </summary>
         /// <param name="builder">The host builder.</param>
         /// <returns>The host builder for chaining.</returns>
-        private static IHostBuilder UseStreamDeck(this IHostBuilder builder)
+        public static IHostBuilder UseStreamDeck(this IHostBuilder builder)
             => builder.ConfigureServices(services =>
             {
                 services

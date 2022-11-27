@@ -16,9 +16,12 @@ namespace SharpDeck.Hosting
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="actionRegistry">The action registry.</param>
-        public StreamDeckPluginHostLifetime(StreamDeckWebSocketConnection connection, StreamDeckActionRegistry actionRegistry)
+        public StreamDeckPluginHostLifetime(StreamDeckWebSocketConnection connection, IStreamDeckActionRegistry actionRegistry)
         {
-            actionRegistry.IsEnabled = true;
+            if (actionRegistry is StreamDeckActionRegistry registry)
+            {
+                registry.IsEnabled = true;
+            }
             this.Connection = connection;
         }
 
