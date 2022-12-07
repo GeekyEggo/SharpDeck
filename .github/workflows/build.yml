@@ -35,7 +35,7 @@ jobs:
       run: dotnet restore
 
     - name: '🛠️ Build'
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build -c Release --no-restore
 
     - name: '🚧 Test'
       run: dotnet test --no-restore

@@ -31,7 +31,7 @@ jobs:
       run: dotnet restore
 
     - name: '🛠️ Build'
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --c Release --no-restore
 
     - name: '🚧 Test'
       run: dotnet test --no-restore
@@ -41,9 +41,9 @@ jobs:
       run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/v}
 
     - name: '📦 Pack'
-      run: dotnet pack ./src/SharpDeck/ --configuration Release -p:Version=${{ steps.branch_name.outputs.TAG }} -p:ContinuousIntegrationBuild=true
+      run: dotnet pack ./src/SharpDeck/ -c Release -p:Version=${{ steps.branch_name.outputs.TAG }} -p:ContinuousIntegrationBuild=true
 
     - name: '📫 Push to NuGet'
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push **/dist/*.nupkg -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --no-symbols true --skip-duplicate
+      run: dotnet nuget push ./dist/*.nupkg -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json -n --skip-duplicate

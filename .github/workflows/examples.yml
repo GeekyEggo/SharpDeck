@@ -34,13 +34,13 @@ jobs:
       run: dotnet restore
 
     - name: '🛠️ Build Counter (.NET Framework 4.8)'
-      run: dotnet build ./examples/Counter/net48/ --configuration Release --no-restore
+      run: dotnet build ./examples/Counter/net48/ -c Release--no-restore
 
     - name: '🛠️ Build Counter (.NET 5.0)'
-      run: dotnet build ./examples/Counter/net50/ --configuration Release --no-restore
+      run: dotnet build ./examples/Counter/net50/ -c Release--no-restore
 
     - name: '🛠️ Build Dynamic Profiles'
-      run: dotnet build ./examples/DynamicProfiles/ --configuration Release --no-restore
+      run: dotnet build ./examples/DynamicProfiles/ -c Release--no-restore
 
     - name: '🛠️ Build Shared Counter'
-      run: dotnet build ./examples/SharedCounter/ --configuration Release --no-restore
+      run: dotnet build ./examples/SharedCounter/ -c Release--no-restore
