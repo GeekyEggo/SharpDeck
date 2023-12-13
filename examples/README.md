@@ -2,6 +2,7 @@
 
 * [Counter](/examples/Counter) - Single action counter plugin.
 * [Shared Counter](/examples/SharedCounter) - Multiple action plugin with a shared counter and reset.
+* [Dial Counter](/examples/DialCounter) - Single action counter plugin using SD+ dial.
 
 ## How it works
 

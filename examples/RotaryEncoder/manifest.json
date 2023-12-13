@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/GeekyEggo/SharpDeck/master/src/SharpDeck.PropertyInspector/manifest-schema.json",
+  "Name": "Dial Counter",
+  "Version": "1.0.0",
+  "Author": "Hy",
+  "Actions": [
+    {
+      "Name": "Dial Counter",
+      "UUID": "com.geekyeggo.dialcounter.counter",
+      "Icon": "Images/Counter/Icon",
+      "Tooltip": "A counter action with SD+ dial",
+      "States": [
+        {
+          "FontSize": "18",
+          "Image": "Images/Counter/Image",
+          "TitleAlignment": "middle"
+        }
+      ],
+      "PropertyInspectorPath": "PropertyInspector/counter.html",
+      "Controllers": [ "Encoder" ],
+      "Encoder": {
+        "layout": "$A1",
+        "TriggerDescription": {
+          "Rotate": "Change counter value",
+          "Push": "Reset the counter",
+          "Touch": "Increase the counter",
+          "LongTouch": "Reset the counter"
+        }
+      }
+    }
+  ],
+  "Category": "Dial Counter",
+  "CategoryIcon": "Images/Plugin/CategoryIcon",
+  "CodePath": "DialCounter.exe",
+  "Description": "A dial counter plugin example",
+  "Icon": "Images/Plugin/Icon",
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "6.0"
+  },
+  "OS": [
+    {
+      "MinimumVersion": "10",
+      "Platform": "windows"
+    }
+  ]
+}
