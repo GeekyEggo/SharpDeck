@@ -1,5 +1,6 @@
 namespace DialCounter.Actions;
 
+using Newtonsoft.Json.Linq;
 using SharpDeck;
 using SharpDeck.Events.Received;
 using SharpDeck.Layouts;
@@ -27,6 +28,25 @@ public class CounterAction : StreamDeckAction<CounterSettings>
         return this.UpdateCountAsync(settings.Count);
     }
 
+    protected override async Task OnSendToPlugin(ActionEventArgs<JObject> args)
+    {
+        switch (args.Payload["sdpi_collection"]?["key"]?.ToString())
+        {
+            case "tickmultiplier":
+                if (int.TryParse(args.Payload["sdpi_collection"]?["value"]?.ToString(), out var value))
+                {
+                    // modify the multiplier
+                    var settings = await this.GetSettingsAsync<CounterSettings>();
+                    settings.TickMultiplier = value;
+
+                    // save the settings
+                    await this.SetSettingsAsync(settings);
+                }
+                break;
+        }
+        
+    }
+
     /// <summary>
     /// Occurs when <see cref="IStreamDeckConnection.DialRotate" /> is received for this instance.
     /// </summary>
@@ -36,7 +56,7 @@ public class CounterAction : StreamDeckAction<CounterSettings>
     {
         // modify the count
         var settings = args.Payload.GetSettings<CounterSettings>();
-        settings.Count += args.Payload.Ticks;
+        settings.Count += args.Payload.Ticks * settings.TickMultiplier;
 
         // save the settings, and set the layout
         await this.SetSettingsAsync(settings);

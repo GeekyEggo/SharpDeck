@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Dial Counter Property Inspector</title>
+    <link rel="stylesheet" href="./libs/css/sdpi.css">
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <div type="range" class="sdpi-item" id="tickmultiplier">
+            <div class="sdpi-item-label">Tick Multiplier</div>
+            <div class="sdpi-item-value">
+                <span class="clickable" value="-10">-10</span>
+                <input class="floating-tooltip" type="range" min="-10" max="10" value=1>
+                <span class="clickable" value="10">10</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="sdpi-info-label hidden" style="top: -1000;" value=""></div>
+
+    <script src="./libs/js/constants.js"></script>
+    <script src="./libs/js/events.js"></script>
+    <script src="./libs/js/api.js"></script>
+    <script src="./libs/js/property-inspector.js"></script>
+    <script src="./libs/js/dynamic-styles.js"></script>
+    <script src="./counter.js"></script>
+</body>
+</html>

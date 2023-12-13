@@ -1,0 +1,3 @@
+[submodule "examples/RotaryEncoder/PropertyInspector/libs"]
+	path = examples/RotaryEncoder/PropertyInspector/libs
+	url = https://github.com/elgatosf/streamdeck-javascript-sdk.git

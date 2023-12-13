@@ -16,6 +16,7 @@
           "TitleAlignment": "middle"
         }
       ],
+      "PropertyInspectorPath": "PropertyInspector/counter.html",
       "Controllers": [ "Encoder" ],
       "Encoder": {
         "layout": "$A1",
